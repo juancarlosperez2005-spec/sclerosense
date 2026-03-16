@@ -9,189 +9,127 @@
 <meta name="apple-mobile-web-app-title" content="ScleroSense">
 <title>ScleroSense</title>
 <link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
-:root {
-  --bg:      #fdf6ee;
-  --bg2:     #f7ede0;
-  --surface: #ffffff;
-  --sf2:     #fef3e8;
-  --sf3:     #fde8d0;
-  --accent:  #c0622a;
-  --accentd: #9e4e20;
-  --teal:    #2a8a7a;
-  --blue:    #3a6fbf;
-  --danger:  #c0392b;
-  --warn:    #d4800a;
-  --ok:      #2e7d5e;
-  --text:    #2c1f14;
-  --muted:   #8c6e56;
-  --muted2:  #6e5040;
-  --brd:     rgba(160,90,40,0.12);
-  --brd2:    rgba(160,90,40,0.22);
-  --r:18px; --rs:12px;
-  --font:'DM Sans',system-ui,sans-serif;
-  --mono:'DM Mono',monospace;
-}
+:root{--bg:#fdf6ee;--bg2:#f7ede0;--sf:#fff;--sf2:#fef3e8;--sf3:#fde8d0;--acc:#c0622a;--accd:#9e4e20;--teal:#2a8a7a;--blue:#3a6fbf;--danger:#c0392b;--warn:#d4800a;--ok:#2e7d5e;--text:#2c1f14;--muted:#8c6e56;--muted2:#6e5040;--brd:rgba(160,90,40,0.12);--brd2:rgba(160,90,40,0.22);--r:18px;--rs:12px;--font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden}
-
-/* PIN */
-#pin-screen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:40px 28px;overflow:hidden}
+#pin-screen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 28px;overflow:hidden}
 .pin-glow{position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(192,98,42,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
-.pin-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
-.pin-logo{width:70px;height:70px;border-radius:22px;background:var(--surface);border:1.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(192,98,42,0.12)}
+.pin-logo{width:68px;height:68px;border-radius:22px;background:var(--sf);border:1.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(192,98,42,0.12)}
 .pin-logo svg{width:40px;height:40px}
-.pin-wm{font-size:26px;font-weight:600;letter-spacing:-.5px;color:var(--text)}
-.pin-wm span{color:var(--accent)}
-.pin-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.5}
+.pin-wm{font-size:26px;font-weight:600;letter-spacing:-.5px}.pin-wm span{color:var(--acc)}
+.pin-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.5;max-width:260px}
 .pin-dots{display:flex;gap:14px}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted);transition:all .2s}
-.pin-dot.filled{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(192,98,42,0.3)}
+.pin-dot.filled{background:var(--acc);border-color:var(--acc);box-shadow:0 0 10px rgba(192,98,42,0.3)}
 .pin-dot.error{background:var(--danger);border-color:var(--danger);animation:shake .3s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:270px}
-.pin-btn{height:68px;border-radius:var(--rs);background:var(--surface);border:1px solid var(--brd);color:var(--text);font-size:22px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:var(--font);box-shadow:0 1px 4px rgba(160,90,40,0.08)}
-.pin-btn:active{transform:scale(.93);background:var(--sf2);border-color:var(--brd2)}
-.pin-btn .sub{font-size:8px;color:var(--muted);letter-spacing:1.5px;margin-top:3px;font-family:var(--mono)}
-.pin-btn.del{font-size:16px}
-.pin-btn.empty{background:transparent;border:none;box-shadow:none;cursor:default}
+.pin-btn{height:64px;border-radius:var(--rs);background:var(--sf);border:1px solid var(--brd);color:var(--text);font-size:22px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:var(--font);box-shadow:0 1px 4px rgba(160,90,40,0.08)}
+.pin-btn:active{transform:scale(.93);background:var(--sf2)}
+.pin-btn .sub{font-size:8px;color:var(--muted);letter-spacing:1.5px;margin-top:2px;font-family:var(--mono)}
+.pin-btn.del{font-size:16px}.pin-btn.empty{background:transparent;border:none;box-shadow:none;cursor:default}
 .pin-err{font-size:12px;color:var(--danger);min-height:16px;font-family:var(--mono)}
-
-/* APP */
-#app{display:none;flex-direction:column;min-height:100vh}
-#app.visible{display:flex}
-.app-hdr{padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg);z-index:10}
-.hdr-brand{display:flex;align-items:center;gap:10px}
-.hdr-icon{width:34px;height:34px;border-radius:10px;background:var(--surface);border:1px solid var(--brd2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(160,90,40,0.1)}
-.hdr-icon svg{width:20px;height:20px}
-.hdr-wm{font-size:17px;font-weight:600;letter-spacing:-.3px}
-.hdr-wm span{color:var(--accent)}
-.hdr-date{font-size:11px;color:var(--muted);margin-top:1px;font-family:var(--mono)}
-.lock-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px;transition:all .2s}
-.lock-btn:active{background:var(--sf2)}
-.lock-btn svg{display:block;width:18px;height:18px}
-
-.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:57px;z-index:9}
-.tab-btn{flex:1;padding:13px 6px;font-size:11.5px;font-weight:500;letter-spacing:.3px;background:none;border:none;color:var(--muted);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font);text-transform:uppercase}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-content{display:none;padding:18px 14px;flex-direction:column;gap:14px}
+.pin-pinfo{font-size:12px;color:var(--muted);font-family:var(--mono);text-align:center}
+#app{display:none;flex-direction:column;min-height:100vh}#app.visible{display:flex}
+.app-hdr{padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg);z-index:10}
+.hdr-brand{display:flex;align-items:center;gap:9px}
+.hdr-icon{width:32px;height:32px;border-radius:10px;background:var(--sf);border:1px solid var(--brd2);display:flex;align-items:center;justify-content:center}
+.hdr-icon svg{width:18px;height:18px}
+.hdr-wm{font-size:16px;font-weight:600;letter-spacing:-.3px}.hdr-wm span{color:var(--acc)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.hdr-patient{font-size:11px;color:var(--muted);font-family:var(--mono);background:var(--sf2);padding:3px 8px;border-radius:20px;border:1px solid var(--brd)}
+.hdr-date{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.lock-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:8px}
+.lock-btn svg{display:block;width:17px;height:17px}
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:53px;z-index:9;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:68px;padding:11px 4px;font-size:10px;font-weight:600;letter-spacing:.3px;background:none;border:none;color:var(--muted);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:4px;font-family:var(--font);text-transform:uppercase;white-space:nowrap}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc)}
+.tab-content{display:none;padding:15px 13px;flex-direction:column;gap:12px;padding-bottom:40px}
 .tab-content.active{display:flex}
-.tab-content:last-child{padding-bottom:36px}
-
-/* Cards */
-.card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px;box-shadow:0 2px 12px rgba(160,90,40,0.07)}
-.ct{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:7px;font-family:var(--mono)}
-.ctd{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
-
-/* Turno */
-.turno-tgl{display:flex;gap:8px;margin-bottom:16px;background:var(--bg2);padding:4px;border-radius:var(--rs);border:1px solid var(--brd)}
-.turno-btn{flex:1;padding:9px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font)}
-.turno-btn.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(160,90,40,0.15)}
-
-/* Inputs */
-.inp-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.inp-grp{display:flex;flex-direction:column;gap:6px}
-.inp-lbl{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.8px;text-transform:uppercase;font-family:var(--mono)}
-.inp-fld{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:11px 8px;color:var(--text);font-size:24px;font-weight:500;text-align:center;width:100%;outline:none;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;font-family:var(--mono)}
-.inp-fld::-webkit-inner-spin-button,.inp-fld::-webkit-outer-spin-button{-webkit-appearance:none}
-.inp-fld:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(192,98,42,0.1)}
-.inp-unit{font-size:10px;color:var(--muted);text-align:center;font-family:var(--mono)}
-
-/* Badges */
-.est-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:30px;font-size:12.5px;font-weight:500;margin-bottom:14px;font-family:var(--mono)}
-.est-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
-.est-normal {background:rgba(46,125,94,.1); color:var(--ok);    border:1px solid rgba(46,125,94,.25)}
-.est-elevada{background:rgba(212,128,10,.1);color:var(--warn);  border:1px solid rgba(212,128,10,.25)}
-.est-alta   {background:rgba(192,57,43,.1); color:var(--danger);border:1px solid rgba(192,57,43,.25)}
-.est-baja   {background:rgba(58,111,191,.1);color:var(--blue);  border:1px solid rgba(58,111,191,.25)}
-.est-crisis {background:rgba(192,57,43,.18);color:#a02020;      border:1px solid rgba(192,57,43,.35)}
-
-.notas-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-size:13px;width:100%;outline:none;transition:border-color .2s;font-family:var(--font);margin-bottom:14px}
-.notas-inp:focus{border-color:var(--accent)}
-
-.btn-save{width:100%;padding:15px;border-radius:var(--rs);background:var(--accent);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font);box-shadow:0 3px 12px rgba(192,98,42,0.3)}
-.btn-save:active{transform:scale(.97);background:var(--accentd)}
+.card{background:var(--sf);border:1px solid var(--brd);border-radius:var(--r);padding:15px;box-shadow:0 2px 10px rgba(160,90,40,0.06)}
+.ct{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:13px;display:flex;align-items:center;gap:7px;font-family:var(--mono)}
+.ctd{width:6px;height:6px;border-radius:50%;background:var(--acc);flex-shrink:0}
+.slbl{font-size:11px;font-weight:600;color:var(--acc);letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono);padding:10px 0 6px;border-bottom:1px solid var(--brd);margin-bottom:10px}
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fld:last-child{margin-bottom:0}
+.fld-lbl{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
+.scale-wrap{display:flex;gap:4px;flex-wrap:wrap}
+.scale-btn{width:29px;height:29px;border-radius:8px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.scale-btn.sel{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.scale-btn:active{transform:scale(.9)}
+.opts-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.opt-btn{padding:6px 11px;border-radius:20px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font)}
+.opt-btn.sel{background:var(--acc);border-color:var(--acc);color:#fff}
+.opt-btn.multi.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.opt-btn:active{transform:scale(.96)}
+.txt-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px 12px;color:var(--text);font-size:13px;width:100%;outline:none;transition:border-color .2s;font-family:var(--font)}
+.txt-inp:focus{border-color:var(--acc)}
+textarea.txt-inp{resize:vertical;min-height:60px}
+.btn-save{width:100%;padding:14px;border-radius:var(--rs);background:var(--acc);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font);box-shadow:0 3px 12px rgba(192,98,42,0.3);margin-top:4px}
+.btn-save:active{transform:scale(.97);background:var(--accd)}
 .btn-save:disabled{background:var(--sf3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
-
-/* Historial */
-.reg-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--brd)}
+.saved-ok{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rs);background:rgba(46,125,94,.08);border:1px solid rgba(46,125,94,.2);font-size:13px;color:var(--ok);font-weight:500}
+.turno-tgl{display:flex;gap:8px;margin-bottom:14px;background:var(--bg2);padding:4px;border-radius:var(--rs);border:1px solid var(--brd)}
+.turno-btn{flex:1;padding:9px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.turno-btn.active{background:var(--sf);color:var(--acc);box-shadow:0 1px 4px rgba(160,90,40,0.15)}
+.inp-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.inp-grp{display:flex;flex-direction:column;gap:5px}
+.inp-lbl{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.8px;text-transform:uppercase;font-family:var(--mono)}
+.inp-fld{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:10px 6px;color:var(--text);font-size:22px;font-weight:500;text-align:center;width:100%;outline:none;transition:border-color .2s;-moz-appearance:textfield;font-family:var(--mono)}
+.inp-fld::-webkit-inner-spin-button,.inp-fld::-webkit-outer-spin-button{-webkit-appearance:none}
+.inp-fld:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(192,98,42,0.1)}
+.inp-unit{font-size:10px;color:var(--muted);text-align:center;font-family:var(--mono)}
+.est-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:500;margin-bottom:12px;font-family:var(--mono)}
+.est-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.est-normal{background:rgba(46,125,94,.1);color:var(--ok);border:1px solid rgba(46,125,94,.25)}
+.est-elevada{background:rgba(212,128,10,.1);color:var(--warn);border:1px solid rgba(212,128,10,.25)}
+.est-alta{background:rgba(192,57,43,.1);color:var(--danger);border:1px solid rgba(192,57,43,.25)}
+.est-baja{background:rgba(58,111,191,.1);color:var(--blue);border:1px solid rgba(58,111,191,.25)}
+.est-crisis{background:rgba(192,57,43,.18);color:#a02020;border:1px solid rgba(192,57,43,.35)}
+.reg-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--brd)}
 .reg-item:last-child{border-bottom:none}
-.reg-fecha{font-size:13px;color:var(--text);font-weight:500}
-.reg-turno{font-size:11px;color:var(--muted);margin-top:2px}
-.reg-vals{font-size:20px;font-weight:600;text-align:right;font-family:var(--mono)}
-.reg-pulso{font-size:11px;color:var(--muted);text-align:right;font-family:var(--mono)}
-.reg-est{font-size:10px;text-align:right;margin-top:2px;font-family:var(--mono)}
-
-/* Resumen grid */
+.reg-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .met-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.met-card{background:var(--sf2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 12px}
-.met-num{font-size:26px;font-weight:600;margin-bottom:3px;font-family:var(--mono);line-height:1;color:var(--text)}
-.met-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
-.met-sub{font-size:11px;margin-top:5px;font-family:var(--mono)}
-
-/* Distribución */
-.dist-bar{display:flex;border-radius:6px;overflow:hidden;height:24px;margin:10px 0 12px}
-.dist-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;transition:width .6s ease;min-width:0;overflow:hidden;font-family:var(--mono)}
-.leg-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted2)}
-.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.est-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--brd)}
-.est-row:last-child{border-bottom:none}
-.est-lbl{font-size:12.5px;display:flex;align-items:center;gap:8px;color:var(--text)}
-.est-cnt{font-size:15px;font-weight:600;font-family:var(--mono);color:var(--text)}
-.est-pct{font-size:11px;color:var(--muted);font-family:var(--mono)}
-
-/* Métricas clínicas avanzadas */
-.clin-card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--rs);padding:14px;margin-bottom:8px}
-.clin-card:last-child{margin-bottom:0}
-.clin-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px}
-.clin-name{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;flex:1}
-.clin-val{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--text);white-space:nowrap}
-.clin-desc{font-size:11.5px;color:var(--muted);line-height:1.55;margin-bottom:8px}
-.clin-tag{font-size:11px;padding:4px 10px;border-radius:20px;font-family:var(--mono);display:inline-flex;align-items:center;gap:5px}
-.c-ok    {background:rgba(46,125,94,.1); color:var(--ok);    border:1px solid rgba(46,125,94,.2)}
-.c-warn  {background:rgba(212,128,10,.1);color:var(--warn);  border:1px solid rgba(212,128,10,.2)}
-.c-danger{background:rgba(192,57,43,.1); color:var(--danger);border:1px solid rgba(192,57,43,.2)}
-.c-info  {background:rgba(58,111,191,.1);color:var(--blue);  border:1px solid rgba(58,111,191,.2)}
-.c-na    {background:rgba(140,110,86,.08);color:var(--muted);border:1px solid var(--brd)}
-.clin-bar-wrap{height:5px;background:var(--bg2);border-radius:3px;margin-top:8px;overflow:hidden}
-.clin-bar{height:5px;border-radius:3px;transition:width .8s ease}
-
-/* Insights */
-.ins-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--brd)}
+.met-card{background:var(--sf2);border:1px solid var(--brd);border-radius:var(--rs);padding:13px 11px}
+.met-num{font-size:24px;font-weight:600;font-family:var(--mono);line-height:1;color:var(--text)}
+.met-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-top:3px}
+.met-sub{font-size:11px;margin-top:4px;font-family:var(--mono)}
+.chart-cont{position:relative;width:100%}
+.symp-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+.symp-lbl{font-size:11px;color:var(--muted2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.symp-bar-bg{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.symp-bar{height:8px;border-radius:4px;transition:width .6s ease}
+.symp-val{font-size:11px;font-family:var(--mono);color:var(--text);width:20px;text-align:right;flex-shrink:0}
+.ins-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--brd)}
 .ins-item:last-child{border-bottom:none}
-.ins-icon{width:32px;height:32px;border-radius:9px;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.ins-text{font-size:13px;line-height:1.55;color:var(--muted2)}
+.ins-icon{width:30px;height:30px;border-radius:9px;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ins-text{font-size:12.5px;line-height:1.55;color:var(--muted2)}
 .ins-text strong{color:var(--text);font-weight:600}
-
-/* Config */
-.cfg-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.cfg-fld label{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
-.cfg-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--font)}
-.cfg-inp:focus{border-color:var(--accent)}
-.btn-cfg{width:100%;padding:13px;border-radius:var(--rs);border:1px solid var(--brd);background:var(--sf2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:8px;transition:all .2s;font-family:var(--font)}
+.cfg-fld{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
+.cfg-fld label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
+.cfg-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:9px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--font)}
+.cfg-inp:focus{border-color:var(--acc)}
+.btn-cfg{width:100%;padding:12px;border-radius:var(--rs);border:1px solid var(--brd);background:var(--sf2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:7px;transition:all .2s;font-family:var(--font)}
 .btn-cfg:active{transform:scale(.97)}
 .btn-danger{border-color:rgba(192,57,43,.25);color:var(--danger)}
-.fb-status{display:flex;align-items:center;gap:8px;font-size:12px;padding:10px 12px;border-radius:var(--rs);background:var(--bg2);border:1px solid var(--brd);margin-bottom:14px;font-family:var(--mono)}
+.fb-status{display:flex;align-items:center;gap:8px;font-size:12px;padding:9px 12px;border-radius:var(--rs);background:var(--bg2);border:1px solid var(--brd);margin-bottom:12px;font-family:var(--mono)}
 .st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .s-ok .st-dot{background:var(--ok);box-shadow:0 0 6px rgba(46,125,94,.5)}
 .s-err .st-dot{background:var(--danger)}
 .s-conn .st-dot{background:var(--warn);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* Misc */
-.spinner{border:2px solid var(--brd);border-top-color:var(--accent);border-radius:50%;width:20px;height:20px;animation:spin .7s linear infinite;display:inline-block}
+.spinner{border:2px solid var(--brd);border-top-color:var(--acc);border-radius:50%;width:20px;height:20px;animation:spin .7s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty-st{text-align:center;padding:36px 20px;color:var(--muted)}
-.empty-ic{font-size:36px;margin-bottom:10px}
+.empty-st{text-align:center;padding:32px 20px;color:var(--muted)}
+.empty-ic{font-size:34px;margin-bottom:10px}
 .empty-tx{font-size:13px;line-height:1.6}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:30px;font-size:13.5px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;display:flex;align-items:center;gap:7px;font-family:var(--font)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;font-family:var(--font)}
 .toast.show{transform:translateX(-50%) translateY(0)}
-.chart-cont{position:relative;width:100%}
 </style>
 </head>
 <body>
@@ -199,16 +137,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <!-- PIN -->
 <div id="pin-screen">
   <div class="pin-glow"></div>
-  <div class="pin-logo-wrap">
-    <div class="pin-logo">
-      <svg viewBox="0 0 40 40" fill="none">
-        <path d="M20 7C20 7 9 13.5 9 22C9 27.5 14 32 20 32C26 32 31 27.5 31 22C31 13.5 20 7Z" stroke="#c0622a" stroke-width="1.8" fill="rgba(192,98,42,0.07)"/>
-        <path d="M13 22 L17 18 L20 23 L23 15 L27 22" stroke="#c0622a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      </svg>
-    </div>
-    <div class="pin-wm">Sclero<span>Sense</span></div>
-    <div class="pin-sub" id="pin-subtitle">Introduce tu PIN de acceso</div>
+  <div class="pin-logo">
+    <svg viewBox="0 0 40 40" fill="none">
+      <path d="M20 7C20 7 9 13.5 9 22C9 27.5 14 32 20 32C26 32 31 27.5 31 22C31 13.5 20 7Z" stroke="#c0622a" stroke-width="1.8" fill="rgba(192,98,42,0.07)"/>
+      <path d="M13 22 L17 18 L20 23 L23 15 L27 22" stroke="#c0622a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
   </div>
+  <div class="pin-wm">Sclero<span>Sense</span></div>
+  <div class="pin-sub" id="pin-subtitle">Introduce tu PIN de acceso</div>
   <div class="pin-dots" id="pin-dots">
     <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
     <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
@@ -228,6 +164,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <button class="pin-btn" onclick="pinKey('0')">0</button>
     <button class="pin-btn del" onclick="pinDel()">⌫</button>
   </div>
+  <div class="pin-pinfo" id="pin-pinfo"></div>
 </div>
 
 <!-- APP -->
@@ -237,7 +174,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <div class="hdr-icon">
         <svg viewBox="0 0 20 20" fill="none">
           <path d="M10 3C10 3 4 6.5 4 11C4 13.8 6.7 16 10 16C13.3 16 16 13.8 16 11C16 6.5 10 3Z" stroke="#c0622a" stroke-width="1.5" fill="rgba(192,98,42,0.08)"/>
-          <path d="M6 11 L8 9 L10 12 L12 7 L14 11" stroke="#c0622a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M6 11 L8 9 L10 12 L12 7 L14 11" stroke="#c0622a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div>
@@ -245,88 +182,244 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         <div class="hdr-date" id="header-date"></div>
       </div>
     </div>
-    <button class="lock-btn" onclick="lockApp()">
-      <svg viewBox="0 0 18 18" fill="none">
-        <rect x="3" y="8" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M6 8V5.5C6 3.6 12 3.6 12 5.5V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="9" cy="12.5" r="1.2" fill="currentColor"/>
-      </svg>
-    </button>
+    <div class="hdr-right">
+      <div class="hdr-patient" id="hdr-patient"></div>
+      <button class="lock-btn" onclick="lockApp()">
+        <svg viewBox="0 0 18 18" fill="none">
+          <rect x="3" y="8" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M6 8V5.5C6 3.6 12 3.6 12 5.5V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="9" cy="12.5" r="1.2" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" onclick="showTab('registro',this)">📝 Registro</button>
-    <button class="tab-btn" onclick="showTab('metricas',this)">📊 Métricas</button>
+    <button class="tab-btn active" onclick="showTab('manana',this)">🌅 Mañana</button>
+    <button class="tab-btn" onclick="showTab('noche',this)">🌙 Noche</button>
+    <button class="tab-btn" onclick="showTab('tension',this)">❤️ Tensión</button>
+    <button class="tab-btn" onclick="showTab('analisis',this)">📊 Análisis</button>
     <button class="tab-btn" onclick="showTab('config',this)">⚙️ Config</button>
   </nav>
 
-  <!-- REGISTRO -->
-  <div class="tab-content active" id="tab-registro">
+  <!-- MAÑANA -->
+  <div class="tab-content active" id="tab-manana">
+    <div id="manana-saved" style="display:none" class="saved-ok">✅ Formulario de mañana ya guardado hoy</div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Turno</div>
+      <div class="ct"><span class="ctd"></span> Datos básicos</div>
+      <div class="fld"><div class="fld-lbl">Fecha</div><input type="date" class="txt-inp" id="m-fecha"></div>
+      <div class="fld"><div class="fld-lbl">Hora despertar</div><input type="time" class="txt-inp" id="m-hora-despertar"></div>
+      <div class="fld"><div class="fld-lbl">Hora acostarse (noche anterior)</div><input type="time" class="txt-inp" id="m-hora-acostar"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Valoración del sueño</div>
+      <div class="fld"><div class="fld-lbl">Horas totales de sueño</div><div class="scale-wrap" id="m-horas-sueno"></div></div>
+      <div class="fld"><div class="fld-lbl">Calidad del sueño</div><div class="scale-wrap" id="m-calidad-sueno"></div></div>
+      <div class="fld"><div class="fld-lbl">Nº despertares nocturnos</div><div class="opts-wrap" id="m-despertares"></div></div>
+      <div class="fld"><div class="fld-lbl">Sensación térmica al dormir</div><div class="opts-wrap" id="m-sensacion-termica"></div></div>
+      <div class="fld"><div class="fld-lbl">Pantallas última hora antes de dormir</div><div class="opts-wrap" id="m-pantallas-noche"></div></div>
+      <div class="fld"><div class="fld-lbl">Tiempo entre cena y dormir</div><div class="opts-wrap" id="m-tiempo-cena"></div></div>
+      <div class="fld"><div class="fld-lbl">Sensación de cena pesada</div><div class="opts-wrap" id="m-cena-pesada"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Síntomas al despertar</div>
+      <div class="fld"><div class="fld-lbl">Me desperté descansada</div><div class="opts-wrap" id="m-descansada"></div></div>
+      <div class="fld"><div class="fld-lbl">Fatiga al despertar</div><div class="scale-wrap" id="m-fatiga-despertar"></div></div>
+      <div class="fld"><div class="fld-lbl">Dolor articular superior</div><div class="scale-wrap" id="m-dolor-sup"></div></div>
+      <div class="fld"><div class="fld-lbl">Dolor articular central</div><div class="scale-wrap" id="m-dolor-cen"></div></div>
+      <div class="fld"><div class="fld-lbl">Dolor articular inferior</div><div class="scale-wrap" id="m-dolor-inf"></div></div>
+      <div class="fld"><div class="fld-lbl">Rigidez al despertar</div><div class="scale-wrap" id="m-rigidez"></div></div>
+      <div class="fld"><div class="fld-lbl">Claridad mental</div><div class="scale-wrap" id="m-claridad"></div></div>
+      <div class="slbl">Dolencias articulares específicas</div>
+      <div class="fld"><div class="fld-lbl">Manos</div><div class="scale-wrap" id="m-manos"></div></div>
+      <div class="fld"><div class="fld-lbl">Dedos (manos)</div><div class="scale-wrap" id="m-dedos"></div></div>
+      <div class="fld"><div class="fld-lbl">Muñecas</div><div class="scale-wrap" id="m-munecas"></div></div>
+      <div class="fld"><div class="fld-lbl">Codos</div><div class="scale-wrap" id="m-codos"></div></div>
+      <div class="fld"><div class="fld-lbl">Cadera</div><div class="scale-wrap" id="m-cadera"></div></div>
+      <div class="fld"><div class="fld-lbl">Pecho</div><div class="scale-wrap" id="m-pecho"></div></div>
+      <div class="fld"><div class="fld-lbl">Rodillas</div><div class="scale-wrap" id="m-rodillas"></div></div>
+      <div class="fld"><div class="fld-lbl">Tobillos</div><div class="scale-wrap" id="m-tobillos"></div></div>
+      <div class="fld"><div class="fld-lbl">Pies</div><div class="scale-wrap" id="m-pies"></div></div>
+      <div class="fld"><div class="fld-lbl">Dedos de los pies</div><div class="scale-wrap" id="m-dedos-pies"></div></div>
+      <div class="fld"><div class="fld-lbl">Sensación respiratoria</div><div class="opts-wrap" id="m-respiracion"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Circulación — Raynaud</div>
+      <div class="fld"><div class="fld-lbl">Episodio de Raynaud al despertar</div><div class="opts-wrap" id="m-raynaud"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Medicación matutina</div>
+      <div class="fld"><div class="fld-lbl">Medicación tomada</div><div class="opts-wrap" id="m-medicacion"></div></div>
+      <div class="fld"><div class="fld-lbl">Suplementación — Curcumina</div><div class="opts-wrap" id="m-curcumina"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Información digestiva matinal</div>
+      <div class="fld"><div class="fld-lbl">Sensación digestiva al despertar</div><div class="opts-wrap" id="m-digestivo"></div></div>
+      <div class="fld"><div class="fld-lbl">Tránsito intestinal</div><div class="opts-wrap" id="m-transito"></div></div>
+      <div class="fld"><div class="fld-lbl">Necesidad de evacuar antes del desayuno</div><div class="opts-wrap" id="m-evacuar"></div></div>
+      <div class="fld"><div class="fld-lbl">Apetito (deseo de desayunar)</div><div class="opts-wrap" id="m-apetito"></div></div>
+      <div class="fld"><div class="fld-lbl">Hinchazón abdominal al despertar</div><div class="scale-wrap" id="m-hinchazon"></div></div>
+      <div class="fld"><div class="fld-lbl">Contenido del desayuno</div><div class="opts-wrap" id="m-desayuno"></div></div>
+      <div class="fld"><div class="fld-lbl">Consumo de semillas</div><div class="opts-wrap" id="m-semillas"></div></div>
+    </div>
+    <button class="btn-save" onclick="guardarManana()">💾 Guardar formulario de mañana</button>
+  </div>
+
+  <!-- NOCHE -->
+  <div class="tab-content" id="tab-noche">
+    <div id="noche-saved" style="display:none" class="saved-ok">✅ Formulario de noche ya guardado hoy</div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Datos básicos</div>
+      <div class="fld"><div class="fld-lbl">Fecha</div><input type="date" class="txt-inp" id="n-fecha"></div>
+      <div class="fld"><div class="fld-lbl">Hora</div><input type="time" class="txt-inp" id="n-hora"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Valoración general del día</div>
+      <div class="fld"><div class="fld-lbl">Tipo de día</div><div class="opts-wrap" id="n-tipo-dia"></div></div>
+      <div class="fld"><div class="fld-lbl">¿Cómo me encontré hoy en general?</div><div class="scale-wrap" id="n-bienestar"></div></div>
+      <div class="fld"><div class="fld-lbl">Comparado con ayer</div><div class="opts-wrap" id="n-vs-ayer"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Sintomatología durante el día</div>
+      <div class="fld"><div class="fld-lbl">Nivel de fatiga</div><div class="scale-wrap" id="n-fatiga"></div></div>
+      <div class="slbl">Dolor articular</div>
+      <div class="fld"><div class="fld-lbl">Superior</div><div class="scale-wrap" id="n-dolor-sup"></div></div>
+      <div class="fld"><div class="fld-lbl">Central</div><div class="scale-wrap" id="n-dolor-cen"></div></div>
+      <div class="fld"><div class="fld-lbl">Inferior</div><div class="scale-wrap" id="n-dolor-inf"></div></div>
+      <div class="fld"><div class="fld-lbl">Rigidez general</div><div class="scale-wrap" id="n-rigidez"></div></div>
+      <div class="slbl">Inflamación</div>
+      <div class="fld"><div class="fld-lbl">Superior</div><div class="scale-wrap" id="n-inflam-sup"></div></div>
+      <div class="fld"><div class="fld-lbl">Central</div><div class="scale-wrap" id="n-inflam-cen"></div></div>
+      <div class="fld"><div class="fld-lbl">Inferior</div><div class="scale-wrap" id="n-inflam-inf"></div></div>
+      <div class="fld"><div class="fld-lbl">Dolor muscular</div><div class="scale-wrap" id="n-dolor-musc"></div></div>
+      <div class="slbl">Piel y sistema</div>
+      <div class="fld"><div class="fld-lbl">Piel tirante superior</div><div class="scale-wrap" id="n-piel-sup"></div></div>
+      <div class="fld"><div class="fld-lbl">Piel tirante inferior</div><div class="scale-wrap" id="n-piel-inf"></div></div>
+      <div class="fld"><div class="fld-lbl">Pesadez de estómago</div><div class="scale-wrap" id="n-pesadez"></div></div>
+      <div class="fld"><div class="fld-lbl">Náuseas</div><div class="scale-wrap" id="n-nauseas"></div></div>
+      <div class="fld"><div class="fld-lbl">Reflujo</div><div class="scale-wrap" id="n-reflujo"></div></div>
+      <div class="fld"><div class="fld-lbl">Dificultad respiratoria</div><div class="scale-wrap" id="n-respiracion"></div></div>
+      <div class="fld"><div class="fld-lbl">Dolor de cabeza</div><div class="scale-wrap" id="n-cefalea"></div></div>
+      <div class="fld"><div class="fld-lbl">Claridad mental</div><div class="scale-wrap" id="n-claridad"></div></div>
+      <div class="fld"><div class="fld-lbl">Capacidad de concentración</div><div class="scale-wrap" id="n-concentracion"></div></div>
+      <div class="fld"><div class="fld-lbl">Presión torácica</div><div class="scale-wrap" id="n-presion-tor"></div></div>
+      <div class="fld"><div class="fld-lbl">Estado de ánimo / irritabilidad</div><div class="scale-wrap" id="n-animo"></div></div>
+      <div class="fld"><div class="fld-lbl">Calidad global del día</div><div class="scale-wrap" id="n-calidad-dia"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Raynaud durante el día</div>
+      <div class="fld"><div class="fld-lbl">Episodio de Raynaud</div><div class="opts-wrap" id="n-raynaud"></div></div>
+      <div class="fld"><div class="fld-lbl">Exposición al frío</div><div class="opts-wrap" id="n-frio"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Alimentación</div>
+      <div class="fld"><div class="fld-lbl">Digestión tras el desayuno</div><div class="opts-wrap" id="n-digest-desayuno"></div></div>
+      <div class="slbl">Alimentos del almuerzo</div>
+      <div class="fld"><div class="opts-wrap" id="n-almuerzo"></div></div>
+      <div class="slbl">Alimentos de la cena</div>
+      <div class="fld"><div class="opts-wrap" id="n-cena"></div></div>
+      <div class="fld"><div class="fld-lbl">Comí fuera hoy</div><div class="opts-wrap" id="n-fuera"></div></div>
+      <div class="fld"><div class="fld-lbl">Reflujo durante el día</div><div class="scale-wrap" id="n-reflujo-dia"></div></div>
+      <div class="fld"><div class="fld-lbl">Pesadez de estómago</div><div class="scale-wrap" id="n-pesadez-dia"></div></div>
+      <div class="fld"><div class="fld-lbl">Hinchazón de estómago</div><div class="scale-wrap" id="n-hinchazon-dia"></div></div>
+      <div class="fld"><div class="fld-lbl">Hidratación (agua)</div><div class="opts-wrap" id="n-agua"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Actividad física</div>
+      <div class="fld"><div class="fld-lbl">Actividad física</div><div class="opts-wrap" id="n-actividad"></div></div>
+      <div class="fld"><div class="fld-lbl">Tipo de actividad</div><div class="opts-wrap" id="n-tipo-actividad"></div></div>
+      <div class="fld"><div class="fld-lbl">Tiempo con poca movilidad</div><div class="opts-wrap" id="n-sedentarismo"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Estrés y carga mental</div>
+      <div class="fld"><div class="fld-lbl">Nivel de estrés durante el día</div><div class="scale-wrap" id="n-estres"></div></div>
+      <div class="fld"><div class="fld-lbl">Carga mental</div><div class="opts-wrap" id="n-carga-mental"></div></div>
+      <div class="fld"><div class="fld-lbl">Evento emocionalmente relevante</div><div class="opts-wrap" id="n-evento"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Pantallas y descanso</div>
+      <div class="fld"><div class="fld-lbl">Horas frente al ordenador</div><div class="opts-wrap" id="n-pantalla-pc"></div></div>
+      <div class="fld"><div class="fld-lbl">Horas frente al móvil</div><div class="opts-wrap" id="n-pantalla-movil"></div></div>
+      <div class="fld"><div class="fld-lbl">Horas frente a la TV</div><div class="opts-wrap" id="n-pantalla-tv"></div></div>
+      <div class="fld"><div class="fld-lbl">Trabajo mental intenso</div><div class="opts-wrap" id="n-trabajo-mental"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Entorno físico</div>
+      <div class="fld"><div class="fld-lbl">Tiempo en casa</div><div class="opts-wrap" id="n-tiempo-casa"></div></div>
+      <div class="fld"><div class="fld-lbl">Tiempo fuera de casa</div><div class="opts-wrap" id="n-tiempo-fuera"></div></div>
+      <div class="fld"><div class="fld-lbl">Temperatura predominante</div><div class="opts-wrap" id="n-temperatura"></div></div>
+      <div class="fld"><div class="fld-lbl">Ventilación del espacio</div><div class="opts-wrap" id="n-ventilacion"></div></div>
+      <div class="fld"><div class="fld-lbl">Climatología</div><div class="opts-wrap" id="n-clima"></div></div>
+      <div class="fld"><div class="fld-lbl">Aire cargado / olores / humedades</div><div class="opts-wrap" id="n-aire"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Medicación extra del día</div>
+      <div class="fld"><div class="fld-lbl">Medicación extra tomada</div><div class="opts-wrap" id="n-medicacion-extra"></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Reflexión del día</div>
+      <div class="fld"><div class="fld-lbl">Algo que empeoró mis síntomas hoy</div><textarea class="txt-inp" id="n-empeoro" placeholder="Opcional..."></textarea></div>
+      <div class="fld"><div class="fld-lbl">Algo que me ayudó hoy</div><textarea class="txt-inp" id="n-ayudo" placeholder="Opcional..."></textarea></div>
+      <div class="fld"><div class="fld-lbl">Tiempo destinado a la oración</div><div class="opts-wrap" id="n-oracion"></div></div>
+      <div class="fld"><div class="fld-lbl">Tiempo destinado a la Biblia</div><div class="opts-wrap" id="n-biblia"></div></div>
+    </div>
+    <button class="btn-save" onclick="guardarNoche()">💾 Guardar formulario de noche</button>
+  </div>
+
+  <!-- TENSIÓN -->
+  <div class="tab-content" id="tab-tension">
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Nueva medición</div>
       <div class="turno-tgl">
-        <button class="turno-btn active" id="btn-manana" onclick="setTurno('manana')">🌅 Mañana</button>
-        <button class="turno-btn" id="btn-noche" onclick="setTurno('noche')">🌙 Noche</button>
+        <button class="turno-btn active" id="btn-man-t" onclick="setTurno('manana')">🌅 Mañana</button>
+        <button class="turno-btn" id="btn-noc-t" onclick="setTurno('noche')">🌙 Noche</button>
       </div>
       <div class="inp-row">
-        <div class="inp-grp">
-          <div class="inp-lbl">Sistólica</div>
-          <input class="inp-fld" type="number" id="sistolica" placeholder="120" min="50" max="250" inputmode="numeric" oninput="actualizarEstado()">
-          <div class="inp-unit">mmHg</div>
-        </div>
-        <div class="inp-grp">
-          <div class="inp-lbl">Diastólica</div>
-          <input class="inp-fld" type="number" id="diastolica" placeholder="80" min="30" max="150" inputmode="numeric" oninput="actualizarEstado()">
-          <div class="inp-unit">mmHg</div>
-        </div>
-        <div class="inp-grp">
-          <div class="inp-lbl">Pulso</div>
-          <input class="inp-fld" type="number" id="pulso" placeholder="70" min="30" max="200" inputmode="numeric">
-          <div class="inp-unit">ppm</div>
-        </div>
+        <div class="inp-grp"><div class="inp-lbl">Sistólica</div><input class="inp-fld" type="number" id="t-sis" placeholder="120" inputmode="numeric" oninput="actualizarEstado()"><div class="inp-unit">mmHg</div></div>
+        <div class="inp-grp"><div class="inp-lbl">Diastólica</div><input class="inp-fld" type="number" id="t-dia" placeholder="80" inputmode="numeric" oninput="actualizarEstado()"><div class="inp-unit">mmHg</div></div>
+        <div class="inp-grp"><div class="inp-lbl">Pulso</div><input class="inp-fld" type="number" id="t-pul" placeholder="70" inputmode="numeric"><div class="inp-unit">ppm</div></div>
       </div>
-      <div id="estado-badge"></div>
-      <input class="notas-inp" type="text" id="notas" placeholder="Notas: estrés, medicación, ejercicio...">
-      <button class="btn-save" id="btn-guardar" onclick="guardarRegistro()">Guardar medición</button>
+      <div id="t-estado"></div>
+      <input class="txt-inp" type="text" id="t-notas" placeholder="Notas opcionales..." style="margin-bottom:12px">
+      <button class="btn-save" onclick="guardarTension()">Guardar medición</button>
     </div>
     <div class="card">
       <div class="ct"><span class="ctd"></span> Últimas mediciones</div>
-      <div id="historial-lista"><div style="display:flex;justify-content:center;padding:24px"><div class="spinner"></div></div></div>
+      <div id="t-historial"><div style="display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
     </div>
   </div>
 
-  <!-- MÉTRICAS -->
-  <div class="tab-content" id="tab-metricas">
+  <!-- ANÁLISIS -->
+  <div class="tab-content" id="tab-analisis">
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Evolución — últimos 14 días</div>
-      <div class="chart-cont" style="height:220px"><canvas id="chartEv"></canvas></div>
+      <div class="ct"><span class="ctd"></span> Resumen semanal</div>
+      <div class="met-grid" id="a-resumen"><div style="grid-column:1/-1;display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
     </div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Resumen global</div>
-      <div class="met-grid" id="resumen-grid"><div style="grid-column:1/-1;display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
+      <div class="ct"><span class="ctd"></span> Tensión arterial — 14 días</div>
+      <div class="chart-cont" style="height:200px"><canvas id="a-chart-tension"></canvas></div>
     </div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Distribución por categoría</div>
-      <div class="dist-bar" id="dist-bar"></div>
-      <div class="leg-grid" id="dist-legend"></div>
-      <div id="dist-detalle"></div>
+      <div class="ct"><span class="ctd"></span> Síntomas promedio</div>
+      <div id="a-sintomas"><div class="empty-st"><div class="empty-ic">📉</div><div class="empty-tx">Sin registros nocturnos</div></div></div>
     </div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Métricas clínicas avanzadas</div>
-      <div id="metricas-clinicas"><div style="display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
+      <div class="ct"><span class="ctd"></span> Bienestar y fatiga — evolución</div>
+      <div class="chart-cont" style="height:165px"><canvas id="a-chart-bienestar"></canvas></div>
     </div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Insights clínicos</div>
-      <div id="insights-lista"></div>
-    </div>
-    <div class="card">
-      <div class="ct"><span class="ctd"></span> Historial de pulso</div>
-      <div class="chart-cont" style="height:160px"><canvas id="chartPulso"></canvas></div>
+      <div class="ct"><span class="ctd"></span> Insights</div>
+      <div id="a-insights"><div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Registra datos para ver insights</div></div></div>
     </div>
   </div>
 
   <!-- CONFIG -->
   <div class="tab-content" id="tab-config">
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Paciente</div>
+      <div class="cfg-fld"><label>Nombre / Alias</label><input class="cfg-inp" type="text" id="cfg-nombre" placeholder="Mi nombre..."></div>
+      <button class="btn-cfg" onclick="guardarPaciente()">💾 Guardar nombre</button>
+    </div>
     <div class="card">
       <div class="ct"><span class="ctd"></span> Firebase</div>
       <div class="fb-status s-conn" id="fb-status"><div class="st-dot"></div><span id="fb-status-text">Sin configurar</span></div>
@@ -343,17 +436,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
       <button class="btn-cfg" onclick="cambiarPin()">🔑 Cambiar PIN</button>
     </div>
     <div class="card">
-      <div class="ct"><span class="ctd"></span> Datos locales</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">Los datos en Firebase no se eliminan. Solo se borra la caché local del dispositivo.</div>
-      <button class="btn-cfg btn-danger" onclick="borrarLocal()">🗑️ Limpiar caché local</button>
-    </div>
-    <div class="card">
       <div class="ct"><span class="ctd"></span> Acerca de</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.8">
-        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px">ScleroSense</div>
-        <div>Monitor de tensión arterial · v3.0</div>
-        <div>Clasificación según guías ESC / ACC 2023</div>
-        <div style="margin-top:10px;font-size:11px">Esta app no sustituye el criterio médico profesional.</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">ScleroSense Suite</div>
+        <div>Seguimiento de esclerodermia · v4.0</div>
+        <div style="margin-top:8px;font-size:11px">Esta app no sustituye el criterio médico profesional.</div>
       </div>
     </div>
   </div>
@@ -363,22 +450,102 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 const DPIN='1234';
-let db=null,registros=[],turno='manana',pinIn='',setPinMode=false,cEv=null,cPul=null;
+let db=null,pinIn='',setPinMode=false,turnoT='manana';
+let tensiones=[],nochesDatos=[];
+let chartT=null,chartB=null;
 
 function leer(k,d=''){try{return localStorage.getItem(k)||d;}catch(e){return d;}}
 function guar(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function pid(){let id=leer('scls_pid');if(!id){id='pac_'+Date.now();guar('scls_pid',id);}return id;}
+function nombre(){return leer('scls_nombre','Paciente');}
+function hoy(){return new Date().toISOString().split('T')[0];}
 
-// ── PIN ──────────────────────────────
+// ── FORMS INIT ──────────────────────────────────────
+function initForms(){
+  const escalas=['m-horas-sueno','m-calidad-sueno','m-fatiga-despertar','m-dolor-sup','m-dolor-cen','m-dolor-inf','m-rigidez','m-claridad','m-manos','m-dedos','m-munecas','m-codos','m-cadera','m-pecho','m-rodillas','m-tobillos','m-pies','m-dedos-pies','m-hinchazon','n-fatiga','n-dolor-sup','n-dolor-cen','n-dolor-inf','n-rigidez','n-inflam-sup','n-inflam-cen','n-inflam-inf','n-dolor-musc','n-piel-sup','n-piel-inf','n-pesadez','n-nauseas','n-reflujo','n-respiracion','n-cefalea','n-claridad','n-concentracion','n-presion-tor','n-animo','n-calidad-dia','n-reflujo-dia','n-pesadez-dia','n-hinchazon-dia','n-estres'];
+  escalas.forEach(buildScale);
+  buildOpts('m-despertares',['0','1','2','3','4 o más'],false);
+  buildOpts('m-sensacion-termica',['Frío','Fresco','Confortable','Calor'],false);
+  buildOpts('m-pantallas-noche',['No','< 30 min','30 min - 1h','> 1h'],false);
+  buildOpts('m-tiempo-cena',['< 1h','1-2h','2-3h','> 3h'],false);
+  buildOpts('m-cena-pesada',['No','Algo','Bastante','Muy pesada'],false);
+  buildOpts('m-descansada',['Sí','Parcialmente','No'],false);
+  buildOpts('m-respiracion',['Normal','Algo cargada','Dificultad leve','Dificultad notable'],false);
+  buildOpts('m-raynaud',['Ninguno','Leve esporádico','Intenso esporádico','Con agua fría'],false);
+  buildOpts('m-medicacion',['Sí','No','Parcial'],false);
+  buildOpts('m-curcumina',['Sí','No'],false);
+  buildOpts('m-digestivo',['Bien','Algo pesado','Hinchado','Con náuseas'],false);
+  buildOpts('m-transito',['Normal','Lento','Muy lento','Diarrea'],false);
+  buildOpts('m-evacuar',['Sí','No'],false);
+  buildOpts('m-apetito',['Sin apetito','Poco','Normal','Mucho'],false);
+  buildOpts('m-desayuno',['Fruta','Avena','Tostada espelta','Huevo','Yogur','Frutos secos','Otro'],true);
+  buildOpts('m-semillas',['No','Lino','Chía','Cáñamo','Sésamo','Mix'],true);
+  buildOpts('n-tipo-dia',['Laboral','Descanso'],false);
+  buildOpts('n-vs-ayer',['Mucho peor','Algo peor','Igual','Algo mejor','Mucho mejor'],false);
+  buildOpts('n-raynaud',['Ninguno','Leve esporádico','Intenso esporádico','Intenso con agua'],false);
+  buildOpts('n-frio',['No','Breve','Prolongada'],false);
+  buildOpts('n-digest-desayuno',['Bien','Malestar','Hinchazón','Reflujo','Dolor abdominal'],true);
+  const ali=['Carne Roja','Carne Blanca','Pescado','Huevos','Legumbres','Lácteos Vaca','Lácteos Cabra','Trigo','Espelta','Pseudotrigos','Tomates','Lechugas','Pimientos','Pepinos','Aceite Oliva','AOVE','Alcohol','Café','Picante','Mantequilla','Nueces','Pistachos','Leche Avena'];
+  buildOpts('n-almuerzo',ali,true);
+  buildOpts('n-cena',ali,true);
+  buildOpts('n-fuera',['Sí','No'],false);
+  buildOpts('n-agua',['< 1L','1-1.5L','1.5-2L','> 2L'],false);
+  buildOpts('n-actividad',['Ninguna','Muy suave < 30min','Suave < 1h','Moderada < 1.30h','Intensa > 2h'],false);
+  buildOpts('n-tipo-actividad',['Pasear','Nadar','Pilates','Yoga','Bicicleta','Otro'],true);
+  buildOpts('n-sedentarismo',['< 2h','2-4h','4-6h','6-8h','> 8h'],false);
+  buildOpts('n-carga-mental',['Baja','Media','Alta'],false);
+  buildOpts('n-evento',['Sí','No'],false);
+  buildOpts('n-pantalla-pc',['< 1h','1-3h','3-6h','6-8h','> 8h'],false);
+  buildOpts('n-pantalla-movil',['< 1h','1-3h','3-6h','6-8h','> 8h'],false);
+  buildOpts('n-pantalla-tv',['< 1h','1-3h','3-6h','> 6h'],false);
+  buildOpts('n-trabajo-mental',['Sí','No'],false);
+  buildOpts('n-tiempo-casa',['< 1h','1-3h','3-5h','> 5h'],false);
+  buildOpts('n-tiempo-fuera',['< 1h','1-3h','3-5h','5-9h','> 9h'],false);
+  buildOpts('n-temperatura',['Frío','Fresco','Confortable','Calor'],false);
+  buildOpts('n-ventilacion',['Bajo','Moderado','Intenso'],false);
+  buildOpts('n-clima',['Soleado confortable','Soleado muy intenso','Soleado fresco','Calima','Lluvioso frío','Lluvioso confortable','Lluvioso muy frío'],false);
+  buildOpts('n-aire',['Sí','No'],false);
+  buildOpts('n-medicacion-extra',['Omeprazol','Acxxel','Inmunosupresor','Symbicort','Antihistamínico','Paracetamol','Aciclovir'],true);
+  buildOpts('n-oracion',['No hoy','< 10min','10-20min','20-30min','> 30min'],false);
+  buildOpts('n-biblia',['No hoy','< 10min','10-20min','20-30min','> 30min'],false);
+  document.getElementById('m-fecha').value=hoy();
+  document.getElementById('n-fecha').value=hoy();
+  const t=new Date().toTimeString().slice(0,5);
+  document.getElementById('m-hora-despertar').value=t;
+  document.getElementById('n-hora').value=t;
+}
+
+function buildScale(id){
+  const el=document.getElementById(id);if(!el)return;
+  for(let i=1;i<=10;i++){
+    const b=document.createElement('button');b.className='scale-btn';b.textContent=i;
+    b.onclick=()=>{el.querySelectorAll('.scale-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');};
+    el.appendChild(b);
+  }
+}
+function buildOpts(id,opts,multi){
+  const el=document.getElementById(id);if(!el)return;
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.className='opt-btn'+(multi?' multi':'');b.textContent=o;b.dataset.val=o;
+    b.onclick=()=>{if(multi)b.classList.toggle('sel');else{el.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');}};
+    el.appendChild(b);
+  });
+}
+function getScale(id){const s=document.querySelector('#'+id+' .scale-btn.sel');return s?parseInt(s.textContent):null;}
+function getOpt(id){const s=document.querySelector('#'+id+' .opt-btn.sel');return s?s.dataset.val:null;}
+function getMulti(id){return Array.from(document.querySelectorAll('#'+id+' .opt-btn.sel')).map(b=>b.dataset.val);}
+
+// ── PIN ─────────────────────────────────────────────
 function initPin(){
   if(leer('scls_pin')===''){document.getElementById('pin-subtitle').textContent='Crea un PIN de 4 dígitos';setPinMode=true;}
-  turno=(new Date().getHours()>=12&&new Date().getHours()<22)?'noche':'manana';
+  const n=nombre();if(n&&n!=='Paciente')document.getElementById('pin-pinfo').textContent=n;
 }
 function pinKey(n){if(pinIn.length>=4)return;pinIn+=n;upDots();if(pinIn.length===4)setTimeout(chkPin,160);}
 function pinDel(){pinIn=pinIn.slice(0,-1);upDots();document.getElementById('pin-error').textContent='';}
 function upDots(err=false){for(let i=0;i<4;i++){const d=document.getElementById('d'+i);d.className='pin-dot';if(i<pinIn.length)d.classList.add(err?'error':'filled');}}
 function chkPin(){
   if(setPinMode){
-    if(!window._pc){window._pc=pinIn;pinIn='';upDots();document.getElementById('pin-subtitle').textContent='Repite el PIN para confirmar';return;}
+    if(!window._pc){window._pc=pinIn;pinIn='';upDots();document.getElementById('pin-subtitle').textContent='Repite el PIN';return;}
     if(pinIn===window._pc){guar('scls_pin',pinIn);openApp();}
     else{pinErr('Los PINs no coinciden');window._pc=null;document.getElementById('pin-subtitle').textContent='Crea un PIN de 4 dígitos';}
     return;
@@ -390,7 +557,10 @@ function openApp(){
   document.getElementById('pin-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   document.getElementById('header-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
-  setTurno(turno);initFB();
+  document.getElementById('hdr-patient').textContent=nombre();
+  document.getElementById('cfg-nombre').value=nombre();
+  setTurno(new Date().getHours()>=12?'noche':'manana');
+  initFB();checkSaved();
 }
 function lockApp(){
   document.getElementById('pin-screen').style.display='flex';
@@ -400,8 +570,13 @@ function lockApp(){
   document.getElementById('pin-subtitle').textContent='Introduce tu PIN de acceso';
   window._pc=null;
 }
+function checkSaved(){
+  const h=hoy();
+  document.getElementById('manana-saved').style.display=leer('scls_man_hoy')===h?'flex':'none';
+  document.getElementById('noche-saved').style.display=leer('scls_noc_hoy')===h?'flex':'none';
+}
 
-// ── FIREBASE ─────────────────────────
+// ── FIREBASE ────────────────────────────────────────
 function initFB(){
   const cfg={apiKey:leer('scls_fb_apiKey'),authDomain:leer('scls_fb_authDomain'),projectId:leer('scls_fb_projectId')};
   document.getElementById('cfg-apiKey').value=cfg.apiKey;
@@ -412,7 +587,7 @@ function initFB(){
     const app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
     db=firebase.firestore(app);setFbSt('s-conn','Conectando...');
     db.collection('tensiones').limit(1).get()
-      .then(()=>{setFbSt('s-ok','Conectado a Firebase ✓');loadReg();})
+      .then(()=>{setFbSt('s-ok','Conectado ✓');loadAll();})
       .catch(e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
   }catch(e){setFbSt('s-err','Error: '+e.message);loadLocal();}
 }
@@ -420,310 +595,184 @@ function setFbSt(cls,msg){document.getElementById('fb-status').className='fb-sta
 function guardarFirebase(){
   const ak=document.getElementById('cfg-apiKey').value.trim();
   const ad=document.getElementById('cfg-authDomain').value.trim();
-  const pid=document.getElementById('cfg-projectId').value.trim();
-  if(!ak||!pid){toast('⚠️ Rellena API Key y Project ID');return;}
-  guar('scls_fb_apiKey',ak);guar('scls_fb_authDomain',ad||pid+'.firebaseapp.com');guar('scls_fb_projectId',pid);
+  const pr=document.getElementById('cfg-projectId').value.trim();
+  if(!ak||!pr){toast('⚠️ Rellena API Key y Project ID');return;}
+  guar('scls_fb_apiKey',ak);guar('scls_fb_authDomain',ad||pr+'.firebaseapp.com');guar('scls_fb_projectId',pr);
   try{firebase.apps.forEach(a=>a.delete());}catch(e){}
   db=null;initFB();toast('✅ Firebase guardado');
 }
 
-// ── CRUD ──────────────────────────────
-async function guardarRegistro(){
-  const s=parseInt(document.getElementById('sistolica').value);
-  const d=parseInt(document.getElementById('diastolica').value);
-  const p=parseInt(document.getElementById('pulso').value)||null;
-  const n=document.getElementById('notas').value.trim();
-  if(!s||!d||s<50||d<30||s>250||d>150){toast('⚠️ Introduce valores válidos');return;}
-  const reg={sistolica:s,diastolica:d,pulso:p,turno,notas:n,
-    fecha:new Date().toISOString().split('T')[0],timestamp:new Date().toISOString(),estado:clasif(s,d)};
-  const btn=document.getElementById('btn-guardar');
-  btn.disabled=true;btn.innerHTML='<div class="spinner" style="border-top-color:#fff;width:16px;height:16px"></div>&nbsp; Guardando...';
+// ── GUARDAR ─────────────────────────────────────────
+async function guardarManana(){
+  const fecha=document.getElementById('m-fecha').value;
+  if(!fecha){toast('⚠️ Selecciona la fecha');return;}
+  const d={tipo:'manana',pacienteId:pid(),pacienteNombre:nombre(),fecha,timestamp:new Date().toISOString(),
+    horaDespertar:document.getElementById('m-hora-despertar').value,horaAcostar:document.getElementById('m-hora-acostar').value,
+    horasSueno:getScale('m-horas-sueno'),calidadSueno:getScale('m-calidad-sueno'),despertares:getOpt('m-despertares'),
+    sensacionTermica:getOpt('m-sensacion-termica'),pantallasNoche:getOpt('m-pantallas-noche'),tiempoCena:getOpt('m-tiempo-cena'),
+    cenaPesada:getOpt('m-cena-pesada'),descansada:getOpt('m-descansada'),fatigaDespertar:getScale('m-fatiga-despertar'),
+    dolorSup:getScale('m-dolor-sup'),dolorCen:getScale('m-dolor-cen'),dolorInf:getScale('m-dolor-inf'),
+    rigidez:getScale('m-rigidez'),claridad:getScale('m-claridad'),manos:getScale('m-manos'),dedos:getScale('m-dedos'),
+    munecas:getScale('m-munecas'),codos:getScale('m-codos'),cadera:getScale('m-cadera'),pecho:getScale('m-pecho'),
+    rodillas:getScale('m-rodillas'),tobillos:getScale('m-tobillos'),pies:getScale('m-pies'),dedosPies:getScale('m-dedos-pies'),
+    respiracion:getOpt('m-respiracion'),raynaud:getOpt('m-raynaud'),medicacion:getOpt('m-medicacion'),
+    curcumina:getOpt('m-curcumina'),digestivo:getOpt('m-digestivo'),transito:getOpt('m-transito'),
+    evacuar:getOpt('m-evacuar'),apetito:getOpt('m-apetito'),hinchazon:getScale('m-hinchazon'),
+    desayuno:getMulti('m-desayuno'),semillas:getMulti('m-semillas')};
+  await saveDoc('mananas',fecha+'_'+pid(),d);
+  guar('scls_man_hoy',hoy());checkSaved();toast('✅ Formulario de mañana guardado');
+}
+
+async function guardarNoche(){
+  const fecha=document.getElementById('n-fecha').value;
+  if(!fecha){toast('⚠️ Selecciona la fecha');return;}
+  const d={tipo:'noche',pacienteId:pid(),pacienteNombre:nombre(),fecha,timestamp:new Date().toISOString(),
+    hora:document.getElementById('n-hora').value,tipoDia:getOpt('n-tipo-dia'),bienestar:getScale('n-bienestar'),
+    vsAyer:getOpt('n-vs-ayer'),fatiga:getScale('n-fatiga'),dolorSup:getScale('n-dolor-sup'),
+    dolorCen:getScale('n-dolor-cen'),dolorInf:getScale('n-dolor-inf'),rigidez:getScale('n-rigidez'),
+    inflamSup:getScale('n-inflam-sup'),inflamCen:getScale('n-inflam-cen'),inflamInf:getScale('n-inflam-inf'),
+    dolorMusc:getScale('n-dolor-musc'),pielSup:getScale('n-piel-sup'),pielInf:getScale('n-piel-inf'),
+    pesadez:getScale('n-pesadez'),nauseas:getScale('n-nauseas'),reflujo:getScale('n-reflujo'),
+    respiracion:getScale('n-respiracion'),cefalea:getScale('n-cefalea'),claridad:getScale('n-claridad'),
+    concentracion:getScale('n-concentracion'),presionTor:getScale('n-presion-tor'),animo:getScale('n-animo'),
+    calidadDia:getScale('n-calidad-dia'),raynaud:getOpt('n-raynaud'),frio:getOpt('n-frio'),
+    digestDesayuno:getMulti('n-digest-desayuno'),almuerzo:getMulti('n-almuerzo'),cena:getMulti('n-cena'),
+    fuera:getOpt('n-fuera'),reflujoDia:getScale('n-reflujo-dia'),pesadezDia:getScale('n-pesadez-dia'),
+    hinchazonDia:getScale('n-hinchazon-dia'),agua:getOpt('n-agua'),actividad:getOpt('n-actividad'),
+    tipoActividad:getMulti('n-tipo-actividad'),sedentarismo:getOpt('n-sedentarismo'),estres:getScale('n-estres'),
+    cargaMental:getOpt('n-carga-mental'),evento:getOpt('n-evento'),pantallaPC:getOpt('n-pantalla-pc'),
+    pantallaMovil:getOpt('n-pantalla-movil'),pantallaTV:getOpt('n-pantalla-tv'),trabajoMental:getOpt('n-trabajo-mental'),
+    tiempoCasa:getOpt('n-tiempo-casa'),tiempoFuera:getOpt('n-tiempo-fuera'),temperatura:getOpt('n-temperatura'),
+    ventilacion:getOpt('n-ventilacion'),clima:getOpt('n-clima'),aire:getOpt('n-aire'),
+    medicacionExtra:getMulti('n-medicacion-extra'),empeoro:document.getElementById('n-empeoro').value,
+    ayudo:document.getElementById('n-ayudo').value,oracion:getOpt('n-oracion'),biblia:getOpt('n-biblia')};
+  await saveDoc('noches',fecha+'_'+pid(),d);
+  guar('scls_noc_hoy',hoy());checkSaved();toast('✅ Formulario de noche guardado');
+}
+
+async function guardarTension(){
+  const s=parseInt(document.getElementById('t-sis').value);
+  const d=parseInt(document.getElementById('t-dia').value);
+  const p=parseInt(document.getElementById('t-pul').value)||null;
+  const n=document.getElementById('t-notas').value.trim();
+  if(!s||!d||s<50||d<30||s>250||d>150){toast('⚠️ Valores inválidos');return;}
+  const reg={pacienteId:pid(),pacienteNombre:nombre(),sistolica:s,diastolica:d,pulso:p,turno:turnoT,notas:n,fecha:hoy(),timestamp:new Date().toISOString(),estado:clasifT(s,d)};
+  await saveDoc('tensiones',null,reg);
+  ['t-sis','t-dia','t-pul','t-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('t-estado').innerHTML='';
+  await loadAll();toast('✅ Tensión guardada');
+}
+
+async function saveDoc(col,docId,datos){
   try{
-    if(db){await db.collection('tensiones').add(reg);toast('✅ Guardado en Firebase');}
-    else{const loc=JSON.parse(leer('scls_local','[]'));loc.unshift({...reg,id:Date.now().toString()});guar('scls_local',JSON.stringify(loc.slice(0,300)));toast('💾 Guardado localmente');}
-    ['sistolica','diastolica','pulso','notas'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('estado-badge').innerHTML='';
-    await loadReg();
+    if(db){if(docId)await db.collection(col).doc(docId).set(datos,{merge:true});else await db.collection(col).add(datos);}
+    else{const loc=JSON.parse(leer('scls_'+col,'[]'));loc.unshift({...datos,id:docId||Date.now().toString()});guar('scls_'+col,JSON.stringify(loc.slice(0,500)));}
   }catch(e){toast('❌ Error: '+e.message);}
-  btn.disabled=false;btn.innerHTML='Guardar medición';
 }
-async function loadReg(){
+
+// ── CARGAR ──────────────────────────────────────────
+async function loadAll(){
+  const p=pid();
   try{
-    if(db){const sn=await db.collection('tensiones').orderBy('timestamp','desc').limit(200).get();registros=sn.docs.map(d=>({id:d.id,...d.data()}));}
-    else{loadLocal();return;}
+    if(db){
+      const[ts,ns]=await Promise.all([
+        db.collection('tensiones').where('pacienteId','==',p).orderBy('timestamp','desc').limit(100).get(),
+        db.collection('noches').where('pacienteId','==',p).orderBy('fecha','desc').limit(60).get()
+      ]);
+      tensiones=ts.docs.map(d=>({id:d.id,...d.data()}));
+      nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()}));
+    }else{loadLocal();return;}
   }catch(e){loadLocal();return;}
-  renderAll();
+  renderTHist();renderAnalisis();
 }
-function loadLocal(){try{registros=JSON.parse(leer('scls_local','[]'));}catch(e){registros=[];}renderAll();}
-
-// ── CLASIFICACIÓN ─────────────────────
-function clasif(s,d){
-  if(s<90||d<60)return'baja';
-  if(s<120&&d<80)return'normal';
-  if(s>=120&&s<130&&d<80)return'elevada';
-  if((s>=130&&s<140)||(d>=80&&d<90))return'alta1';
-  if((s>=140&&s<180)||(d>=90&&d<120))return'alta2';
-  if(s>=180||d>=120)return'crisis';
-  return'normal';
-}
-const CL={
-  baja:   {l:'Tensión baja',          c:'#3a6fbf',cl:'est-baja'},
-  normal: {l:'Normal',                c:'#2e7d5e',cl:'est-normal'},
-  elevada:{l:'Elevada',               c:'#d4800a',cl:'est-elevada'},
-  alta1:  {l:'Hipertensión estadio I', c:'#d4800a',cl:'est-elevada'},
-  alta2:  {l:'Hipertensión estadio II',c:'#c0392b',cl:'est-alta'},
-  crisis: {l:'Crisis hipertensiva',   c:'#a02020',cl:'est-crisis'}
-};
-function actualizarEstado(){
-  const s=parseInt(document.getElementById('sistolica').value);
-  const d=parseInt(document.getElementById('diastolica').value);
-  const el=document.getElementById('estado-badge');
-  if(!s||!d){el.innerHTML='';return;}
-  const e=clasif(s,d);
-  el.innerHTML=`<div class="est-badge ${CL[e].cl}">${CL[e].l} &nbsp;${s}/${d}</div>`;
+function loadLocal(){
+  try{tensiones=JSON.parse(leer('scls_tensiones','[]'));}catch(e){tensiones=[];}
+  try{nochesDatos=JSON.parse(leer('scls_noches','[]'));}catch(e){nochesDatos=[];}
+  renderTHist();renderAnalisis();
 }
 
-// ── RENDER ALL ───────────────────────
-function renderAll(){renderHist();renderMet();}
-function renderHist(){
-  const el=document.getElementById('historial-lista');
-  const data=registros.slice(0,12);
-  if(!data.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">📋</div><div class="empty-tx">Sin mediciones todavía.<br>Registra la primera arriba.</div></div>';return;}
-  el.innerHTML=data.map(r=>{
-    const e=CL[r.estado||clasif(r.sistolica,r.diastolica)];
+// ── TENSIÓN RENDER ──────────────────────────────────
+const CL={baja:{l:'Tensión baja',c:'#3a6fbf',cl:'est-baja'},normal:{l:'Normal',c:'#2e7d5e',cl:'est-normal'},elevada:{l:'Elevada',c:'#d4800a',cl:'est-elevada'},alta1:{l:'Hipertensión I',c:'#d4800a',cl:'est-elevada'},alta2:{l:'Hipertensión II',c:'#c0392b',cl:'est-alta'},crisis:{l:'Crisis hipertensiva',c:'#a02020',cl:'est-crisis'}};
+function clasifT(s,d){if(s<90||d<60)return'baja';if(s<120&&d<80)return'normal';if(s>=120&&s<130&&d<80)return'elevada';if((s>=130&&s<140)||(d>=80&&d<90))return'alta1';if((s>=140&&s<180)||(d>=90&&d<120))return'alta2';return'crisis';}
+function actualizarEstado(){const s=parseInt(document.getElementById('t-sis').value);const d=parseInt(document.getElementById('t-dia').value);const el=document.getElementById('t-estado');if(!s||!d){el.innerHTML='';return;}const e=clasifT(s,d);el.innerHTML=`<div class="est-badge ${CL[e].cl}" style="margin-bottom:12px">${CL[e].l} &nbsp;${s}/${d}</div>`;}
+function setTurno(t){turnoT=t;document.getElementById('btn-man-t').classList.toggle('active',t==='manana');document.getElementById('btn-noc-t').classList.toggle('active',t==='noche');}
+function renderTHist(){
+  const el=document.getElementById('t-historial');
+  if(!tensiones.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">📋</div><div class="empty-tx">Sin mediciones todavía</div></div>';return;}
+  el.innerHTML=tensiones.slice(0,10).map(r=>{
+    const e=CL[r.estado||clasifT(r.sistolica,r.diastolica)];
     const f=new Date(r.timestamp||r.fecha).toLocaleDateString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-    return`<div class="reg-item"><div><div class="reg-fecha">${f}</div><div class="reg-turno">${r.turno==='manana'?'🌅 Mañana':'🌙 Noche'}${r.notas?' · '+r.notas:''}</div></div><div><div class="reg-vals" style="color:${e.c}">${r.sistolica}/${r.diastolica}</div><div class="reg-pulso">${r.pulso?r.pulso+' ppm':''}</div><div class="reg-est" style="color:${e.c}">${e.l}</div></div></div>`;
+    return`<div class="reg-item"><div><div style="font-size:13px;font-weight:500">${f}</div><div class="reg-meta">${r.turno==='manana'?'🌅':'🌙'} ${r.notas||''}</div></div><div><div style="font-size:19px;font-weight:600;font-family:var(--mono);color:${e.c}">${r.sistolica}/${r.diastolica}</div><div class="reg-meta" style="text-align:right">${r.pulso?r.pulso+' ppm':''}</div></div></div>`;
   }).join('');
 }
-function renderMet(){
-  if(!registros.length){
-    document.getElementById('resumen-grid').innerHTML='<div class="empty-st" style="grid-column:1/-1"><div class="empty-ic">📊</div><div class="empty-tx">Sin datos suficientes</div></div>';
-    ['dist-bar','dist-legend','dist-detalle','insights-lista','metricas-clinicas'].forEach(id=>document.getElementById(id).innerHTML='');
-    return;
-  }
-  renderResumen();renderDist();renderClinicas();renderInsights();renderChEv();renderChPulso();
-}
 
+// ── ANÁLISIS ─────────────────────────────────────────
+function renderAnalisis(){renderResumen();renderChartT();renderSintomas();renderChartB();renderInsights();}
 function renderResumen(){
-  const n=registros.length;
-  const aS=Math.round(registros.reduce((s,r)=>s+r.sistolica,0)/n);
-  const aD=Math.round(registros.reduce((s,r)=>s+r.diastolica,0)/n);
-  const mxS=Math.max(...registros.map(r=>r.sistolica));
-  const mnS=Math.min(...registros.map(r=>r.sistolica));
-  const pv=registros.filter(r=>r.pulso);
-  const aP=pv.length?Math.round(pv.reduce((s,r)=>s+r.pulso,0)/pv.length):null;
-  const norm=registros.filter(r=>['normal'].includes(r.estado||clasif(r.sistolica,r.diastolica))).length;
-  const pctN=Math.round(norm*100/n);
-  const aPP=Math.round(registros.reduce((s,r)=>s+(r.sistolica-r.diastolica),0)/n);
-  const vr=Math.round(Math.sqrt(registros.reduce((s,r)=>s+Math.pow(r.sistolica-aS,2),0)/n));
-  const est=CL[clasif(aS,aD)];
-  document.getElementById('resumen-grid').innerHTML=`
-    <div class="met-card" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between">
-      <div><div class="met-num" style="font-size:32px;color:${est.c}">${aS}/${aD}</div><div class="met-lbl">Tensión media (${n} medición${n!==1?'es':''})</div></div>
-      <div class="est-badge ${est.cl}" style="margin:0">${est.l}</div>
-    </div>
-    <div class="met-card"><div class="met-num" style="color:var(--ok)">${pctN}%</div><div class="met-lbl">En rango normal</div><div class="met-sub" style="color:var(--muted)">${norm} / ${n}</div></div>
-    <div class="met-card"><div class="met-num">${mxS}</div><div class="met-lbl">Máx. sistólica</div><div class="met-sub" style="color:var(--muted)">Mín: ${mnS} mmHg</div></div>
-    <div class="met-card"><div class="met-num">${aP||'—'}</div><div class="met-lbl">Pulso medio</div><div class="met-sub" style="color:var(--muted)">${aP?'ppm':'Sin datos'}</div></div>
-    <div class="met-card"><div class="met-num" style="color:${aPP>60?'var(--warn)':'var(--text)'}">${aPP}</div><div class="met-lbl">Presión de pulso</div><div class="met-sub" style="color:var(--muted)">Normal &lt;60 mmHg</div></div>
-    <div class="met-card"><div class="met-num">±${vr}</div><div class="met-lbl">Variabilidad</div><div class="met-sub" style="color:var(--muted)">Desv. estándar</div></div>
+  const el=document.getElementById('a-resumen');
+  const h7=new Date();h7.setDate(h7.getDate()-7);
+  const t7=tensiones.filter(r=>new Date(r.timestamp||r.fecha)>=h7);
+  const n7=nochesDatos.filter(r=>new Date(r.fecha)>=h7);
+  if(!t7.length&&!n7.length){el.innerHTML='<div class="empty-st" style="grid-column:1/-1"><div class="empty-ic">📊</div><div class="empty-tx">Sin datos suficientes</div></div>';return;}
+  const bv=n7.filter(r=>r.bienestar);const fv=n7.filter(r=>r.fatiga);
+  const avgB=bv.length?Math.round(bv.reduce((s,r)=>s+r.bienestar,0)/bv.length*10)/10:'—';
+  const avgF=fv.length?Math.round(fv.reduce((s,r)=>s+r.fatiga,0)/fv.length*10)/10:'—';
+  const avgS=t7.length?Math.round(t7.reduce((s,r)=>s+r.sistolica,0)/t7.length):'—';
+  const avgD=t7.length?Math.round(t7.reduce((s,r)=>s+r.diastolica,0)/t7.length):'—';
+  el.innerHTML=`
+    <div class="met-card"><div class="met-num" style="color:var(--ok)">${avgB}</div><div class="met-lbl">Bienestar medio</div><div class="met-sub" style="color:var(--muted)">/10 esta semana</div></div>
+    <div class="met-card"><div class="met-num" style="color:var(--warn)">${avgF}</div><div class="met-lbl">Fatiga media</div><div class="met-sub" style="color:var(--muted)">/10 esta semana</div></div>
+    <div class="met-card"><div class="met-num">${avgS!=='—'?avgS+'/'+avgD:'—'}</div><div class="met-lbl">Tensión media</div><div class="met-sub" style="color:var(--muted)">${t7.length} mediciones</div></div>
+    <div class="met-card"><div class="met-num">${n7.length}</div><div class="met-lbl">Registros noche</div><div class="met-sub" style="color:var(--muted)">últimos 7 días</div></div>
   `;
 }
-
-// ── 8 MÉTRICAS CLÍNICAS ───────────────
-function renderClinicas(){
-  const n=registros.length;
-  if(n<2){document.getElementById('metricas-clinicas').innerHTML='<div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Necesitas al menos 2 mediciones</div></div>';return;}
-
-  const sorted=[...registros].sort((a,b)=>new Date(a.timestamp||a.fecha)-new Date(b.timestamp||b.fecha));
-  const mans=sorted.filter(r=>r.turno==='manana');
-  const nocs=sorted.filter(r=>r.turno==='noche');
-
-  // 1. Morning Surge
-  const surgeVals=[];
-  mans.forEach(m=>{
-    const fd=m.fecha||(m.timestamp||'').split('T')[0];
-    const pa=new Date(fd);pa.setDate(pa.getDate()-1);
-    const pas=pa.toISOString().split('T')[0];
-    const na=nocs.find(x=>(x.fecha||(x.timestamp||'').split('T')[0])===pas);
-    if(na)surgeVals.push(m.sistolica-na.sistolica);
-  });
-  const surge=surgeVals.length?Math.round(surgeVals.reduce((a,b)=>a+b,0)/surgeVals.length):null;
-
-  // 2. Carga hipertensiva
-  const altN=registros.filter(r=>r.sistolica>=140||r.diastolica>=90).length;
-  const carga=Math.round(altN*100/n);
-
-  // 3. ARV
-  const pf={};
-  sorted.forEach(r=>{const f=(r.timestamp||r.fecha||'').split('T')[0];if(!f)return;if(!pf[f])pf[f]={s:[],d:[]};pf[f].s.push(r.sistolica);pf[f].d.push(r.diastolica);});
-  const dSis=Object.values(pf).map(d=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
-  const arv=dSis.length>=2?Math.round(dSis.slice(1).map((v,i)=>Math.abs(v-dSis[i])).reduce((a,b)=>a+b,0)/( dSis.length-1)*10)/10:null;
-
-  // 4. Ratio S/D
-  const aS=registros.reduce((s,r)=>s+r.sistolica,0)/n;
-  const aD=registros.reduce((s,r)=>s+r.diastolica,0)/n;
-  const ratio=Math.round(aS/aD*100)/100;
-
-  // 5. PAM
-  const pam=Math.round(registros.reduce((s,r)=>s+(r.diastolica+(r.sistolica-r.diastolica)/3),0)/n);
-
-  // 6. Estabilidad
-  const desv=Math.sqrt(registros.reduce((s,r)=>s+Math.pow(r.sistolica-aS,2),0)/n);
-  const estab=aS>0?Math.round((1-desv/aS)*100)/100:null;
-
-  // 7. Tendencia (slope)
-  const diasArr=Object.entries(pf).sort(([a],[b])=>a.localeCompare(b));
-  const v7=diasArr.slice(-7).map(([,d])=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
-  const v30=diasArr.slice(-30).map(([,d])=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
-  const sl7=v7.length>=2?calcSlope(v7):null;
-  const sl30=v30.length>=3?calcSlope(v30):null;
-
-  // 8. PP elevada
-  const aPP=Math.round(registros.reduce((s,r)=>s+(r.sistolica-r.diastolica),0)/n);
-  const ppEl=registros.filter(r=>(r.sistolica-r.diastolica)>60).length;
-  const pctPP=Math.round(ppEl*100/n);
-
-  const items=[];
-
-  // 1
-  if(surge!==null){
-    const sc=surge>55?'c-danger':surge>35?'c-warn':surge<0?'c-info':'c-ok';
-    const sl=surge>55?'⚠️ Muy elevado (riesgo CV alto)':surge>35?'Moderado':surge<0?'Negativo (dipping nocturno)':'Normal';
-    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🌅 Morning Surge</div><div class="clin-val">${surge>0?'+':''}${surge} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Aumento de la presión sistólica al despertar respecto a la noche anterior. Valores >55 mmHg se asocian a mayor riesgo de infarto y ACV matutino. Calculado sobre ${surgeVals.length} par${surgeVals.length!==1?'es':''}.</div><span class="clin-tag ${sc}">${sl}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,Math.max(0,(surge+20)/100*100))}%;background:${surge>55?'#c0392b':surge>35?'#d4800a':'#2e7d5e'}"></div></div></div>`);
-  }else{
-    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🌅 Morning Surge</div><div class="clin-val" style="color:var(--muted);font-size:16px">Sin datos</div></div><div class="clin-desc">Necesita al menos un par de medición nocturna seguida de medición matutina del día siguiente.</div><span class="clin-tag c-na">Sin pares noche→mañana</span></div>`);
-  }
-
-  // 2
-  const c2=carga>50?'c-danger':carga>25?'c-warn':'c-ok';
-  const l2=carga>50?'⚠️ Carga alta':carga>25?'Carga moderada':'Carga baja';
-  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📊 Carga hipertensiva</div><div class="clin-val">${carga}<small style="font-size:11px;color:var(--muted)">%</small></div></div><div class="clin-desc">Proporción de mediciones con PA ≥140/90 mmHg. Refleja el tiempo real bajo hipertensión. ${altN} de ${n} mediciones superan el umbral.</div><span class="clin-tag ${c2}">${l2}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${carga}%;background:${carga>50?'#c0392b':carga>25?'#d4800a':'#2e7d5e'}"></div></div></div>`);
-
-  // 3
-  if(arv!==null){
-    const c3=arv>10?'c-danger':arv>6?'c-warn':'c-ok';
-    const l3=arv>10?'⚠️ Variabilidad alta':arv>6?'Variabilidad moderada':'Variabilidad baja';
-    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📉 Variabilidad día a día (ARV)</div><div class="clin-val">${arv} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Average Real Variability: promedio de cambios absolutos entre días consecutivos. Alta variabilidad se asocia a mayor riesgo cardiovascular, incluso con PA media normal.</div><span class="clin-tag ${c3}">${l3}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,arv/20*100)}%;background:${arv>10?'#c0392b':arv>6?'#d4800a':'#2e7d5e'}"></div></div></div>`);
-  }
-
-  // 4
-  const c4=ratio>1.8?'c-warn':ratio<1.3?'c-info':'c-ok';
-  const l4=ratio>1.8?'Por encima del rango':ratio<1.3?'Por debajo del rango':'Normal (1.3–1.8)';
-  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🔢 Índice sistólica/diastólica</div><div class="clin-val">${ratio}</div></div><div class="clin-desc">Relación entre la PA sistólica y diastólica medias (${Math.round(aS)}/${Math.round(aD)} mmHg). Puede indicar cambios en la elasticidad arterial. Rango habitual: 1.3–1.8.</div><span class="clin-tag ${c4}">${l4}</span></div>`);
-
-  // 5
-  const c5=pam>110?'c-danger':pam>100?'c-warn':pam<70?'c-info':'c-ok';
-  const l5=pam>110?'⚠️ Elevada':pam>100?'Algo elevada':pam<70?'Baja':'Normal (70–100 mmHg)';
-  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">💉 Presión arterial media (PAM)</div><div class="clin-val">${pam} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">PAM = Diastólica + (Sistólica − Diastólica) / 3. Refleja la presión de perfusión de los órganos vitales. Rango normal: 70–100 mmHg.</div><span class="clin-tag ${c5}">${l5}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,pam/150*100)}%;background:${pam>110?'#c0392b':pam>100?'#d4800a':'#2e7d5e'}"></div></div></div>`);
-
-  // 6
-  if(estab!==null){
-    const c6=estab>0.9?'c-ok':estab>0.8?'c-warn':'c-danger';
-    const l6=estab>0.9?'Muy estable':estab>0.8?'Moderadamente estable':'Inestable';
-    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">⚖️ Índice de estabilidad</div><div class="clin-val">${estab}</div></div><div class="clin-desc">Estabilidad = 1 − (desviación estándar / media sistólica). Más cercano a 1 indica presión más constante en el tiempo. Valores &lt;0.8 sugieren variabilidad importante.</div><span class="clin-tag ${c6}">${l6}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,estab*100)}%;background:${estab>0.9?'#2e7d5e':estab>0.8?'#d4800a':'#c0392b'}"></div></div></div>`);
-  }
-
-  // 7
-  if(sl7!==null){
-    const c7=Math.abs(sl7)<0.5?'c-ok':sl7>0?'c-warn':'c-info';
-    const l7=Math.abs(sl7)<0.5?'Estable':sl7>1?`↑ Subiendo ${sl7>0?'+':''}${sl7} mmHg/día`:`${sl7>0?'↑':'↓'} ${sl7>0?'+':''}${sl7} mmHg/día`;
-    const l30=sl30!==null?(Math.abs(sl30)<0.3?'Estable':sl30>0?`↑ +${sl30} mmHg/día`:`↓ ${sl30} mmHg/día`):'';
-    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📈 Tendencia (slope)</div><div class="clin-val" style="font-size:16px">${sl7>0?'+':''}${sl7} <small style="font-size:11px;color:var(--muted)">mmHg/día</small></div></div><div class="clin-desc">Pendiente de la presión sistólica por regresión lineal. Detecta si la presión está aumentando o bajando lentamente.${l30?'<br>• Última semana: <strong>'+l7+'</strong><br>• Último mes: <strong>'+l30+'</strong>':''}</div><span class="clin-tag ${c7}">${l7}</span></div>`);
-  }
-
-  // 8
-  const c8=pctPP>50?'c-danger':pctPP>30?'c-warn':'c-ok';
-  const l8=pctPP>50?'⚠️ Frecuente — posible rigidez arterial':pctPP>30?'Moderado':'Normal';
-  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">💓 PP elevada (&gt;60 mmHg)</div><div class="clin-val">${aPP} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Presión de pulso media = Sistólica − Diastólica. PP >60 mmHg de forma habitual puede indicar rigidez arterial. ${ppEl} de ${n} mediciones (${pctPP}%) superan los 60 mmHg.</div><span class="clin-tag ${c8}">${l8}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${pctPP}%;background:${pctPP>50?'#c0392b':pctPP>30?'#d4800a':'#2e7d5e'}"></div></div></div>`);
-
-  document.getElementById('metricas-clinicas').innerHTML=items.join('');
+function renderChartT(){
+  const pf={};tensiones.forEach(r=>{const f=(r.timestamp||r.fecha||'').split('T')[0];if(!f)return;if(!pf[f])pf[f]={s:[],d:[]};pf[f].s.push(r.sistolica);pf[f].d.push(r.diastolica);});
+  const sk=Object.keys(pf).sort().slice(-14);if(!sk.length)return;
+  if(chartT)chartT.destroy();
+  chartT=new Chart(document.getElementById('a-chart-tension').getContext('2d'),{type:'line',data:{labels:sk.map(f=>f.slice(5).replace('-','/')),datasets:[{label:'Sistólica',data:sk.map(f=>Math.round(pf[f].s.reduce((a,b)=>a+b,0)/pf[f].s.length)),borderColor:'#c0622a',backgroundColor:'rgba(192,98,42,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#c0622a'},{label:'Diastólica',data:sk.map(f=>Math.round(pf[f].d.reduce((a,b)=>a+b,0)/pf[f].d.length)),borderColor:'#3a6fbf',backgroundColor:'rgba(58,111,191,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#3a6fbf'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:11}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:7},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:50,suggestedMax:180}}}});
 }
-
-function calcSlope(vs){
-  const n=vs.length;if(n<2)return null;
-  const sx=n*(n-1)/2,sx2=n*(n-1)*(2*n-1)/6;
-  const sy=vs.reduce((a,b)=>a+b,0);
-  const sxy=vs.reduce((s,v,i)=>s+i*v,0);
-  return Math.round((n*sxy-sx*sy)/(n*sx2-sx*sx)*10)/10;
+function renderSintomas(){
+  const el=document.getElementById('a-sintomas');
+  if(!nochesDatos.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">📉</div><div class="empty-tx">Sin registros nocturnos todavía</div></div>';return;}
+  const campos=[{k:'fatiga',l:'Fatiga'},{k:'dolorSup',l:'Dolor articular sup.'},{k:'dolorCen',l:'Dolor articular cen.'},{k:'dolorInf',l:'Dolor articular inf.'},{k:'rigidez',l:'Rigidez'},{k:'inflamSup',l:'Inflamación sup.'},{k:'dolorMusc',l:'Dolor muscular'},{k:'pielSup',l:'Piel tirante sup.'},{k:'nauseas',l:'Náuseas'},{k:'reflujo',l:'Reflujo'},{k:'cefalea',l:'Cefalea'},{k:'animo',l:'Ánimo/irritabilidad'},{k:'estres',l:'Estrés'},{k:'presionTor',l:'Presión torácica'}];
+  const avgs=campos.map(c=>{const vs=nochesDatos.filter(r=>r[c.k]!=null).map(r=>r[c.k]);return{...c,avg:vs.length?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length*10)/10:null};}).filter(c=>c.avg!==null).sort((a,b)=>b.avg-a.avg);
+  el.innerHTML=avgs.map(c=>{const col=c.avg>=7?'#c0392b':c.avg>=5?'#d4800a':'#2e7d5e';return`<div class="symp-row"><div class="symp-lbl" title="${c.l}">${c.l}</div><div class="symp-bar-bg"><div class="symp-bar" style="width:${c.avg*10}%;background:${col}"></div></div><div class="symp-val">${c.avg}</div></div>`;}).join('');
 }
-
-function renderDist(){
-  const cats={baja:0,normal:0,elevada:0,alta1:0,alta2:0,crisis:0};
-  registros.forEach(r=>{const e=r.estado||clasif(r.sistolica,r.diastolica);cats[e]=(cats[e]||0)+1;});
-  const tot=registros.length;
-  const col={baja:'#3a6fbf',normal:'#2e7d5e',elevada:'#d4800a',alta1:'#c07030',alta2:'#c0392b',crisis:'#8b1a1a'};
-  document.getElementById('dist-bar').innerHTML=Object.entries(cats).filter(([,v])=>v>0).map(([k,v])=>{const p=Math.round(v*100/tot);return`<div class="dist-seg" style="width:${p}%;background:${col[k]};color:#fff">${p>10?p+'%':''}</div>`;}).join('');
-  document.getElementById('dist-legend').innerHTML=Object.entries(cats).filter(([,v])=>v>0).map(([k,v])=>`<div class="leg-item"><div class="leg-dot" style="background:${col[k]}"></div>${CL[k].l}: ${v}</div>`).join('');
-  const alt=(cats.alta1||0)+(cats.alta2||0)+(cats.crisis||0);
-  document.getElementById('dist-detalle').innerHTML=`
-    <div class="est-row"><span class="est-lbl"><span style="color:#2e7d5e">●</span> Normal/Elevada</span><span><span class="est-cnt">${(cats.normal||0)+(cats.elevada||0)}</span>&nbsp;<span class="est-pct">${Math.round(((cats.normal||0)+(cats.elevada||0))*100/tot)}%</span></span></div>
-    <div class="est-row"><span class="est-lbl"><span style="color:#c0392b">●</span> Hipertensión</span><span><span class="est-cnt">${alt}</span>&nbsp;<span class="est-pct">${Math.round(alt*100/tot)}%</span></span></div>
-    <div class="est-row"><span class="est-lbl"><span style="color:#3a6fbf">●</span> Baja</span><span><span class="est-cnt">${cats.baja||0}</span>&nbsp;<span class="est-pct">${Math.round((cats.baja||0)*100/tot)}%</span></span></div>
-  `;
+function renderChartB(){
+  const datos=nochesDatos.filter(r=>r.bienestar&&r.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(-21);
+  if(datos.length<2)return;
+  if(chartB)chartB.destroy();
+  chartB=new Chart(document.getElementById('a-chart-bienestar').getContext('2d'),{type:'line',data:{labels:datos.map(r=>r.fecha.slice(5).replace('-','/')),datasets:[{label:'Bienestar',data:datos.map(r=>r.bienestar),borderColor:'#2e7d5e',backgroundColor:'rgba(46,125,94,0.1)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#2e7d5e'},{label:'Fatiga',data:datos.map(r=>r.fatiga),borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.05)',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#c0392b'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:11}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},min:0,max:10}}}});
 }
-
 function renderInsights(){
-  const ins=[],n=registros.length;
-  if(n<2){document.getElementById('insights-lista').innerHTML='<div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Necesitas al menos 2 mediciones</div></div>';return;}
-  const aS=registros.reduce((s,r)=>s+r.sistolica,0)/n;
-  const r7=registros.filter(r=>(Date.now()-new Date(r.timestamp||r.fecha).getTime())<7*86400000);
-  if(r7.length>=3){const a7=Math.round(r7.reduce((s,r)=>s+r.sistolica,0)/r7.length),d=a7-Math.round(aS);if(Math.abs(d)>=5)ins.push({i:'📈',t:`Últimos 7 días: sistólica media <strong>${a7} mmHg</strong> (${d>0?'+'+d:d} mmHg vs. media histórica).${Math.abs(d)>10?' Tendencia marcada.':''}`});}
-  const ma=registros.filter(r=>r.turno==='manana'),no=registros.filter(r=>r.turno==='noche');
-  if(ma.length>=2&&no.length>=2){const am=Math.round(ma.reduce((s,r)=>s+r.sistolica,0)/ma.length),an=Math.round(no.reduce((s,r)=>s+r.sistolica,0)/no.length),d=an-am;if(Math.abs(d)>=5)ins.push({i:'🕐',t:`Sistólica <strong>${d>0?an+' mmHg por la noche':am+' mmHg por la mañana'}</strong> (${Math.abs(d)} mmHg de diferencia).`});}
-  const cr=registros.filter(r=>(r.estado||clasif(r.sistolica,r.diastolica))==='crisis');
-  if(cr.length)ins.push({i:'⚠️',t:`<strong>${cr.length} episodio${cr.length>1?'s':''} de crisis hipertensiva</strong> (≥180/120). Consulta con tu médico.`});
-  const pv=registros.filter(r=>r.pulso);
-  if(pv.length){const tq=pv.filter(r=>r.pulso>100),br=pv.filter(r=>r.pulso<50);if(tq.length)ins.push({i:'💗',t:`<strong>${tq.length} medición${tq.length>1?'es':''}</strong> con pulso >100 ppm.`});if(br.length)ins.push({i:'🫀',t:`<strong>${br.length} medición${br.length>1?'es':''}</strong> con pulso <50 ppm.`});}
-  const nm=registros.filter(r=>r.estado==='normal'||(clasif(r.sistolica,r.diastolica)==='normal'));
-  if(Math.round(nm.length*100/n)>=70)ins.push({i:'✅',t:`El <strong>${Math.round(nm.length*100/n)}%</strong> de tus mediciones están en rango óptimo.`});
-  if(!ins.length)ins.push({i:'🔬',t:'Sigue registrando mediciones para obtener insights personalizados.'});
-  document.getElementById('insights-lista').innerHTML=ins.map(x=>`<div class="ins-item"><div class="ins-icon">${x.i}</div><div class="ins-text">${x.t}</div></div>`).join('');
+  const ins=[];const n=nochesDatos.length;
+  if(n>=3){
+    const bv=nochesDatos.filter(r=>r.bienestar);const fv=nochesDatos.filter(r=>r.fatiga);
+    if(fv.length){const af=fv.reduce((s,r)=>s+r.fatiga,0)/fv.length;if(af>6)ins.push({i:'😴',t:`Fatiga media de <strong>${Math.round(af*10)/10}/10</strong>. Nivel elevado sostenido.`});}
+    if(bv.length){const ab=bv.reduce((s,r)=>s+r.bienestar,0)/bv.length;if(ab<5)ins.push({i:'📉',t:`Bienestar medio de <strong>${Math.round(ab*10)/10}/10</strong>. Por debajo del umbral óptimo.`});}
+    const ray=nochesDatos.filter(r=>r.raynaud&&r.raynaud!=='Ninguno');
+    if(ray.length>n*0.3)ins.push({i:'🤍',t:`Raynaud presente en el <strong>${Math.round(ray.length*100/n)}%</strong> de los días registrados.`});
+    const rv=nochesDatos.filter(r=>r.reflujo);if(rv.length){const ar=rv.reduce((s,r)=>s+r.reflujo,0)/rv.length;if(ar>5)ins.push({i:'🔥',t:`Reflujo medio de <strong>${Math.round(ar*10)/10}/10</strong>. Valorar relación con la alimentación registrada.`});}
+    const ev=nochesDatos.filter(r=>r.estres);if(ev.length){const ae=ev.reduce((s,r)=>s+r.estres,0)/ev.length;if(ae>6)ins.push({i:'🧠',t:`Estrés medio de <strong>${Math.round(ae*10)/10}/10</strong>. Carga emocional elevada.`});}
+    const laboral=nochesDatos.filter(r=>r.tipoDia==='Laboral');const descanso=nochesDatos.filter(r=>r.tipoDia==='Descanso');
+    if(laboral.length>=3&&descanso.length>=2){
+      const bL=laboral.filter(r=>r.bienestar).reduce((s,r)=>s+r.bienestar,0)/Math.max(1,laboral.filter(r=>r.bienestar).length);
+      const bD=descanso.filter(r=>r.bienestar).reduce((s,r)=>s+r.bienestar,0)/Math.max(1,descanso.filter(r=>r.bienestar).length);
+      if(bD-bL>1.5)ins.push({i:'📅',t:`El bienestar en días de descanso (${Math.round(bD*10)/10}) es <strong>${Math.round((bD-bL)*10)/10} puntos mayor</strong> que en días laborales (${Math.round(bL*10)/10}).`});
+    }
+  }
+  if(tensiones.length>=5){const aS=Math.round(tensiones.reduce((s,r)=>s+r.sistolica,0)/tensiones.length);const aD=Math.round(tensiones.reduce((s,r)=>s+r.diastolica,0)/tensiones.length);const e=clasifT(aS,aD);if(e!=='normal'&&e!=='baja')ins.push({i:'❤️',t:`Tensión media <strong>${aS}/${aD}</strong> — ${CL[e].l}.`});}
+  if(!ins.length)ins.push({i:'🔬',t:'Sigue registrando datos para obtener insights. Se necesitan al menos 3 registros nocturnos.'});
+  document.getElementById('a-insights').innerHTML=ins.map(x=>`<div class="ins-item"><div class="ins-icon">${x.i}</div><div class="ins-text">${x.t}</div></div>`).join('');
 }
 
-function renderChEv(){
-  const pf={};
-  registros.forEach(r=>{const f=(r.timestamp||r.fecha||'').split('T')[0];if(!f)return;if(!pf[f])pf[f]={s:[],d:[]};pf[f].s.push(r.sistolica);pf[f].d.push(r.diastolica);});
-  const sk=Object.keys(pf).sort().slice(-14);
-  const lb=sk.map(f=>f.slice(5).replace('-','/'));
-  const dS=sk.map(f=>Math.round(pf[f].s.reduce((a,b)=>a+b,0)/pf[f].s.length));
-  const dD=sk.map(f=>Math.round(pf[f].d.reduce((a,b)=>a+b,0)/pf[f].d.length));
-  if(cEv)cEv.destroy();
-  cEv=new Chart(document.getElementById('chartEv').getContext('2d'),{
-    type:'line',data:{labels:lb,datasets:[
-      {label:'Sistólica',data:dS,borderColor:'#c0622a',backgroundColor:'rgba(192,98,42,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#c0622a'},
-      {label:'Diastólica',data:dD,borderColor:'#3a6fbf',backgroundColor:'rgba(58,111,191,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#3a6fbf'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:11}}}},
-      scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:7},grid:{color:'rgba(160,90,40,0.06)'}},
-              y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:50,suggestedMax:185}}}
-  });
-}
-function renderChPulso(){
-  const pv=registros.filter(r=>r.pulso).slice(-20).reverse();
-  if(pv.length<2)return;
-  const lb=pv.map(r=>(r.timestamp||r.fecha||'').split('T')[0].slice(5).replace('-','/'));
-  const dt=pv.map(r=>r.pulso);
-  if(cPul)cPul.destroy();
-  cPul=new Chart(document.getElementById('chartPulso').getContext('2d'),{
-    type:'bar',data:{labels:lb,datasets:[{label:'Pulso (ppm)',data:dt,backgroundColor:dt.map(v=>v>100?'rgba(192,57,43,0.7)':v<50?'rgba(58,111,191,0.7)':'rgba(46,125,94,0.6)'),borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#8c6e56',font:{size:9},maxRotation:45},grid:{display:false}},
-              y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:40,suggestedMax:120}}}
-  });
-}
-
-// ── UI HELPERS ────────────────────────
+// ── UI HELPERS ──────────────────────────────────────
 function showTab(n,b){
   document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
   document.getElementById('tab-'+n).classList.add('active');b.classList.add('active');
-  if(n==='metricas')renderMet();
-}
-function setTurno(t){
-  turno=t;
-  document.getElementById('btn-manana').classList.toggle('active',t==='manana');
-  document.getElementById('btn-noche').classList.toggle('active',t==='noche');
+  if(n==='analisis')renderAnalisis();
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 function cambiarPin(){
@@ -731,16 +780,17 @@ function cambiarPin(){
   const nv=document.getElementById('cfg-pin-nuevo').value;
   const r=document.getElementById('cfg-pin-rep').value;
   if(a!==leer('scls_pin',DPIN)){toast('❌ PIN actual incorrecto');return;}
-  if(!/^\d{4}$/.test(nv)){toast('⚠️ El PIN debe tener 4 dígitos');return;}
-  if(nv!==r){toast('❌ Los PINs no coinciden');return;}
+  if(!/^\d{4}$/.test(nv)){toast('⚠️ PIN debe ser 4 dígitos');return;}
+  if(nv!==r){toast('❌ PINs no coinciden');return;}
   guar('scls_pin',nv);['cfg-pin-actual','cfg-pin-nuevo','cfg-pin-rep'].forEach(id=>document.getElementById(id).value='');toast('✅ PIN cambiado');
 }
-function borrarLocal(){
-  if(!confirm('¿Borrar caché local? Los datos en Firebase no se eliminan.'))return;
-  localStorage.removeItem('scls_local');registros=[];renderAll();toast('🗑️ Caché local limpiado');
+function guardarPaciente(){
+  const n=document.getElementById('cfg-nombre').value.trim();
+  if(!n){toast('⚠️ Escribe un nombre');return;}
+  guar('scls_nombre',n);document.getElementById('hdr-patient').textContent=n;toast('✅ Nombre guardado');
 }
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.addEventListener('DOMContentLoaded',initPin);
+window.addEventListener('DOMContentLoaded',()=>{initForms();initPin();});
 </script>
 </body>
 </html>

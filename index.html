@@ -128,6 +128,49 @@ textarea.txt-inp{resize:vertical;min-height:60px}
 .empty-st{text-align:center;padding:32px 20px;color:var(--muted)}
 .empty-ic{font-size:34px;margin-bottom:10px}
 .empty-tx{font-size:13px;line-height:1.6}
+.pbtn{padding:5px 11px;border-radius:20px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--mono);transition:all .15s}
+.pbtn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.corr-item{display:flex;flex-direction:column;gap:6px;padding:11px 0;border-bottom:1px solid var(--brd)}
+.corr-item:last-child{border-bottom:none}
+.corr-hdr{display:flex;align-items:center;justify-content:space-between}
+.corr-lbl{font-size:12.5px;font-weight:600;color:var(--text)}
+.corr-val{font-size:13px;font-weight:700;font-family:var(--mono)}
+.corr-desc{font-size:11.5px;color:var(--muted2);line-height:1.5}
+.corr-bar-bg{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.corr-bar{height:6px;border-radius:3px;transition:width .8s ease}
+.corr-positive{color:var(--danger)}
+.corr-negative{color:var(--ok)}
+.corr-neutral{color:var(--muted)}
+.tend-btn{padding:5px 10px;border-radius:16px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted2);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .15s}
+.tend-btn.active{background:var(--teal);border-color:var(--teal);color:#fff}
+.alim-btn{padding:5px 10px;border-radius:16px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted2);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .15s}
+.alim-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.alim-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd)}
+.alim-row:last-child{border-bottom:none}
+.alim-food{font-size:12px;color:var(--text);width:110px;flex-shrink:0;font-weight:500}
+.alim-bar-bg{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.alim-bar{height:8px;border-radius:4px;transition:width .6s ease}
+.alim-val{font-size:11px;font-family:var(--mono);color:var(--text);width:30px;text-align:right;flex-shrink:0}
+.alim-n{font-size:10px;color:var(--muted);width:20px;text-align:right;flex-shrink:0}
+.ctx-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)}
+.ctx-row:last-child{border-bottom:none}
+.ctx-lbl{font-size:12.5px;color:var(--text)}
+.ctx-val{font-size:13px;font-weight:600;font-family:var(--mono)}
+.raynaud-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--brd)}
+.raynaud-row:last-child{border-bottom:none}
+.raynaud-lbl{font-size:12px;color:var(--text);flex:1}
+.raynaud-pct{font-size:13px;font-weight:600;font-family:var(--mono);color:var(--acc)}
+.act-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--brd)}
+.act-row:last-child{border-bottom:none}
+.act-lbl{font-size:12px;color:var(--text);flex:1}
+.act-val{font-size:13px;font-weight:600;font-family:var(--mono)}
+.stat-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--mono);margin-top:6px}
+.sp-ok{background:rgba(46,125,94,.1);color:var(--ok);border:1px solid rgba(46,125,94,.2)}
+.sp-warn{background:rgba(212,128,10,.1);color:var(--warn);border:1px solid rgba(212,128,10,.2)}
+.sp-danger{background:rgba(192,57,43,.1);color:var(--danger);border:1px solid rgba(192,57,43,.2)}
+.sp-info{background:rgba(58,111,191,.1);color:var(--blue);border:1px solid rgba(58,111,191,.2)}
+.insight-box{background:var(--sf2);border:1px solid var(--brd);border-radius:var(--rs);padding:10px 12px;font-size:12.5px;color:var(--muted2);line-height:1.55;margin-top:8px}
+.insight-box strong{color:var(--text);font-weight:600}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;font-family:var(--font)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 </style>
@@ -199,6 +242,7 @@ textarea.txt-inp{resize:vertical;min-height:60px}
     <button class="tab-btn" onclick="showTab('noche',this)">🌙 Noche</button>
     <button class="tab-btn" onclick="showTab('tension',this)">❤️ Tensión</button>
     <button class="tab-btn" onclick="showTab('analisis',this)">📊 Análisis</button>
+    <button class="tab-btn" onclick="showTab('profundo',this)">🔬 Clínico</button>
     <button class="tab-btn" onclick="showTab('config',this)">⚙️ Config</button>
   </nav>
 
@@ -411,6 +455,85 @@ textarea.txt-inp{resize:vertical;min-height:60px}
       <div class="ct"><span class="ctd"></span> Insights</div>
       <div id="a-insights"><div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Registra datos para ver insights</div></div></div>
     </div>
+  </div>
+
+  <!-- ANÁLISIS CLÍNICO PROFUNDO -->
+  <div class="tab-content" id="tab-profundo">
+
+    <!-- SELECTOR DE PERÍODO -->
+    <div class="card" style="padding:12px 15px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono);font-weight:600;text-transform:uppercase;letter-spacing:.8px">Período de análisis</div>
+        <div style="display:flex;gap:6px" id="periodo-btns">
+          <button class="pbtn active" onclick="setPeriodo(7,this)">7d</button>
+          <button class="pbtn" onclick="setPeriodo(14,this)">14d</button>
+          <button class="pbtn" onclick="setPeriodo(30,this)">30d</button>
+          <button class="pbtn" onclick="setPeriodo(90,this)">3m</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. CORRELACIONES CLÍNICAS -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 🔗 Correlaciones clínicas</div>
+      <div id="p-correlaciones"><div style="display:flex;justify-content:center;padding:16px"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- 2. TENDENCIAS TEMPORALES -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 📈 Tendencias temporales</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono)">Selecciona síntoma:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px" id="tendencia-selector"></div>
+      </div>
+      <div class="chart-cont" style="height:180px"><canvas id="p-chart-tendencia"></canvas></div>
+      <div id="p-tendencia-stat" style="margin-top:8px"></div>
+    </div>
+
+    <!-- 3. SUEÑO Y RECUPERACIÓN -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 😴 Sueño y recuperación</div>
+      <div class="chart-cont" style="height:170px"><canvas id="p-chart-sueno"></canvas></div>
+      <div id="p-sueno-insights" style="margin-top:10px"></div>
+    </div>
+
+    <!-- 4. ALIMENTACIÓN VS SÍNTOMAS -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 🍽️ Alimentación vs síntomas</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono)">Síntoma a analizar:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px" id="alim-sintoma-sel"></div>
+      </div>
+      <div id="p-alimentacion"></div>
+    </div>
+
+    <!-- 5. TENSIÓN EN CONTEXTO -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> ❤️ Tensión arterial en contexto</div>
+      <div id="p-tension-contexto"></div>
+      <div class="chart-cont" style="height:160px;margin-top:10px"><canvas id="p-chart-tension-estres"></canvas></div>
+    </div>
+
+    <!-- 6. RAYNAUD Y CLIMA -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 🤍 Raynaud y factores ambientales</div>
+      <div id="p-raynaud"></div>
+    </div>
+
+    <!-- 7. ACTIVIDAD FÍSICA VS BIENESTAR -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 🏃 Actividad física vs bienestar</div>
+      <div id="p-actividad"></div>
+      <div class="chart-cont" style="height:150px;margin-top:10px"><canvas id="p-chart-actividad"></canvas></div>
+    </div>
+
+    <!-- 8. ESTRÉS Y SÍNTOMAS -->
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> 🧠 Estrés y carga mental</div>
+      <div id="p-estres"></div>
+      <div class="chart-cont" style="height:160px;margin-top:10px"><canvas id="p-chart-estres"></canvas></div>
+    </div>
+
   </div>
 
   <!-- CONFIG -->
@@ -767,12 +890,232 @@ function renderInsights(){
   document.getElementById('a-insights').innerHTML=ins.map(x=>`<div class="ins-item"><div class="ins-icon">${x.i}</div><div class="ins-text">${x.t}</div></div>`).join('');
 }
 
+// ══════════════════════════════════════════
+//  ANÁLISIS CLÍNICO PROFUNDO
+// ══════════════════════════════════════════
+let periodoActual=14,chartTend=null,chartSue=null,chartTensEst=null,chartAct=null,chartEst=null;
+let sintomaTend='fatiga',alimentoSint='reflujo';
+let manadasDatos=[];
+
+const SNOCHE=[
+  {k:'fatiga',l:'Fatiga'},{k:'dolorSup',l:'Dolor sup.'},{k:'dolorCen',l:'Dolor cen.'},
+  {k:'dolorInf',l:'Dolor inf.'},{k:'rigidez',l:'Rigidez'},{k:'inflamSup',l:'Inflam. sup.'},
+  {k:'inflamCen',l:'Inflam. cen.'},{k:'inflamInf',l:'Inflam. inf.'},{k:'dolorMusc',l:'D. muscular'},
+  {k:'pielSup',l:'Piel sup.'},{k:'pielInf',l:'Piel inf.'},{k:'nauseas',l:'Náuseas'},
+  {k:'reflujo',l:'Reflujo'},{k:'cefalea',l:'Cefalea'},{k:'claridad',l:'Claridad'},
+  {k:'concentracion',l:'Concentración'},{k:'presionTor',l:'P. torácica'},
+  {k:'animo',l:'Ánimo'},{k:'estres',l:'Estrés'},{k:'calidadDia',l:'Calidad día'},{k:'bienestar',l:'Bienestar'}
+];
+
+function setPeriodo(dias,btn){periodoActual=dias;document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderProfundo();}
+
+function initProfundoSelectors(){
+  const ts=document.getElementById('tendencia-selector');
+  if(ts&&!ts.children.length){SNOCHE.forEach((s,i)=>{const b=document.createElement('button');b.className='tend-btn'+(i===0?' active':'');b.textContent=s.l;b.dataset.k=s.k;b.onclick=()=>{document.querySelectorAll('.tend-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');sintomaTend=s.k;renderTendencia();};ts.appendChild(b);});}
+  const as=document.getElementById('alim-sintoma-sel');
+  if(as&&!as.children.length){[{k:'reflujo',l:'Reflujo'},{k:'nauseas',l:'Náuseas'},{k:'pesadez',l:'Pesadez'},{k:'hinchazonDia',l:'Hinchazón'},{k:'animo',l:'Ánimo'},{k:'fatiga',l:'Fatiga'},{k:'cefalea',l:'Cefalea'}].forEach((s,i)=>{const b=document.createElement('button');b.className='alim-btn'+(i===0?' active':'');b.textContent=s.l;b.dataset.k=s.k;b.onclick=()=>{document.querySelectorAll('.alim-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');alimentoSint=s.k;renderAlimentacion();};as.appendChild(b);});}
+}
+
+function renderProfundo(){initProfundoSelectors();renderCorrelaciones();renderTendencia();renderSuenoRec();renderAlimentacion();renderTensionCtx();renderRaynaudAnal();renderActividadAnal();renderEstresAnal();}
+
+function getDatosPer(dias){const d=new Date();d.setDate(d.getDate()-dias);return{n:nochesDatos.filter(r=>new Date(r.fecha)>=d),t:tensiones.filter(r=>new Date(r.timestamp||r.fecha)>=d)};}
+
+function pearson(x,y){const n=x.length;if(n<3)return null;const mx=x.reduce((a,b)=>a+b,0)/n,my=y.reduce((a,b)=>a+b,0)/n;let num=0,dx=0,dy=0;for(let i=0;i<n;i++){const a=x[i]-mx,b=y[i]-my;num+=a*b;dx+=a*a;dy+=b*b;}return(dx===0||dy===0)?null:num/Math.sqrt(dx*dy);}
+
+function calcSlopeP(vs){const n=vs.length;if(n<2)return null;const sx=n*(n-1)/2,sx2=n*(n-1)*(2*n-1)/6,sy=vs.reduce((a,b)=>a+b,0),sxy=vs.reduce((s,v,i)=>s+i*v,0);return Math.round((n*sxy-sx*sy)/(n*sx2-sx*sx)*100)/100;}
+
+// 1. CORRELACIONES
+function renderCorrelaciones(){
+  const el=document.getElementById('p-correlaciones');
+  const{n}=getDatosPer(periodoActual);
+  if(!n.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">🔗</div><div class="empty-tx">Sin datos para el período</div></div>';return;}
+  const pares=[
+    {a:'calidadSueno',b:'fatiga',la:'Calidad sueño → Fatiga',desc:'¿Mejor sueño = menos fatiga?'},
+    {a:'estres',b:'dolorSup',la:'Estrés → Dolor articular',desc:'¿Más estrés = más dolor?'},
+    {a:'estres',b:'animo',la:'Estrés → Estado ánimo',desc:'¿El estrés afecta el ánimo?'},
+    {a:'fatiga',b:'claridad',la:'Fatiga → Claridad mental',desc:'¿Más fatiga = peor claridad?'},
+    {a:'estres',b:'rigidez',la:'Estrés → Rigidez',desc:'¿El estrés genera rigidez?'},
+    {a:'reflujo',b:'nauseas',la:'Reflujo → Náuseas',desc:'¿Aparecen juntos?'},
+    {a:'estres',b:'presionTor',la:'Estrés → Presión torácica',desc:'¿El estrés afecta el pecho?'},
+    {a:'bienestar',b:'calidadDia',la:'Bienestar → Calidad del día',desc:'Coherencia en la valoración'},
+    {a:'dolorSup',b:'dolorInf',la:'Dolor sup. → Dolor inf.',desc:'¿El dolor es global o localizado?'},
+    {a:'inflamSup',b:'pielSup',la:'Inflamación → Piel tirante',desc:'¿Inflamación y piel tirante van juntos?'},
+  ];
+  const res=pares.map(p=>{
+    const pares2=n.filter(r=>r[p.a]!=null&&r[p.b]!=null);
+    if(pares2.length<3)return null;
+    const r=pearson(pares2.map(x=>x[p.a]),pares2.map(x=>x[p.b]));
+    return r!==null?{...p,r,n:pares2.length}:null;
+  }).filter(Boolean).sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
+  if(!res.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">🔗</div><div class="empty-tx">Necesitas más registros para calcular correlaciones</div></div>';return;}
+  el.innerHTML=res.map(p=>{
+    const abs=Math.abs(p.r),pct=Math.round(abs*100);
+    const col=abs>0.6?'#c0392b':abs>0.4?'#d4800a':abs>0.2?'#2a8a7a':'#8c6e56';
+    const fuerza=abs>0.6?'Fuerte':abs>0.4?'Moderada':abs>0.2?'Débil':'Muy débil';
+    const dir=p.r>0?'positiva':'negativa';
+    return`<div class="corr-item"><div class="corr-hdr"><div class="corr-lbl">${p.la}</div><div class="corr-val" style="color:${col}">${p.r>0?'+':''}${p.r.toFixed(2)}</div></div><div class="corr-bar-bg"><div class="corr-bar" style="width:${pct}%;background:${col}"></div></div><div class="corr-desc">${p.desc} · <strong>${fuerza}</strong> correlación ${dir} · n=${p.n}</div></div>`;
+  }).join('');
+}
+
+// 2. TENDENCIAS
+function renderTendencia(){
+  const{n}=getDatosPer(periodoActual);
+  const stat=document.getElementById('p-tendencia-stat');
+  const sorted=[...n].filter(r=>r[sintomaTend]!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(!sorted.length){if(chartTend)chartTend.destroy();stat.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px">Sin datos para este síntoma</div>';return;}
+  const labels=sorted.map(r=>r.fecha.slice(5).replace('-','/'));
+  const vals=sorted.map(r=>r[sintomaTend]);
+  const slope=calcSlopeP(vals);
+  const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10;
+  const max=Math.max(...vals),min=Math.min(...vals);
+  if(chartTend)chartTend.destroy();
+  const col=avg>=7?'#c0392b':avg>=5?'#d4800a':'#2e7d5e';
+  const trendLine=slope!==null?vals.map((_,i)=>Math.max(0,Math.min(10,Math.round((avg+slope*(i-vals.length/2))*10)/10))):[];
+  chartTend=new Chart(document.getElementById('p-chart-tendencia').getContext('2d'),{type:'line',data:{labels,datasets:[{label:SNOCHE.find(s=>s.k===sintomaTend)?.l||sintomaTend,data:vals,borderColor:col,backgroundColor:col+'18',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:col},{label:'Tendencia',data:trendLine,borderColor:'#8c6e56',borderDash:[4,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},min:0,max:10}}}});
+  const tL=slope===null?'Sin tendencia':slope>0.1?`↑ +${slope}/día`:slope<-0.1?`↓ ${slope}/día`:'→ Estable';
+  const tC=slope===null?'sp-info':slope>0.2?'sp-danger':slope<-0.2?'sp-ok':'sp-info';
+  stat.innerHTML=`<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px"><span class="stat-pill sp-info">Promedio: ${avg}/10</span><span class="stat-pill sp-info">Rango: ${min}–${max}</span><span class="stat-pill ${tC}">${tL}</span><span class="stat-pill sp-info">n=${sorted.length}</span></div>`;
+}
+
+// 3. SUEÑO Y RECUPERACIÓN
+function renderSuenoRec(){
+  const{n}=getDatosPer(periodoActual);
+  const ins=document.getElementById('p-sueno-insights');
+  const con=n.filter(r=>r.calidadSueno!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(con.length>=2){
+    if(chartSue)chartSue.destroy();
+    chartSue=new Chart(document.getElementById('p-chart-sueno').getContext('2d'),{type:'line',data:{labels:con.map(r=>r.fecha.slice(5).replace('-','/')),datasets:[{label:'Calidad sueño',data:con.map(r=>r.calidadSueno),borderColor:'#3a6fbf',backgroundColor:'rgba(58,111,191,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#3a6fbf'},{label:'Fatiga al día sig.',data:con.map(r=>r.fatiga),borderColor:'#c0392b',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#c0392b',borderDash:[4,3]},{label:'Horas sueño',data:con.map(r=>r.horasSueno),borderColor:'#2e7d5e',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#2e7d5e'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},min:0,max:10}}}});
+  }
+  const insights=[];
+  if(con.length>=3){
+    const avgCal=con.filter(r=>r.calidadSueno!=null).reduce((a,b,_,ar)=>a+b.calidadSueno/ar.length,0);
+    const avgH=con.filter(r=>r.horasSueno!=null).reduce((a,b,_,ar)=>a+b.horasSueno/ar.length,0);
+    const cf=pearson(con.filter(r=>r.calidadSueno!=null&&r.fatiga!=null).map(r=>r.calidadSueno),con.filter(r=>r.calidadSueno!=null&&r.fatiga!=null).map(r=>r.fatiga));
+    if(Math.round(avgCal*10)/10<5)insights.push(`Calidad de sueño media <strong>${Math.round(avgCal*10)/10}/10</strong> — baja. Impacto probable en recuperación diaria.`);
+    if(Math.round(avgH*10)/10<6&&avgH>0)insights.push(`Promedio de <strong>${Math.round(avgH*10)/10} horas</strong> de sueño — inferior a lo recomendado para enfermedades autoinmunes (7-9h).`);
+    if(cf!==null&&cf<-0.3)insights.push(`Mayor calidad de sueño se asocia a <strong>menor fatiga</strong> (correlación r=${cf.toFixed(2)}).`);
+    const sinP=con.filter(r=>r.pantallasNoche==='No'&&r.calidadSueno!=null);const conP=con.filter(r=>r.pantallasNoche&&r.pantallasNoche!=='No'&&r.calidadSueno!=null);
+    if(sinP.length>=2&&conP.length>=2){const aS=sinP.reduce((a,b)=>a+b.calidadSueno,0)/sinP.length,aC=conP.reduce((a,b)=>a+b.calidadSueno,0)/conP.length;if(aS-aC>0.5)insights.push(`Sin pantallas: sueño <strong>${Math.round(aS*10)/10}/10</strong> vs <strong>${Math.round(aC*10)/10}/10</strong> con pantallas.`);}
+    const ligera=con.filter(r=>r.cenaPesada==='No'&&r.calidadSueno!=null);const pesada=con.filter(r=>['Bastante','Muy pesada'].includes(r.cenaPesada)&&r.calidadSueno!=null);
+    if(ligera.length>=2&&pesada.length>=2){const aL=ligera.reduce((a,b)=>a+b.calidadSueno,0)/ligera.length,aP=pesada.reduce((a,b)=>a+b.calidadSueno,0)/pesada.length;if(aL-aP>0.5)insights.push(`Cena ligera → sueño <strong>${Math.round(aL*10)/10}/10</strong> vs cena pesada <strong>${Math.round(aP*10)/10}/10</strong>.`);}
+  }
+  ins.innerHTML=insights.length?insights.map(t=>`<div class="insight-box">${t}</div>`).join(''):'<div class="insight-box">Registra más datos de sueño para obtener insights personalizados.</div>';
+}
+
+// 4. ALIMENTACIÓN
+function renderAlimentacion(){
+  const el=document.getElementById('p-alimentacion');
+  const{n}=getDatosPer(periodoActual);
+  if(!n.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin datos</div>';return;}
+  const alis=['Carne Roja','Carne Blanca','Pescado','Huevos','Legumbres','Lácteos Vaca','Lácteos Cabra','Trigo','Espelta','Pseudotrigos','Tomates','Lechugas','Pimientos','Pepinos','Alcohol','Café','Picante','Nueces','Pistachos'];
+  const stats=alis.map(ali=>{
+    const con=n.filter(r=>(r.almuerzo||[]).includes(ali)||(r.cena||[]).includes(ali));
+    const sin=n.filter(r=>!((r.almuerzo||[]).includes(ali)||(r.cena||[]).includes(ali)));
+    if(con.length<2||sin.length<2)return null;
+    const aCon=con.filter(r=>r[alimentoSint]!=null).reduce((s,r)=>s+r[alimentoSint],0)/Math.max(1,con.filter(r=>r[alimentoSint]!=null).length);
+    const aSin=sin.filter(r=>r[alimentoSint]!=null).reduce((s,r)=>s+r[alimentoSint],0)/Math.max(1,sin.filter(r=>r[alimentoSint]!=null).length);
+    return{ali,aCon:Math.round(aCon*10)/10,aSin:Math.round(aSin*10)/10,diff:Math.round((aCon-aSin)*10)/10,n:con.length};
+  }).filter(Boolean).sort((a,b)=>b.diff-a.diff);
+  if(!stats.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin suficientes datos de alimentación para el período</div>';return;}
+  const sintomaLbl=document.querySelector('.alim-btn.active')?.textContent||alimentoSint;
+  const maxV=Math.max(...stats.map(s=>s.aCon),0.1);
+  el.innerHTML=`<div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">Nivel de "${sintomaLbl}" los días que se consume cada alimento (diferencia vs días sin él):</div>`+
+  stats.slice(0,14).map(s=>{const col=s.diff>1?'#c0392b':s.diff>0.3?'#d4800a':s.diff<-0.3?'#2e7d5e':'#8c6e56';const dL=s.diff>0?`+${s.diff}`:String(s.diff);return`<div class="alim-row"><div class="alim-food" title="${s.ali}">${s.ali}</div><div class="alim-bar-bg"><div class="alim-bar" style="width:${Math.round(s.aCon/maxV*100)}%;background:${col}"></div></div><div class="alim-val">${s.aCon}</div><div class="alim-n" style="color:${col};font-weight:600">${dL}</div></div>`;}).join('')+
+  `<div style="font-size:10px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Número en rojo/verde = diferencia vs días sin ese alimento. +1 = síntoma 1 punto mayor con ese alimento.</div>`;
+}
+
+// 5. TENSIÓN EN CONTEXTO
+function renderTensionCtx(){
+  const el=document.getElementById('p-tension-contexto');
+  const{n,t}=getDatosPer(periodoActual);
+  if(!t.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin mediciones de tensión en el período</div>';return;}
+  const tPF={};t.forEach(r=>{const f=r.fecha||(r.timestamp||'').split('T')[0];if(!tPF[f])tPF[f]=[];tPF[f].push(r);});
+  const cruzados=n.map(r=>{const td=tPF[r.fecha];if(!td||!td.length)return null;return{fecha:r.fecha,sis:Math.round(td.reduce((s,x)=>s+x.sistolica,0)/td.length),dia:Math.round(td.reduce((s,x)=>s+x.diastolica,0)/td.length),estres:r.estres,actividad:r.actividad,bienestar:r.bienestar};}).filter(Boolean);
+  const eB=cruzados.filter(r=>r.estres!=null&&r.estres<=3);const eA=cruzados.filter(r=>r.estres!=null&&r.estres>=7);
+  const conAct=cruzados.filter(r=>r.actividad&&r.actividad!=='Ninguna');const sinAct=cruzados.filter(r=>r.actividad==='Ninguna');
+  const avg=v=>v.length?Math.round(v.reduce((s,r)=>s+r.sis,0)/v.length):null;
+  el.innerHTML=`
+    <div class="ctx-row"><div class="ctx-lbl">Sistólica media del período</div><div class="ctx-val">${Math.round(t.reduce((s,r)=>s+r.sistolica,0)/t.length)} mmHg</div></div>
+    <div class="ctx-row"><div class="ctx-lbl">Diastólica media</div><div class="ctx-val">${Math.round(t.reduce((s,r)=>s+r.diastolica,0)/t.length)} mmHg</div></div>
+    ${avg(eB)&&avg(eA)?`<div class="ctx-row"><div class="ctx-lbl">Sistólica con estrés bajo (≤3)</div><div class="ctx-val" style="color:var(--ok)">${avg(eB)} mmHg</div></div><div class="ctx-row"><div class="ctx-lbl">Sistólica con estrés alto (≥7)</div><div class="ctx-val" style="color:var(--danger)">${avg(eA)} mmHg <span style="font-size:11px">(${avg(eA)>avg(eB)?'+':''}${avg(eA)-avg(eB)})</span></div></div>`:''}
+    ${avg(conAct)&&avg(sinAct)?`<div class="ctx-row"><div class="ctx-lbl">Sistólica días con actividad física</div><div class="ctx-val" style="color:var(--ok)">${avg(conAct)} mmHg</div></div><div class="ctx-row"><div class="ctx-lbl">Sistólica días sin actividad</div><div class="ctx-val">${avg(sinAct)} mmHg</div></div>`:''}
+  `;
+  if(cruzados.filter(r=>r.estres!=null).length>=2){
+    const s2=cruzados.filter(r=>r.estres!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    if(chartTensEst)chartTensEst.destroy();
+    chartTensEst=new Chart(document.getElementById('p-chart-tension-estres').getContext('2d'),{type:'line',data:{labels:s2.map(r=>r.fecha.slice(5).replace('-','/')),datasets:[{label:'Sistólica',data:s2.map(r=>r.sis),borderColor:'#c0622a',backgroundColor:'rgba(192,98,42,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#c0622a',yAxisID:'y'},{label:'Estrés',data:s2.map(r=>r.estres),borderColor:'#d4800a',borderDash:[4,3],backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#d4800a',yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#c0622a',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:80,suggestedMax:160,position:'left'},y2:{ticks:{color:'#d4800a',font:{size:10}},grid:{display:false},min:0,max:10,position:'right'}}}});
+  }
+}
+
+// 6. RAYNAUD
+function renderRaynaudAnal(){
+  const el=document.getElementById('p-raynaud');
+  const{n}=getDatosPer(periodoActual);
+  if(!n.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin datos</div>';return;}
+  const total=n.length;
+  const conR=n.filter(r=>r.raynaud&&r.raynaud!=='Ninguno');
+  const tipos={};n.forEach(r=>{if(r.raynaud)tipos[r.raynaud]=(tipos[r.raynaud]||0)+1;});
+  const porT={};n.forEach(r=>{if(r.temperatura){if(!porT[r.temperatura])porT[r.temperatura]={r:0,t:0};porT[r.temperatura].t++;if(r.raynaud&&r.raynaud!=='Ninguno')porT[r.temperatura].r++;}});
+  const cF=n.filter(r=>r.frio&&r.frio!=='No'),sF=n.filter(r=>r.frio==='No');
+  const rCF=cF.filter(r=>r.raynaud&&r.raynaud!=='Ninguno').length,rSF=sF.filter(r=>r.raynaud&&r.raynaud!=='Ninguno').length;
+  el.innerHTML=`
+    <div class="raynaud-row"><div class="raynaud-lbl">Días con episodio de Raynaud</div><div class="raynaud-pct">${conR.length}/${total} (${Math.round(conR.length*100/total)}%)</div></div>
+    ${Object.entries(tipos).map(([k,v])=>`<div class="raynaud-row"><div class="raynaud-lbl" style="color:var(--muted2);font-size:11.5px">&nbsp;• ${k}</div><div class="raynaud-pct" style="font-size:12px">${v}d</div></div>`).join('')}
+    ${cF.length&&sF.length?`<div class="raynaud-row" style="margin-top:6px"><div class="raynaud-lbl">Con exposición al frío</div><div class="raynaud-pct">${Math.round(rCF*100/cF.length)}% de esos días</div></div><div class="raynaud-row"><div class="raynaud-lbl">Sin exposición al frío</div><div class="raynaud-pct">${Math.round(rSF*100/sF.length)}% de esos días</div></div>`:''}
+    ${Object.keys(porT).length?'<div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.8px">Por temperatura ambiente:</div>'+Object.entries(porT).map(([k,v])=>`<div class="raynaud-row"><div class="raynaud-lbl">${k}</div><div class="raynaud-pct">${Math.round(v.r*100/v.t)}% (${v.r}/${v.t}d)</div></div>`).join(''):''}
+  `;
+}
+
+// 7. ACTIVIDAD FÍSICA
+function renderActividadAnal(){
+  const el=document.getElementById('p-actividad');
+  const{n}=getDatosPer(periodoActual);
+  if(!n.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin datos</div>';return;}
+  const niveles=['Ninguna','Muy suave < 30min','Suave < 1h','Moderada < 1.30h','Intensa > 2h'];
+  const stats=niveles.map(nv=>{
+    const d=n.filter(r=>r.actividad===nv);if(!d.length)return null;
+    const avgB=d.filter(r=>r.bienestar!=null).reduce((s,r)=>s+r.bienestar,0)/Math.max(1,d.filter(r=>r.bienestar!=null).length);
+    const avgF=d.filter(r=>r.fatiga!=null).reduce((s,r)=>s+r.fatiga,0)/Math.max(1,d.filter(r=>r.fatiga!=null).length);
+    const avgD=d.filter(r=>r.dolorSup!=null).map(r=>((r.dolorSup||0)+(r.dolorCen||0)+(r.dolorInf||0))/3).reduce((a,b)=>a+b,0)/Math.max(1,d.filter(r=>r.dolorSup!=null).length);
+    return{nv,n:d.length,avgB:Math.round(avgB*10)/10,avgF:Math.round(avgF*10)/10,avgD:Math.round(avgD*10)/10};
+  }).filter(Boolean);
+  el.innerHTML=stats.map(s=>`<div class="act-row"><div class="act-lbl">${s.nv} <span style="color:var(--muted);font-size:11px">(${s.n}d)</span></div><div style="display:flex;gap:5px"><span class="stat-pill sp-ok" style="padding:3px 7px;font-size:10px">B:${s.avgB}</span><span class="stat-pill sp-warn" style="padding:3px 7px;font-size:10px">F:${s.avgF}</span><span class="stat-pill sp-danger" style="padding:3px 7px;font-size:10px">D:${s.avgD}</span></div></div>`).join('');
+  if(stats.length>=2){
+    if(chartAct)chartAct.destroy();
+    chartAct=new Chart(document.getElementById('p-chart-actividad').getContext('2d'),{type:'bar',data:{labels:stats.map(s=>s.nv.split(' ')[0]),datasets:[{label:'Bienestar',data:stats.map(s=>s.avgB),backgroundColor:'rgba(46,125,94,0.7)',borderRadius:5},{label:'Fatiga',data:stats.map(s=>s.avgF),backgroundColor:'rgba(192,57,43,0.7)',borderRadius:5},{label:'Dolor',data:stats.map(s=>s.avgD),backgroundColor:'rgba(212,128,10,0.7)',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},min:0,max:10}}}});
+  }
+}
+
+// 8. ESTRÉS
+function renderEstresAnal(){
+  const el=document.getElementById('p-estres');
+  const{n}=getDatosPer(periodoActual);
+  if(!n.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin datos</div>';return;}
+  const cE=n.filter(r=>r.estres!=null);if(!cE.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">Sin datos de estrés</div>';return;}
+  const avgE=Math.round(cE.reduce((s,r)=>s+r.estres,0)/cE.length*10)/10;
+  const cEv=n.filter(r=>r.evento==='Sí'),sEv=n.filter(r=>r.evento==='No');
+  const avgBCE=cEv.filter(r=>r.bienestar!=null).reduce((s,r)=>s+r.bienestar,0)/Math.max(1,cEv.filter(r=>r.bienestar!=null).length);
+  const avgBSE=sEv.filter(r=>r.bienestar!=null).reduce((s,r)=>s+r.bienestar,0)/Math.max(1,sEv.filter(r=>r.bienestar!=null).length);
+  const pC={};n.forEach(r=>{if(r.cargaMental){if(!pC[r.cargaMental])pC[r.cargaMental]={b:[],f:[]};if(r.bienestar!=null)pC[r.cargaMental].b.push(r.bienestar);if(r.fatiga!=null)pC[r.cargaMental].f.push(r.fatiga);}});
+  el.innerHTML=`
+    <div class="act-row"><div class="act-lbl">Estrés medio</div><div class="act-val" style="color:${avgE>6?'var(--danger)':avgE>4?'var(--warn)':'var(--ok)'}">${avgE}/10</div></div>
+    ${cEv.length&&sEv.length?`<div class="act-row"><div class="act-lbl">Bienestar días con evento emocional</div><div class="act-val" style="color:var(--danger)">${Math.round(avgBCE*10)/10}/10</div></div><div class="act-row"><div class="act-lbl">Bienestar días sin evento emocional</div><div class="act-val" style="color:var(--ok)">${Math.round(avgBSE*10)/10}/10</div></div>`:''}
+    ${Object.entries(pC).map(([k,v])=>`<div class="act-row"><div class="act-lbl">Carga mental ${k}</div><div style="display:flex;gap:5px"><span class="stat-pill sp-ok" style="padding:3px 6px;font-size:10px">B:${v.b.length?Math.round(v.b.reduce((a,b)=>a+b,0)/v.b.length*10)/10:'—'}</span><span class="stat-pill sp-warn" style="padding:3px 6px;font-size:10px">F:${v.f.length?Math.round(v.f.reduce((a,b)=>a+b,0)/v.f.length*10)/10:'—'}</span></div></div>`).join('')}
+  `;
+  const s2=cE.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(s2.length>=2){
+    if(chartEst)chartEst.destroy();
+    chartEst=new Chart(document.getElementById('p-chart-estres').getContext('2d'),{type:'line',data:{labels:s2.map(r=>r.fecha.slice(5).replace('-','/')),datasets:[{label:'Estrés',data:s2.map(r=>r.estres),borderColor:'#d4800a',backgroundColor:'rgba(212,128,10,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#d4800a'},{label:'Dolor articular',data:s2.map(r=>r.dolorSup!=null?Math.round(((r.dolorSup||0)+(r.dolorCen||0)+(r.dolorInf||0))/3*10)/10:null),borderColor:'#c0392b',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#c0392b',borderDash:[4,3]},{label:'Bienestar',data:s2.map(r=>r.bienestar),borderColor:'#2e7d5e',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:3,pointBackgroundColor:'#2e7d5e',borderDash:[2,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:'rgba(160,90,40,0.06)'}},y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},min:0,max:10}}}});
+  }
+}
+
 // ── UI HELPERS ──────────────────────────────────────
 function showTab(n,b){
   document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
   document.getElementById('tab-'+n).classList.add('active');b.classList.add('active');
   if(n==='analisis')renderAnalisis();
+  if(n==='profundo')renderProfundo();
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 function cambiarPin(){

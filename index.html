@@ -3,440 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#080e1a">
+<meta name="theme-color" content="#fdf6ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ScleroSense">
 <title>ScleroSense</title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
 <style>
 :root {
-  --bg:       #080e1a;
-  --bg2:      #0d1525;
-  --surface:  #111d33;
-  --surface2: #172440;
-  --surface3: #1e2f52;
-  --accent:   #00c8a0;
-  --accent2:  #00f0c0;
-  --accentd:  #009e80;
-  --blue:     #3a8fff;
-  --danger:   #ff5c5c;
-  --warn:     #ffb347;
-  --ok:       #00c8a0;
-  --text:     #dce8f0;
-  --muted:    #607090;
-  --muted2:   #8090b0;
-  --border:   rgba(0,200,160,0.10);
-  --border2:  rgba(0,200,160,0.18);
-  --radius:   18px;
-  --radiusS:  12px;
-  --font:     'DM Sans', system-ui, sans-serif;
-  --mono:     'DM Mono', monospace;
+  --bg:      #fdf6ee;
+  --bg2:     #f7ede0;
+  --surface: #ffffff;
+  --sf2:     #fef3e8;
+  --sf3:     #fde8d0;
+  --accent:  #c0622a;
+  --accentd: #9e4e20;
+  --teal:    #2a8a7a;
+  --blue:    #3a6fbf;
+  --danger:  #c0392b;
+  --warn:    #d4800a;
+  --ok:      #2e7d5e;
+  --text:    #2c1f14;
+  --muted:   #8c6e56;
+  --muted2:  #6e5040;
+  --brd:     rgba(160,90,40,0.12);
+  --brd2:    rgba(160,90,40,0.22);
+  --r:18px; --rs:12px;
+  --font:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* PIN */
+#pin-screen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:40px 28px;overflow:hidden}
+.pin-glow{position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(192,98,42,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
+.pin-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.pin-logo{width:70px;height:70px;border-radius:22px;background:var(--surface);border:1.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(192,98,42,0.12)}
+.pin-logo svg{width:40px;height:40px}
+.pin-wm{font-size:26px;font-weight:600;letter-spacing:-.5px;color:var(--text)}
+.pin-wm span{color:var(--accent)}
+.pin-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.5}
+.pin-dots{display:flex;gap:14px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted);transition:all .2s}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(192,98,42,0.3)}
+.pin-dot.error{background:var(--danger);border-color:var(--danger);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:270px}
+.pin-btn{height:68px;border-radius:var(--rs);background:var(--surface);border:1px solid var(--brd);color:var(--text);font-size:22px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:var(--font);box-shadow:0 1px 4px rgba(160,90,40,0.08)}
+.pin-btn:active{transform:scale(.93);background:var(--sf2);border-color:var(--brd2)}
+.pin-btn .sub{font-size:8px;color:var(--muted);letter-spacing:1.5px;margin-top:3px;font-family:var(--mono)}
+.pin-btn.del{font-size:16px}
+.pin-btn.empty{background:transparent;border:none;box-shadow:none;cursor:default}
+.pin-err{font-size:12px;color:var(--danger);min-height:16px;font-family:var(--mono)}
 
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  overflow-x: hidden;
-}
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.visible{display:flex}
+.app-hdr{padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg);z-index:10}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:34px;height:34px;border-radius:10px;background:var(--surface);border:1px solid var(--brd2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(160,90,40,0.1)}
+.hdr-icon svg{width:20px;height:20px}
+.hdr-wm{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.hdr-wm span{color:var(--accent)}
+.hdr-date{font-size:11px;color:var(--muted);margin-top:1px;font-family:var(--mono)}
+.lock-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px;transition:all .2s}
+.lock-btn:active{background:var(--sf2)}
+.lock-btn svg{display:block;width:18px;height:18px}
 
-/* ═══ PIN SCREEN ═══ */
-#pin-screen {
-  position: fixed; inset: 0; z-index: 999;
-  background: var(--bg);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 36px; padding: 40px 28px;
-  overflow: hidden;
-}
-
-.pin-bg-glow {
-  position: absolute; width: 320px; height: 320px;
-  border-radius: 50%; background: radial-gradient(circle, rgba(0,200,160,0.07) 0%, transparent 70%);
-  top: 50%; left: 50%; transform: translate(-50%, -60%);
-  pointer-events: none;
-}
-
-.pin-logo-wrap {
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-}
-
-.pin-logo {
-  width: 68px; height: 68px; border-radius: 20px;
-  background: var(--surface);
-  border: 1.5px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-}
-
-.pin-logo svg { width: 38px; height: 38px; }
-
-.pin-wordmark {
-  font-size: 26px; font-weight: 600; letter-spacing: -0.5px;
-  color: var(--text);
-}
-.pin-wordmark span { color: var(--accent); }
-
-.pin-subtitle-txt {
-  font-size: 13px; color: var(--muted2); text-align: center; line-height: 1.5;
-}
-
-.pin-dots {
-  display: flex; gap: 14px;
-}
-.pin-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 1.5px solid var(--muted);
-  transition: all 0.2s;
-}
-.pin-dot.filled { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px rgba(0,200,160,0.4); }
-.pin-dot.error  { background: var(--danger); border-color: var(--danger); animation: shake 0.3s; }
-
-@keyframes shake {
-  0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)}
-}
-
-.pin-pad {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 10px; width: 270px;
-}
-.pin-btn {
-  height: 68px; border-radius: var(--radiusS);
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--text); font-size: 22px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s; user-select: none;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; font-family: var(--font);
-}
-.pin-btn:active { transform: scale(0.93); background: var(--surface2); border-color: var(--border2); }
-.pin-btn .sub { font-size: 8px; color: var(--muted); letter-spacing: 1.5px; margin-top: 3px; font-family: var(--mono); }
-.pin-btn.del { font-size: 16px; }
-.pin-btn.empty { background: transparent; border: none; cursor: default; }
-.pin-error { font-size: 12px; color: var(--danger); min-height: 16px; font-family: var(--mono); letter-spacing: 0.3px; }
-
-/* ═══ APP SHELL ═══ */
-#app { display: none; flex-direction: column; min-height: 100vh; }
-#app.visible { display: flex; }
-
-/* Header */
-.app-header {
-  padding: 14px 20px 12px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--bg); z-index: 10;
-}
-
-.header-brand {
-  display: flex; align-items: center; gap: 10px;
-}
-.header-icon {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-}
-.header-icon svg { width: 20px; height: 20px; }
-.header-wordmark { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
-.header-wordmark span { color: var(--accent); }
-.header-date { font-size: 11px; color: var(--muted); margin-top: 1px; font-family: var(--mono); }
-
-.lock-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 6px; border-radius: 8px; transition: all 0.2s; }
-.lock-btn:active { background: var(--surface); }
-.lock-btn svg { display: block; width: 18px; height: 18px; }
-
-/* Tabs */
-.tabs {
-  display: flex; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 57px; z-index: 9;
-}
-.tab-btn {
-  flex: 1; padding: 13px 6px;
-  font-size: 11.5px; font-weight: 500; letter-spacing: 0.3px;
-  background: none; border: none; color: var(--muted);
-  cursor: pointer; transition: all 0.2s;
-  border-bottom: 2px solid transparent;
-  display: flex; align-items: center; justify-content: center; gap: 5px;
-  font-family: var(--font); text-transform: uppercase;
-}
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-icon { font-size: 14px; }
-
-.tab-content { display: none; padding: 18px 14px; flex-direction: column; gap: 14px; }
-.tab-content.active { display: flex; }
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);position:sticky;top:57px;z-index:9}
+.tab-btn{flex:1;padding:13px 6px;font-size:11.5px;font-weight:500;letter-spacing:.3px;background:none;border:none;color:var(--muted);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font);text-transform:uppercase}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:18px 14px;flex-direction:column;gap:14px}
+.tab-content.active{display:flex}
+.tab-content:last-child{padding-bottom:36px}
 
 /* Cards */
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
-}
-.card-title {
-  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
-  display: flex; align-items: center; gap: 7px; font-family: var(--mono);
-}
-.card-title-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0;
-}
+.card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px;box-shadow:0 2px 12px rgba(160,90,40,0.07)}
+.ct{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:7px;font-family:var(--mono)}
+.ctd{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
 
-/* Turno toggle */
-.turno-toggle {
-  display: flex; gap: 8px; margin-bottom: 16px;
-  background: var(--bg2); padding: 4px; border-radius: var(--radiusS);
-  border: 1px solid var(--border);
-}
-.turno-btn {
-  flex: 1; padding: 9px; border-radius: 9px;
-  border: none; background: transparent;
-  color: var(--muted); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; justify-content: center; gap: 5px;
-  font-family: var(--font);
-}
-.turno-btn.active {
-  background: var(--surface2); color: var(--accent);
-  box-shadow: 0 0 0 1px var(--border2);
-}
+/* Turno */
+.turno-tgl{display:flex;gap:8px;margin-bottom:16px;background:var(--bg2);padding:4px;border-radius:var(--rs);border:1px solid var(--brd)}
+.turno-btn{flex:1;padding:9px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font)}
+.turno-btn.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(160,90,40,0.15)}
 
 /* Inputs */
-.inputs-row {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px; margin-bottom: 14px;
-}
-.input-group { display: flex; flex-direction: column; gap: 6px; }
-.input-label {
-  font-size: 10px; color: var(--muted); font-weight: 500;
-  letter-spacing: 0.8px; text-transform: uppercase; font-family: var(--mono);
-}
+.inp-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.inp-grp{display:flex;flex-direction:column;gap:6px}
+.inp-lbl{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.8px;text-transform:uppercase;font-family:var(--mono)}
+.inp-fld{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:11px 8px;color:var(--text);font-size:24px;font-weight:500;text-align:center;width:100%;outline:none;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;font-family:var(--mono)}
+.inp-fld::-webkit-inner-spin-button,.inp-fld::-webkit-outer-spin-button{-webkit-appearance:none}
+.inp-fld:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(192,98,42,0.1)}
+.inp-unit{font-size:10px;color:var(--muted);text-align:center;font-family:var(--mono)}
 
-.input-field {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radiusS); padding: 11px 8px;
-  color: var(--text); font-size: 24px; font-weight: 500;
-  text-align: center; width: 100%;
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  -moz-appearance: textfield; font-family: var(--mono);
-}
-.input-field::-webkit-inner-spin-button,
-.input-field::-webkit-outer-spin-button { -webkit-appearance: none; }
-.input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,200,160,0.12); }
-.input-unit { font-size: 10px; color: var(--muted); text-align: center; font-family: var(--mono); }
+/* Badges */
+.est-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:30px;font-size:12.5px;font-weight:500;margin-bottom:14px;font-family:var(--mono)}
+.est-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.est-normal {background:rgba(46,125,94,.1); color:var(--ok);    border:1px solid rgba(46,125,94,.25)}
+.est-elevada{background:rgba(212,128,10,.1);color:var(--warn);  border:1px solid rgba(212,128,10,.25)}
+.est-alta   {background:rgba(192,57,43,.1); color:var(--danger);border:1px solid rgba(192,57,43,.25)}
+.est-baja   {background:rgba(58,111,191,.1);color:var(--blue);  border:1px solid rgba(58,111,191,.25)}
+.est-crisis {background:rgba(192,57,43,.18);color:#a02020;      border:1px solid rgba(192,57,43,.35)}
 
-/* Estado badge */
-.estado-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 7px 14px; border-radius: 30px;
-  font-size: 12.5px; font-weight: 500;
-  margin-bottom: 14px; font-family: var(--mono);
-}
-.estado-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.estado-normal  { background: rgba(0,200,160,0.12);  color: var(--ok);     border: 1px solid rgba(0,200,160,0.25); }
-.estado-elevada { background: rgba(255,179,71,0.12);  color: var(--warn);   border: 1px solid rgba(255,179,71,0.25); }
-.estado-alta    { background: rgba(255,92,92,0.12);   color: var(--danger); border: 1px solid rgba(255,92,92,0.25); }
-.estado-baja    { background: rgba(58,143,255,0.12);  color: var(--blue);   border: 1px solid rgba(58,143,255,0.25); }
-.estado-crisis  { background: rgba(255,50,50,0.18);   color: #ff3030;       border: 1px solid rgba(255,50,50,0.35); }
+.notas-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-size:13px;width:100%;outline:none;transition:border-color .2s;font-family:var(--font);margin-bottom:14px}
+.notas-inp:focus{border-color:var(--accent)}
 
-/* Notas input */
-.notas-input {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radiusS); padding: 10px 12px;
-  color: var(--text); font-size: 13px;
-  width: 100%; outline: none; transition: border-color 0.2s;
-  font-family: var(--font); margin-bottom: 14px;
-}
-.notas-input:focus { border-color: var(--accent); }
-
-/* Botón guardar */
-.btn-guardar {
-  width: 100%; padding: 15px; border-radius: var(--radiusS);
-  background: var(--accent); border: none; color: #000;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  transition: all 0.2s; display: flex; align-items: center;
-  justify-content: center; gap: 8px; font-family: var(--font);
-  letter-spacing: 0.2px;
-}
-.btn-guardar:active { transform: scale(0.97); background: var(--accentd); }
-.btn-guardar:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
+.btn-save{width:100%;padding:15px;border-radius:var(--rs);background:var(--accent);border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font);box-shadow:0 3px 12px rgba(192,98,42,0.3)}
+.btn-save:active{transform:scale(.97);background:var(--accentd)}
+.btn-save:disabled{background:var(--sf3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
 
 /* Historial */
-.registro-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 0; border-bottom: 1px solid var(--border);
-}
-.registro-item:last-child { border-bottom: none; }
-.reg-fecha { font-size: 13px; color: var(--text); font-weight: 500; }
-.reg-turno { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.reg-vals { font-size: 20px; font-weight: 600; text-align: right; font-family: var(--mono); }
-.reg-pulso { font-size: 11px; color: var(--muted); text-align: right; font-family: var(--mono); }
-.reg-est { font-size: 10px; text-align: right; margin-top: 2px; font-family: var(--mono); }
+.reg-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--brd)}
+.reg-item:last-child{border-bottom:none}
+.reg-fecha{font-size:13px;color:var(--text);font-weight:500}
+.reg-turno{font-size:11px;color:var(--muted);margin-top:2px}
+.reg-vals{font-size:20px;font-weight:600;text-align:right;font-family:var(--mono)}
+.reg-pulso{font-size:11px;color:var(--muted);text-align:right;font-family:var(--mono)}
+.reg-est{font-size:10px;text-align:right;margin-top:2px;font-family:var(--mono)}
 
-/* ═══ MÉTRICAS ═══ */
-.metricas-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.metrica-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radiusS); padding: 14px 12px;
-}
-.metrica-num {
-  font-size: 26px; font-weight: 600; margin-bottom: 3px;
-  font-family: var(--mono); line-height: 1;
-}
-.metrica-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
-.metrica-sub { font-size: 11px; margin-top: 5px; font-family: var(--mono); }
+/* Resumen grid */
+.met-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.met-card{background:var(--sf2);border:1px solid var(--brd);border-radius:var(--rs);padding:14px 12px}
+.met-num{font-size:26px;font-weight:600;margin-bottom:3px;font-family:var(--mono);line-height:1;color:var(--text)}
+.met-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.met-sub{font-size:11px;margin-top:5px;font-family:var(--mono)}
 
-.chart-container { position: relative; width: 100%; }
+/* Distribución */
+.dist-bar{display:flex;border-radius:6px;overflow:hidden;height:24px;margin:10px 0 12px}
+.dist-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;transition:width .6s ease;min-width:0;overflow:hidden;font-family:var(--mono)}
+.leg-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted2)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.est-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--brd)}
+.est-row:last-child{border-bottom:none}
+.est-lbl{font-size:12.5px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.est-cnt{font-size:15px;font-weight:600;font-family:var(--mono);color:var(--text)}
+.est-pct{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
-.distribucion-bar {
-  display: flex; border-radius: 6px; overflow: hidden;
-  height: 24px; margin: 10px 0 12px;
-}
-.dist-seg {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 600; transition: width 0.6s ease;
-  min-width: 0; overflow: hidden; font-family: var(--mono);
-}
+/* Métricas clínicas avanzadas */
+.clin-card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--rs);padding:14px;margin-bottom:8px}
+.clin-card:last-child{margin-bottom:0}
+.clin-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px}
+.clin-name{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;flex:1}
+.clin-val{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--text);white-space:nowrap}
+.clin-desc{font-size:11.5px;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.clin-tag{font-size:11px;padding:4px 10px;border-radius:20px;font-family:var(--mono);display:inline-flex;align-items:center;gap:5px}
+.c-ok    {background:rgba(46,125,94,.1); color:var(--ok);    border:1px solid rgba(46,125,94,.2)}
+.c-warn  {background:rgba(212,128,10,.1);color:var(--warn);  border:1px solid rgba(212,128,10,.2)}
+.c-danger{background:rgba(192,57,43,.1); color:var(--danger);border:1px solid rgba(192,57,43,.2)}
+.c-info  {background:rgba(58,111,191,.1);color:var(--blue);  border:1px solid rgba(58,111,191,.2)}
+.c-na    {background:rgba(140,110,86,.08);color:var(--muted);border:1px solid var(--brd)}
+.clin-bar-wrap{height:5px;background:var(--bg2);border-radius:3px;margin-top:8px;overflow:hidden}
+.clin-bar{height:5px;border-radius:3px;transition:width .8s ease}
 
-.legend-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;
-}
-.legend-item {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: var(--muted2);
-}
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* Insights */
+.ins-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--brd)}
+.ins-item:last-child{border-bottom:none}
+.ins-icon{width:32px;height:32px;border-radius:9px;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ins-text{font-size:13px;line-height:1.55;color:var(--muted2)}
+.ins-text strong{color:var(--text);font-weight:600}
 
-.estado-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 0; border-bottom: 1px solid var(--border);
-}
-.estado-row:last-child { border-bottom: none; }
-.estado-label { font-size: 12.5px; display: flex; align-items: center; gap: 8px; }
-.estado-count { font-size: 15px; font-weight: 600; font-family: var(--mono); }
-.estado-pct { font-size: 11px; color: var(--muted); font-family: var(--mono); }
-
-.insight-item {
-  display: flex; gap: 12px; padding: 11px 0;
-  border-bottom: 1px solid var(--border);
-}
-.insight-item:last-child { border-bottom: none; }
-.insight-icon {
-  width: 32px; height: 32px; border-radius: 9px; background: var(--surface2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.insight-text { font-size: 13px; line-height: 1.55; color: var(--muted2); }
-.insight-text strong { color: var(--text); font-weight: 600; }
-
-/* ═══ CONFIG ═══ */
-.config-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-.config-field label { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; font-family: var(--mono); }
-.config-input {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radiusS); padding: 10px 12px;
-  color: var(--text); font-size: 13px; outline: none;
-  transition: border-color 0.2s; font-family: var(--font);
-}
-.config-input:focus { border-color: var(--accent); }
-
-.btn-config {
-  width: 100%; padding: 13px; border-radius: var(--radiusS);
-  border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); font-size: 13px; font-weight: 500;
-  cursor: pointer; margin-bottom: 8px; transition: all 0.2s;
-  font-family: var(--font);
-}
-.btn-config:active { transform: scale(0.97); }
-.btn-danger { border-color: rgba(255,92,92,0.25); color: var(--danger); }
-
-.firebase-status {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12px; padding: 10px 12px;
-  border-radius: var(--radiusS); background: var(--bg2);
-  border: 1px solid var(--border); margin-bottom: 14px;
-  font-family: var(--mono);
-}
-.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.status-ok .status-dot       { background: var(--ok); box-shadow: 0 0 8px rgba(0,200,160,0.5); }
-.status-err .status-dot      { background: var(--danger); }
-.status-connecting .status-dot { background: var(--warn); animation: pulse 1.2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* Config */
+.cfg-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.cfg-fld label{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.5px;text-transform:uppercase;font-family:var(--mono)}
+.cfg-inp{background:var(--bg);border:1.5px solid var(--brd);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--font)}
+.cfg-inp:focus{border-color:var(--accent)}
+.btn-cfg{width:100%;padding:13px;border-radius:var(--rs);border:1px solid var(--brd);background:var(--sf2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:8px;transition:all .2s;font-family:var(--font)}
+.btn-cfg:active{transform:scale(.97)}
+.btn-danger{border-color:rgba(192,57,43,.25);color:var(--danger)}
+.fb-status{display:flex;align-items:center;gap:8px;font-size:12px;padding:10px 12px;border-radius:var(--rs);background:var(--bg2);border:1px solid var(--brd);margin-bottom:14px;font-family:var(--mono)}
+.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.s-ok .st-dot{background:var(--ok);box-shadow:0 0 6px rgba(46,125,94,.5)}
+.s-err .st-dot{background:var(--danger)}
+.s-conn .st-dot{background:var(--warn);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* Misc */
-.spinner {
-  border: 2px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; width: 20px; height: 20px;
-  animation: spin 0.7s linear infinite; display: inline-block;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.empty-state { text-align: center; padding: 36px 20px; color: var(--muted); }
-.empty-icon { font-size: 36px; margin-bottom: 10px; }
-.empty-text { font-size: 13px; line-height: 1.6; }
-
-.toast {
-  position: fixed; bottom: 28px; left: 50%;
-  transform: translateX(-50%) translateY(90px);
-  background: var(--surface2); border: 1px solid var(--border2);
-  padding: 11px 20px; border-radius: 30px;
-  font-size: 13.5px; font-weight: 500;
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-  z-index: 9999; white-space: nowrap;
-  display: flex; align-items: center; gap: 7px;
-  font-family: var(--font);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* Section divider */
-.sec-divider {
-  font-size: 10px; font-weight: 600; color: var(--muted);
-  letter-spacing: 1px; text-transform: uppercase;
-  padding: 4px 0 2px; font-family: var(--mono);
-}
-
-/* Pulse chart label override */
-.tab-content:last-child { padding-bottom: 36px; }
+.spinner{border:2px solid var(--brd);border-top-color:var(--accent);border-radius:50%;width:20px;height:20px;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-st{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty-ic{font-size:36px;margin-bottom:10px}
+.empty-tx{font-size:13px;line-height:1.6}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:30px;font-size:13.5px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;display:flex;align-items:center;gap:7px;font-family:var(--font)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.chart-cont{position:relative;width:100%}
 </style>
 </head>
 <body>
 
-<!-- ══════════════ PIN SCREEN ══════════════ -->
+<!-- PIN -->
 <div id="pin-screen">
-  <div class="pin-bg-glow"></div>
-
+  <div class="pin-glow"></div>
   <div class="pin-logo-wrap">
     <div class="pin-logo">
-      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19 6C19 6 8 12.5 8 21C8 26.5 13 31 19 31C25 31 30 26.5 30 21C30 12.5 19 6Z" stroke="#00c8a0" stroke-width="1.8" fill="none"/>
-        <path d="M12 21 L16 17 L19 22 L22 15 L26 21" stroke="#00c8a0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <svg viewBox="0 0 40 40" fill="none">
+        <path d="M20 7C20 7 9 13.5 9 22C9 27.5 14 32 20 32C26 32 31 27.5 31 22C31 13.5 20 7Z" stroke="#c0622a" stroke-width="1.8" fill="rgba(192,98,42,0.07)"/>
+        <path d="M13 22 L17 18 L20 23 L23 15 L27 22" stroke="#c0622a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
       </svg>
     </div>
-    <div class="pin-wordmark">Sclero<span>Sense</span></div>
-    <div class="pin-subtitle-txt" id="pin-subtitle">Introduce tu PIN de acceso</div>
+    <div class="pin-wm">Sclero<span>Sense</span></div>
+    <div class="pin-sub" id="pin-subtitle">Introduce tu PIN de acceso</div>
   </div>
-
   <div class="pin-dots" id="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
-  <div class="pin-error" id="pin-error"></div>
-
-  <div class="pin-pad" id="pin-pad">
+  <div class="pin-err" id="pin-error"></div>
+  <div class="pin-pad">
     <button class="pin-btn" onclick="pinKey('1')">1</button>
     <button class="pin-btn" onclick="pinKey('2')">2<span class="sub">ABC</span></button>
     <button class="pin-btn" onclick="pinKey('3')">3<span class="sub">DEF</span></button>
@@ -452,24 +230,23 @@ body {
   </div>
 </div>
 
-<!-- ══════════════ APP ══════════════ -->
+<!-- APP -->
 <div id="app">
-
-  <header class="app-header">
-    <div class="header-brand">
-      <div class="header-icon">
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 3C10 3 4 6.5 4 11C4 13.8 6.7 16 10 16C13.3 16 16 13.8 16 11C16 6.5 10 3Z" stroke="#00c8a0" stroke-width="1.5" fill="none"/>
-          <path d="M6 11 L8 9 L10 12 L12 7 L14 11" stroke="#00c8a0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <header class="app-hdr">
+    <div class="hdr-brand">
+      <div class="hdr-icon">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M10 3C10 3 4 6.5 4 11C4 13.8 6.7 16 10 16C13.3 16 16 13.8 16 11C16 6.5 10 3Z" stroke="#c0622a" stroke-width="1.5" fill="rgba(192,98,42,0.08)"/>
+          <path d="M6 11 L8 9 L10 12 L12 7 L14 11" stroke="#c0622a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </div>
       <div>
-        <div class="header-wordmark">Sclero<span>Sense</span></div>
-        <div class="header-date" id="header-date"></div>
+        <div class="hdr-wm">Sclero<span>Sense</span></div>
+        <div class="hdr-date" id="header-date"></div>
       </div>
     </div>
-    <button class="lock-btn" onclick="lockApp()" title="Bloquear">
-      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <button class="lock-btn" onclick="lockApp()">
+      <svg viewBox="0 0 18 18" fill="none">
         <rect x="3" y="8" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
         <path d="M6 8V5.5C6 3.6 12 3.6 12 5.5V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         <circle cx="9" cy="12.5" r="1.2" fill="currentColor"/>
@@ -478,675 +255,492 @@ body {
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" onclick="showTab('registro', this)">
-      <span class="tab-icon">📝</span> Registro
-    </button>
-    <button class="tab-btn" onclick="showTab('metricas', this)">
-      <span class="tab-icon">📊</span> Métricas
-    </button>
-    <button class="tab-btn" onclick="showTab('config', this)">
-      <span class="tab-icon">⚙️</span> Config
-    </button>
+    <button class="tab-btn active" onclick="showTab('registro',this)">📝 Registro</button>
+    <button class="tab-btn" onclick="showTab('metricas',this)">📊 Métricas</button>
+    <button class="tab-btn" onclick="showTab('config',this)">⚙️ Config</button>
   </nav>
 
-  <!-- ══ TAB: REGISTRO ══ -->
+  <!-- REGISTRO -->
   <div class="tab-content active" id="tab-registro">
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Turno</div>
-      <div class="turno-toggle">
+      <div class="ct"><span class="ctd"></span> Turno</div>
+      <div class="turno-tgl">
         <button class="turno-btn active" id="btn-manana" onclick="setTurno('manana')">🌅 Mañana</button>
         <button class="turno-btn" id="btn-noche" onclick="setTurno('noche')">🌙 Noche</button>
       </div>
-
-      <div class="inputs-row">
-        <div class="input-group">
-          <div class="input-label">Sistólica</div>
-          <input class="input-field" type="number" id="sistolica" placeholder="120" min="50" max="250" inputmode="numeric" oninput="actualizarEstado()">
-          <div class="input-unit">mmHg</div>
+      <div class="inp-row">
+        <div class="inp-grp">
+          <div class="inp-lbl">Sistólica</div>
+          <input class="inp-fld" type="number" id="sistolica" placeholder="120" min="50" max="250" inputmode="numeric" oninput="actualizarEstado()">
+          <div class="inp-unit">mmHg</div>
         </div>
-        <div class="input-group">
-          <div class="input-label">Diastólica</div>
-          <input class="input-field" type="number" id="diastolica" placeholder="80" min="30" max="150" inputmode="numeric" oninput="actualizarEstado()">
-          <div class="input-unit">mmHg</div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Diastólica</div>
+          <input class="inp-fld" type="number" id="diastolica" placeholder="80" min="30" max="150" inputmode="numeric" oninput="actualizarEstado()">
+          <div class="inp-unit">mmHg</div>
         </div>
-        <div class="input-group">
-          <div class="input-label">Pulso</div>
-          <input class="input-field" type="number" id="pulso" placeholder="70" min="30" max="200" inputmode="numeric">
-          <div class="input-unit">ppm</div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Pulso</div>
+          <input class="inp-fld" type="number" id="pulso" placeholder="70" min="30" max="200" inputmode="numeric">
+          <div class="inp-unit">ppm</div>
         </div>
       </div>
-
       <div id="estado-badge"></div>
-
-      <input class="notas-input" type="text" id="notas" placeholder="Notas: estrés, medicación, ejercicio...">
-
-      <button class="btn-guardar" id="btn-guardar" onclick="guardarRegistro()">
-        Guardar medición
-      </button>
+      <input class="notas-inp" type="text" id="notas" placeholder="Notas: estrés, medicación, ejercicio...">
+      <button class="btn-save" id="btn-guardar" onclick="guardarRegistro()">Guardar medición</button>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Últimas mediciones</div>
-      <div id="historial-lista">
-        <div style="display:flex;justify-content:center;padding:24px">
-          <div class="spinner"></div>
-        </div>
-      </div>
+      <div class="ct"><span class="ctd"></span> Últimas mediciones</div>
+      <div id="historial-lista"><div style="display:flex;justify-content:center;padding:24px"><div class="spinner"></div></div></div>
     </div>
   </div>
 
-  <!-- ══ TAB: MÉTRICAS ══ -->
+  <!-- MÉTRICAS -->
   <div class="tab-content" id="tab-metricas">
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Evolución — últimos 14 días</div>
-      <div class="chart-container" style="height:220px">
-        <canvas id="chartEvolucion"></canvas>
-      </div>
+      <div class="ct"><span class="ctd"></span> Evolución — últimos 14 días</div>
+      <div class="chart-cont" style="height:220px"><canvas id="chartEv"></canvas></div>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Resumen global</div>
-      <div class="metricas-grid" id="resumen-grid">
-        <div style="grid-column:1/-1;display:flex;justify-content:center;padding:20px">
-          <div class="spinner"></div>
-        </div>
-      </div>
+      <div class="ct"><span class="ctd"></span> Resumen global</div>
+      <div class="met-grid" id="resumen-grid"><div style="grid-column:1/-1;display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Distribución por categoría</div>
-      <div class="distribucion-bar" id="dist-bar"></div>
-      <div class="legend-grid" id="dist-legend"></div>
+      <div class="ct"><span class="ctd"></span> Distribución por categoría</div>
+      <div class="dist-bar" id="dist-bar"></div>
+      <div class="leg-grid" id="dist-legend"></div>
       <div id="dist-detalle"></div>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Insights clínicos</div>
+      <div class="ct"><span class="ctd"></span> Métricas clínicas avanzadas</div>
+      <div id="metricas-clinicas"><div style="display:flex;justify-content:center;padding:20px"><div class="spinner"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="ctd"></span> Insights clínicos</div>
       <div id="insights-lista"></div>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Historial de pulso</div>
-      <div class="chart-container" style="height:160px">
-        <canvas id="chartPulso"></canvas>
-      </div>
+      <div class="ct"><span class="ctd"></span> Historial de pulso</div>
+      <div class="chart-cont" style="height:160px"><canvas id="chartPulso"></canvas></div>
     </div>
-
   </div>
 
-  <!-- ══ TAB: CONFIG ══ -->
+  <!-- CONFIG -->
   <div class="tab-content" id="tab-config">
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Firebase</div>
-      <div class="firebase-status status-connecting" id="fb-status">
-        <div class="status-dot"></div>
-        <span id="fb-status-text">Sin configurar</span>
-      </div>
-      <div class="config-field">
-        <label>API Key</label>
-        <input class="config-input" type="text" id="cfg-apiKey" placeholder="AIzaSy...">
-      </div>
-      <div class="config-field">
-        <label>Auth Domain</label>
-        <input class="config-input" type="text" id="cfg-authDomain" placeholder="sclerosense.firebaseapp.com">
-      </div>
-      <div class="config-field">
-        <label>Project ID</label>
-        <input class="config-input" type="text" id="cfg-projectId" placeholder="sclerosense-xxxxx">
-      </div>
-      <button class="btn-config" onclick="guardarFirebase()">💾 Guardar y conectar</button>
+      <div class="ct"><span class="ctd"></span> Firebase</div>
+      <div class="fb-status s-conn" id="fb-status"><div class="st-dot"></div><span id="fb-status-text">Sin configurar</span></div>
+      <div class="cfg-fld"><label>API Key</label><input class="cfg-inp" type="text" id="cfg-apiKey" placeholder="AIzaSy..."></div>
+      <div class="cfg-fld"><label>Auth Domain</label><input class="cfg-inp" type="text" id="cfg-authDomain" placeholder="sclerosense.firebaseapp.com"></div>
+      <div class="cfg-fld"><label>Project ID</label><input class="cfg-inp" type="text" id="cfg-projectId" placeholder="sclerosense-xxxxx"></div>
+      <button class="btn-cfg" onclick="guardarFirebase()">💾 Guardar y conectar</button>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> PIN de acceso</div>
-      <div class="config-field">
-        <label>PIN actual</label>
-        <input class="config-input" type="password" id="cfg-pin-actual" placeholder="••••" maxlength="4" inputmode="numeric">
-      </div>
-      <div class="config-field">
-        <label>Nuevo PIN</label>
-        <input class="config-input" type="password" id="cfg-pin-nuevo" placeholder="••••" maxlength="4" inputmode="numeric">
-      </div>
-      <div class="config-field">
-        <label>Repetir nuevo PIN</label>
-        <input class="config-input" type="password" id="cfg-pin-rep" placeholder="••••" maxlength="4" inputmode="numeric">
-      </div>
-      <button class="btn-config" onclick="cambiarPin()">🔑 Cambiar PIN</button>
+      <div class="ct"><span class="ctd"></span> PIN de acceso</div>
+      <div class="cfg-fld"><label>PIN actual</label><input class="cfg-inp" type="password" id="cfg-pin-actual" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+      <div class="cfg-fld"><label>Nuevo PIN</label><input class="cfg-inp" type="password" id="cfg-pin-nuevo" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+      <div class="cfg-fld"><label>Repetir nuevo PIN</label><input class="cfg-inp" type="password" id="cfg-pin-rep" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+      <button class="btn-cfg" onclick="cambiarPin()">🔑 Cambiar PIN</button>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Datos locales</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-        Los datos en Firebase no se ven afectados. Solo se elimina la caché local del dispositivo.
-      </div>
-      <button class="btn-config btn-danger" onclick="borrarDatosLocales()">🗑️ Limpiar caché local</button>
+      <div class="ct"><span class="ctd"></span> Datos locales</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">Los datos en Firebase no se eliminan. Solo se borra la caché local del dispositivo.</div>
+      <button class="btn-cfg btn-danger" onclick="borrarLocal()">🗑️ Limpiar caché local</button>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span> Acerca de</div>
+      <div class="ct"><span class="ctd"></span> Acerca de</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.8">
         <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px">ScleroSense</div>
-        <div>Monitor de tensión arterial · v1.0</div>
+        <div>Monitor de tensión arterial · v3.0</div>
         <div>Clasificación según guías ESC / ACC 2023</div>
-        <div style="margin-top:10px;font-size:11px;color:var(--muted)">Esta app no sustituye el criterio médico.</div>
+        <div style="margin-top:10px;font-size:11px">Esta app no sustituye el criterio médico profesional.</div>
       </div>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-
 <script>
-// ══════════════════════════════════════
-//  ESTADO
-// ══════════════════════════════════════
-const DEFAULT_PIN = '1234';
-let db = null;
-let registros = [];
-let turnoActual = 'manana';
-let pinInput = '';
-let settingPin = false;
-let chartEvol = null;
-let chartPulso = null;
+const DPIN='1234';
+let db=null,registros=[],turno='manana',pinIn='',setPinMode=false,cEv=null,cPul=null;
 
-// ══════════════════════════════════════
-//  STORAGE
-// ══════════════════════════════════════
-function leerConfig(k, def = '') {
-  try { return localStorage.getItem(k) || def; } catch(e) { return def; }
-}
-function guardarConfig(k, v) {
-  try { localStorage.setItem(k, v); } catch(e) {}
-}
+function leer(k,d=''){try{return localStorage.getItem(k)||d;}catch(e){return d;}}
+function guar(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 
-// ══════════════════════════════════════
-//  PIN
-// ══════════════════════════════════════
-function initPin() {
-  const firstTime = leerConfig('scls_pin') === '';
-  if (firstTime) {
-    document.getElementById('pin-subtitle').textContent = 'Crea un PIN de 4 dígitos para proteger tus datos';
-    settingPin = true;
-  } else {
-    document.getElementById('pin-subtitle').textContent = 'Introduce tu PIN de acceso';
-  }
-  const h = new Date().getHours();
-  turnoActual = (h >= 12 && h < 22) ? 'noche' : 'manana';
+// ── PIN ──────────────────────────────
+function initPin(){
+  if(leer('scls_pin')===''){document.getElementById('pin-subtitle').textContent='Crea un PIN de 4 dígitos';setPinMode=true;}
+  turno=(new Date().getHours()>=12&&new Date().getHours()<22)?'noche':'manana';
 }
-
-function pinKey(n) {
-  if (pinInput.length >= 4) return;
-  pinInput += n;
-  updatePinDots();
-  if (pinInput.length === 4) setTimeout(checkPin, 160);
-}
-function pinDel() {
-  pinInput = pinInput.slice(0, -1);
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-}
-function updatePinDots(error = false) {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById('d' + i);
-    d.className = 'pin-dot';
-    if (i < pinInput.length) d.classList.add(error ? 'error' : 'filled');
-  }
-}
-function checkPin() {
-  if (settingPin) {
-    if (!window._pinConf) {
-      window._pinConf = pinInput; pinInput = '';
-      updatePinDots();
-      document.getElementById('pin-subtitle').textContent = 'Repite el PIN para confirmar';
-      return;
-    }
-    if (pinInput === window._pinConf) {
-      guardarConfig('scls_pin', pinInput);
-      openApp();
-    } else {
-      pinError('Los PINs no coinciden');
-      window._pinConf = null;
-      document.getElementById('pin-subtitle').textContent = 'Crea un PIN de 4 dígitos';
-    }
+function pinKey(n){if(pinIn.length>=4)return;pinIn+=n;upDots();if(pinIn.length===4)setTimeout(chkPin,160);}
+function pinDel(){pinIn=pinIn.slice(0,-1);upDots();document.getElementById('pin-error').textContent='';}
+function upDots(err=false){for(let i=0;i<4;i++){const d=document.getElementById('d'+i);d.className='pin-dot';if(i<pinIn.length)d.classList.add(err?'error':'filled');}}
+function chkPin(){
+  if(setPinMode){
+    if(!window._pc){window._pc=pinIn;pinIn='';upDots();document.getElementById('pin-subtitle').textContent='Repite el PIN para confirmar';return;}
+    if(pinIn===window._pc){guar('scls_pin',pinIn);openApp();}
+    else{pinErr('Los PINs no coinciden');window._pc=null;document.getElementById('pin-subtitle').textContent='Crea un PIN de 4 dígitos';}
     return;
   }
-  const saved = leerConfig('scls_pin', DEFAULT_PIN);
-  if (pinInput === saved) { openApp(); }
-  else { pinError('PIN incorrecto'); }
+  if(pinIn===leer('scls_pin',DPIN))openApp();else pinErr('PIN incorrecto');
 }
-function pinError(msg) {
-  updatePinDots(true);
-  document.getElementById('pin-error').textContent = msg;
-  setTimeout(() => { pinInput = ''; updatePinDots(); }, 750);
-}
-
-function openApp() {
-  document.getElementById('pin-screen').style.display = 'none';
+function pinErr(m){upDots(true);document.getElementById('pin-error').textContent=m;setTimeout(()=>{pinIn='';upDots();},750);}
+function openApp(){
+  document.getElementById('pin-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
-  document.getElementById('header-date').textContent =
-    new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
-  setTurno(turnoActual);
-  initFirebase();
+  document.getElementById('header-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  setTurno(turno);initFB();
 }
-
-function lockApp() {
-  document.getElementById('pin-screen').style.display = 'flex';
+function lockApp(){
+  document.getElementById('pin-screen').style.display='flex';
   document.getElementById('app').classList.remove('visible');
-  pinInput = ''; settingPin = false;
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  document.getElementById('pin-subtitle').textContent = 'Introduce tu PIN de acceso';
-  window._pinConf = null;
+  pinIn='';setPinMode=false;upDots();
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('pin-subtitle').textContent='Introduce tu PIN de acceso';
+  window._pc=null;
 }
 
-// ══════════════════════════════════════
-//  FIREBASE
-// ══════════════════════════════════════
-function initFirebase() {
-  const cfg = {
-    apiKey:    leerConfig('scls_fb_apiKey'),
-    authDomain:leerConfig('scls_fb_authDomain'),
-    projectId: leerConfig('scls_fb_projectId')
-  };
-  document.getElementById('cfg-apiKey').value    = cfg.apiKey;
-  document.getElementById('cfg-authDomain').value = cfg.authDomain;
-  document.getElementById('cfg-projectId').value  = cfg.projectId;
-
-  if (!cfg.apiKey || !cfg.projectId) {
-    setFbStatus('err', 'Sin configurar — ve a Config');
-    cargarDatosLocales(); return;
-  }
-  try {
-    const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(cfg);
-    db = firebase.firestore(app);
-    setFbStatus('connecting', 'Conectando...');
+// ── FIREBASE ─────────────────────────
+function initFB(){
+  const cfg={apiKey:leer('scls_fb_apiKey'),authDomain:leer('scls_fb_authDomain'),projectId:leer('scls_fb_projectId')};
+  document.getElementById('cfg-apiKey').value=cfg.apiKey;
+  document.getElementById('cfg-authDomain').value=cfg.authDomain;
+  document.getElementById('cfg-projectId').value=cfg.projectId;
+  if(!cfg.apiKey||!cfg.projectId){setFbSt('s-err','Sin configurar — ve a Config');loadLocal();return;}
+  try{
+    const app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
+    db=firebase.firestore(app);setFbSt('s-conn','Conectando...');
     db.collection('tensiones').limit(1).get()
-      .then(() => { setFbStatus('ok', 'Conectado a Firebase ✓'); cargarRegistros(); })
-      .catch(e => { setFbStatus('err', 'Error: ' + e.message); cargarDatosLocales(); });
-  } catch(e) {
-    setFbStatus('err', 'Error: ' + e.message); cargarDatosLocales();
-  }
+      .then(()=>{setFbSt('s-ok','Conectado a Firebase ✓');loadReg();})
+      .catch(e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
+  }catch(e){setFbSt('s-err','Error: '+e.message);loadLocal();}
 }
-function setFbStatus(type, msg) {
-  document.getElementById('fb-status').className = 'firebase-status status-' + type;
-  document.getElementById('fb-status-text').textContent = msg;
-}
-function guardarFirebase() {
-  const apiKey    = document.getElementById('cfg-apiKey').value.trim();
-  const authDomain= document.getElementById('cfg-authDomain').value.trim();
-  const projectId = document.getElementById('cfg-projectId').value.trim();
-  if (!apiKey || !projectId) { showToast('⚠️ Rellena API Key y Project ID'); return; }
-  guardarConfig('scls_fb_apiKey', apiKey);
-  guardarConfig('scls_fb_authDomain', authDomain || projectId + '.firebaseapp.com');
-  guardarConfig('scls_fb_projectId', projectId);
-  try { firebase.apps.forEach(a => a.delete()); } catch(e) {}
-  db = null;
-  initFirebase();
-  showToast('✅ Firebase guardado');
+function setFbSt(cls,msg){document.getElementById('fb-status').className='fb-status '+cls;document.getElementById('fb-status-text').textContent=msg;}
+function guardarFirebase(){
+  const ak=document.getElementById('cfg-apiKey').value.trim();
+  const ad=document.getElementById('cfg-authDomain').value.trim();
+  const pid=document.getElementById('cfg-projectId').value.trim();
+  if(!ak||!pid){toast('⚠️ Rellena API Key y Project ID');return;}
+  guar('scls_fb_apiKey',ak);guar('scls_fb_authDomain',ad||pid+'.firebaseapp.com');guar('scls_fb_projectId',pid);
+  try{firebase.apps.forEach(a=>a.delete());}catch(e){}
+  db=null;initFB();toast('✅ Firebase guardado');
 }
 
-// ══════════════════════════════════════
-//  CRUD
-// ══════════════════════════════════════
-async function guardarRegistro() {
-  const sis  = parseInt(document.getElementById('sistolica').value);
-  const dia  = parseInt(document.getElementById('diastolica').value);
-  const pul  = parseInt(document.getElementById('pulso').value) || null;
-  const notas= document.getElementById('notas').value.trim();
-  if (!sis || !dia || sis < 50 || dia < 30 || sis > 250 || dia > 150) {
-    showToast('⚠️ Introduce valores de tensión válidos'); return;
-  }
-  const reg = {
-    sistolica: sis, diastolica: dia, pulso: pul,
-    turno: turnoActual, notas,
-    fecha: new Date().toISOString().split('T')[0],
-    timestamp: new Date().toISOString(),
-    estado: clasificarTension(sis, dia)
-  };
-  const btn = document.getElementById('btn-guardar');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="border-top-color:#000;width:16px;height:16px"></div>&nbsp; Guardando...';
-  try {
-    if (db) {
-      await db.collection('tensiones').add(reg);
-      showToast('✅ Guardado en Firebase');
-    } else {
-      const local = JSON.parse(leerConfig('scls_local', '[]'));
-      local.unshift({...reg, id: Date.now().toString()});
-      guardarConfig('scls_local', JSON.stringify(local.slice(0, 300)));
-      showToast('💾 Guardado localmente');
-    }
-    ['sistolica','diastolica','pulso','notas'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('estado-badge').innerHTML = '';
-    await cargarRegistros();
-  } catch(e) { showToast('❌ Error: ' + e.message); }
-  btn.disabled = false; btn.innerHTML = 'Guardar medición';
+// ── CRUD ──────────────────────────────
+async function guardarRegistro(){
+  const s=parseInt(document.getElementById('sistolica').value);
+  const d=parseInt(document.getElementById('diastolica').value);
+  const p=parseInt(document.getElementById('pulso').value)||null;
+  const n=document.getElementById('notas').value.trim();
+  if(!s||!d||s<50||d<30||s>250||d>150){toast('⚠️ Introduce valores válidos');return;}
+  const reg={sistolica:s,diastolica:d,pulso:p,turno,notas:n,
+    fecha:new Date().toISOString().split('T')[0],timestamp:new Date().toISOString(),estado:clasif(s,d)};
+  const btn=document.getElementById('btn-guardar');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="border-top-color:#fff;width:16px;height:16px"></div>&nbsp; Guardando...';
+  try{
+    if(db){await db.collection('tensiones').add(reg);toast('✅ Guardado en Firebase');}
+    else{const loc=JSON.parse(leer('scls_local','[]'));loc.unshift({...reg,id:Date.now().toString()});guar('scls_local',JSON.stringify(loc.slice(0,300)));toast('💾 Guardado localmente');}
+    ['sistolica','diastolica','pulso','notas'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('estado-badge').innerHTML='';
+    await loadReg();
+  }catch(e){toast('❌ Error: '+e.message);}
+  btn.disabled=false;btn.innerHTML='Guardar medición';
 }
+async function loadReg(){
+  try{
+    if(db){const sn=await db.collection('tensiones').orderBy('timestamp','desc').limit(200).get();registros=sn.docs.map(d=>({id:d.id,...d.data()}));}
+    else{loadLocal();return;}
+  }catch(e){loadLocal();return;}
+  renderAll();
+}
+function loadLocal(){try{registros=JSON.parse(leer('scls_local','[]'));}catch(e){registros=[];}renderAll();}
 
-async function cargarRegistros() {
-  try {
-    if (db) {
-      const snap = await db.collection('tensiones').orderBy('timestamp','desc').limit(120).get();
-      registros = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    } else { cargarDatosLocales(); return; }
-  } catch(e) { cargarDatosLocales(); return; }
-  renderHistorial(); renderMetricas();
+// ── CLASIFICACIÓN ─────────────────────
+function clasif(s,d){
+  if(s<90||d<60)return'baja';
+  if(s<120&&d<80)return'normal';
+  if(s>=120&&s<130&&d<80)return'elevada';
+  if((s>=130&&s<140)||(d>=80&&d<90))return'alta1';
+  if((s>=140&&s<180)||(d>=90&&d<120))return'alta2';
+  if(s>=180||d>=120)return'crisis';
+  return'normal';
 }
-function cargarDatosLocales() {
-  try { registros = JSON.parse(leerConfig('scls_local','[]')); } catch(e) { registros = []; }
-  renderHistorial(); renderMetricas();
-}
-
-// ══════════════════════════════════════
-//  CLASIFICACIÓN (ESC/ACC 2023)
-// ══════════════════════════════════════
-function clasificarTension(sis, dia) {
-  if (sis < 90 || dia < 60)                                       return 'baja';
-  if (sis < 120 && dia < 80)                                      return 'normal';
-  if (sis >= 120 && sis < 130 && dia < 80)                        return 'elevada';
-  if ((sis >= 130 && sis < 140) || (dia >= 80 && dia < 90))       return 'alta1';
-  if ((sis >= 140 && sis < 180) || (dia >= 90 && dia < 120))      return 'alta2';
-  if (sis >= 180 || dia >= 120)                                   return 'crisis';
-  return 'normal';
-}
-const CLAS = {
-  baja:   { label: 'Tensión baja',         color: '#3a8fff', cls: 'estado-baja'   },
-  normal: { label: 'Normal',               color: '#00c8a0', cls: 'estado-normal' },
-  elevada:{ label: 'Elevada',              color: '#ffb347', cls: 'estado-elevada'},
-  alta1:  { label: 'Hipertensión estadio I',color: '#ffb347', cls: 'estado-elevada'},
-  alta2:  { label: 'Hipertensión estadio II',color:'#ff5c5c', cls: 'estado-alta'  },
-  crisis: { label: 'Crisis hipertensiva',  color: '#ff3030', cls: 'estado-crisis' }
+const CL={
+  baja:   {l:'Tensión baja',          c:'#3a6fbf',cl:'est-baja'},
+  normal: {l:'Normal',                c:'#2e7d5e',cl:'est-normal'},
+  elevada:{l:'Elevada',               c:'#d4800a',cl:'est-elevada'},
+  alta1:  {l:'Hipertensión estadio I', c:'#d4800a',cl:'est-elevada'},
+  alta2:  {l:'Hipertensión estadio II',c:'#c0392b',cl:'est-alta'},
+  crisis: {l:'Crisis hipertensiva',   c:'#a02020',cl:'est-crisis'}
 };
-
-function actualizarEstado() {
-  const sis = parseInt(document.getElementById('sistolica').value);
-  const dia = parseInt(document.getElementById('diastolica').value);
-  const el  = document.getElementById('estado-badge');
-  if (!sis || !dia) { el.innerHTML = ''; return; }
-  const e = clasificarTension(sis, dia);
-  el.innerHTML = `<div class="estado-badge ${CLAS[e].cls}">${CLAS[e].label} &nbsp;${sis}/${dia}</div>`;
+function actualizarEstado(){
+  const s=parseInt(document.getElementById('sistolica').value);
+  const d=parseInt(document.getElementById('diastolica').value);
+  const el=document.getElementById('estado-badge');
+  if(!s||!d){el.innerHTML='';return;}
+  const e=clasif(s,d);
+  el.innerHTML=`<div class="est-badge ${CL[e].cl}">${CL[e].l} &nbsp;${s}/${d}</div>`;
 }
 
-// ══════════════════════════════════════
-//  RENDER HISTORIAL
-// ══════════════════════════════════════
-function renderHistorial() {
-  const el = document.getElementById('historial-lista');
-  const data = registros.slice(0, 12);
-  if (!data.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Sin mediciones todavía.<br>Registra la primera arriba.</div></div>';
-    return;
-  }
-  el.innerHTML = data.map(r => {
-    const e = CLAS[r.estado || clasificarTension(r.sistolica, r.diastolica)];
-    const ts = r.timestamp || r.fecha || '';
-    const fecha = new Date(ts).toLocaleDateString('es-ES', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-    return `<div class="registro-item">
-      <div>
-        <div class="reg-fecha">${fecha}</div>
-        <div class="reg-turno">${r.turno === 'manana' ? '🌅 Mañana' : '🌙 Noche'}${r.notas ? ' · ' + r.notas : ''}</div>
-      </div>
-      <div>
-        <div class="reg-vals" style="color:${e.color}">${r.sistolica}/${r.diastolica}</div>
-        <div class="reg-pulso">${r.pulso ? r.pulso + ' ppm' : ''}</div>
-        <div class="reg-est" style="color:${e.color}">${e.label}</div>
-      </div>
-    </div>`;
+// ── RENDER ALL ───────────────────────
+function renderAll(){renderHist();renderMet();}
+function renderHist(){
+  const el=document.getElementById('historial-lista');
+  const data=registros.slice(0,12);
+  if(!data.length){el.innerHTML='<div class="empty-st"><div class="empty-ic">📋</div><div class="empty-tx">Sin mediciones todavía.<br>Registra la primera arriba.</div></div>';return;}
+  el.innerHTML=data.map(r=>{
+    const e=CL[r.estado||clasif(r.sistolica,r.diastolica)];
+    const f=new Date(r.timestamp||r.fecha).toLocaleDateString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    return`<div class="reg-item"><div><div class="reg-fecha">${f}</div><div class="reg-turno">${r.turno==='manana'?'🌅 Mañana':'🌙 Noche'}${r.notas?' · '+r.notas:''}</div></div><div><div class="reg-vals" style="color:${e.c}">${r.sistolica}/${r.diastolica}</div><div class="reg-pulso">${r.pulso?r.pulso+' ppm':''}</div><div class="reg-est" style="color:${e.c}">${e.l}</div></div></div>`;
   }).join('');
 }
-
-// ══════════════════════════════════════
-//  RENDER MÉTRICAS
-// ══════════════════════════════════════
-function renderMetricas() {
-  if (!registros.length) {
-    document.getElementById('resumen-grid').innerHTML =
-      '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📊</div><div class="empty-text">Sin datos suficientes</div></div>';
-    ['dist-bar','dist-legend','dist-detalle','insights-lista'].forEach(id => document.getElementById(id).innerHTML = '');
+function renderMet(){
+  if(!registros.length){
+    document.getElementById('resumen-grid').innerHTML='<div class="empty-st" style="grid-column:1/-1"><div class="empty-ic">📊</div><div class="empty-tx">Sin datos suficientes</div></div>';
+    ['dist-bar','dist-legend','dist-detalle','insights-lista','metricas-clinicas'].forEach(id=>document.getElementById(id).innerHTML='');
     return;
   }
-  renderResumen(); renderDistribucion(); renderInsights();
-  renderChartEvolucion(); renderChartPulso();
+  renderResumen();renderDist();renderClinicas();renderInsights();renderChEv();renderChPulso();
 }
 
-function renderResumen() {
-  const n = registros.length;
-  const avgSis = Math.round(registros.reduce((s,r) => s+r.sistolica, 0) / n);
-  const avgDia = Math.round(registros.reduce((s,r) => s+r.diastolica, 0) / n);
-  const maxSis = Math.max(...registros.map(r => r.sistolica));
-  const minSis = Math.min(...registros.map(r => r.sistolica));
-  const pv = registros.filter(r => r.pulso);
-  const avgPulso = pv.length ? Math.round(pv.reduce((s,r) => s+r.pulso, 0)/pv.length) : null;
-  const normales = registros.filter(r => ['normal'].includes(r.estado || clasificarTension(r.sistolica, r.diastolica))).length;
-  const pctNormal = Math.round(normales * 100 / n);
-  const avgPP = Math.round(registros.reduce((s,r) => s+(r.sistolica-r.diastolica), 0)/n);
-  const variab = Math.round(Math.sqrt(registros.reduce((s,r) => s+Math.pow(r.sistolica-avgSis,2),0)/n));
-  const est = CLAS[clasificarTension(avgSis, avgDia)];
-
-  document.getElementById('resumen-grid').innerHTML = `
-    <div class="metrica-card" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div class="metrica-num" style="font-size:32px;color:${est.color}">${avgSis}/${avgDia}</div>
-        <div class="metrica-label">Tensión media (${n} medición${n!==1?'es':''})</div>
-      </div>
-      <div class="estado-badge ${est.cls}" style="margin:0">${est.label}</div>
+function renderResumen(){
+  const n=registros.length;
+  const aS=Math.round(registros.reduce((s,r)=>s+r.sistolica,0)/n);
+  const aD=Math.round(registros.reduce((s,r)=>s+r.diastolica,0)/n);
+  const mxS=Math.max(...registros.map(r=>r.sistolica));
+  const mnS=Math.min(...registros.map(r=>r.sistolica));
+  const pv=registros.filter(r=>r.pulso);
+  const aP=pv.length?Math.round(pv.reduce((s,r)=>s+r.pulso,0)/pv.length):null;
+  const norm=registros.filter(r=>['normal'].includes(r.estado||clasif(r.sistolica,r.diastolica))).length;
+  const pctN=Math.round(norm*100/n);
+  const aPP=Math.round(registros.reduce((s,r)=>s+(r.sistolica-r.diastolica),0)/n);
+  const vr=Math.round(Math.sqrt(registros.reduce((s,r)=>s+Math.pow(r.sistolica-aS,2),0)/n));
+  const est=CL[clasif(aS,aD)];
+  document.getElementById('resumen-grid').innerHTML=`
+    <div class="met-card" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between">
+      <div><div class="met-num" style="font-size:32px;color:${est.c}">${aS}/${aD}</div><div class="met-lbl">Tensión media (${n} medición${n!==1?'es':''})</div></div>
+      <div class="est-badge ${est.cl}" style="margin:0">${est.l}</div>
     </div>
-    <div class="metrica-card">
-      <div class="metrica-num" style="color:var(--ok)">${pctNormal}%</div>
-      <div class="metrica-label">En rango normal</div>
-      <div class="metrica-sub" style="color:var(--muted)">${normales} / ${n}</div>
-    </div>
-    <div class="metrica-card">
-      <div class="metrica-num">${maxSis}</div>
-      <div class="metrica-label">Máx. sistólica</div>
-      <div class="metrica-sub" style="color:var(--muted)">Mín: ${minSis} mmHg</div>
-    </div>
-    <div class="metrica-card">
-      <div class="metrica-num">${avgPulso || '—'}</div>
-      <div class="metrica-label">Pulso medio</div>
-      <div class="metrica-sub" style="color:var(--muted)">${avgPulso ? 'ppm' : 'Sin datos'}</div>
-    </div>
-    <div class="metrica-card">
-      <div class="metrica-num" style="color:${avgPP>60?'var(--warn)':'var(--text)'}">${avgPP}</div>
-      <div class="metrica-label">Presión de pulso</div>
-      <div class="metrica-sub" style="color:var(--muted)">Normal &lt; 60 mmHg</div>
-    </div>
-    <div class="metrica-card">
-      <div class="metrica-num">±${variab}</div>
-      <div class="metrica-label">Variabilidad</div>
-      <div class="metrica-sub" style="color:var(--muted)">Desv. estándar</div>
-    </div>
+    <div class="met-card"><div class="met-num" style="color:var(--ok)">${pctN}%</div><div class="met-lbl">En rango normal</div><div class="met-sub" style="color:var(--muted)">${norm} / ${n}</div></div>
+    <div class="met-card"><div class="met-num">${mxS}</div><div class="met-lbl">Máx. sistólica</div><div class="met-sub" style="color:var(--muted)">Mín: ${mnS} mmHg</div></div>
+    <div class="met-card"><div class="met-num">${aP||'—'}</div><div class="met-lbl">Pulso medio</div><div class="met-sub" style="color:var(--muted)">${aP?'ppm':'Sin datos'}</div></div>
+    <div class="met-card"><div class="met-num" style="color:${aPP>60?'var(--warn)':'var(--text)'}">${aPP}</div><div class="met-lbl">Presión de pulso</div><div class="met-sub" style="color:var(--muted)">Normal &lt;60 mmHg</div></div>
+    <div class="met-card"><div class="met-num">±${vr}</div><div class="met-lbl">Variabilidad</div><div class="met-sub" style="color:var(--muted)">Desv. estándar</div></div>
   `;
 }
 
-function renderDistribucion() {
-  const cats = {baja:0, normal:0, elevada:0, alta1:0, alta2:0, crisis:0};
-  registros.forEach(r => { const e = r.estado || clasificarTension(r.sistolica, r.diastolica); cats[e] = (cats[e]||0)+1; });
-  const total = registros.length;
-  const col = { baja:'#3a8fff', normal:'#00c8a0', elevada:'#ffb347', alta1:'#f09060', alta2:'#ff5c5c', crisis:'#c0392b' };
+// ── 8 MÉTRICAS CLÍNICAS ───────────────
+function renderClinicas(){
+  const n=registros.length;
+  if(n<2){document.getElementById('metricas-clinicas').innerHTML='<div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Necesitas al menos 2 mediciones</div></div>';return;}
 
-  document.getElementById('dist-bar').innerHTML = Object.entries(cats).filter(([,v])=>v>0).map(([k,v]) => {
-    const pct = Math.round(v*100/total);
-    return `<div class="dist-seg" style="width:${pct}%;background:${col[k]};color:#000">${pct>10?pct+'%':''}</div>`;
-  }).join('');
+  const sorted=[...registros].sort((a,b)=>new Date(a.timestamp||a.fecha)-new Date(b.timestamp||b.fecha));
+  const mans=sorted.filter(r=>r.turno==='manana');
+  const nocs=sorted.filter(r=>r.turno==='noche');
 
-  document.getElementById('dist-legend').innerHTML = Object.entries(cats).filter(([,v])=>v>0).map(([k,v]) =>
-    `<div class="legend-item"><div class="legend-dot" style="background:${col[k]}"></div>${CLAS[k].label}: ${v}</div>`
-  ).join('');
+  // 1. Morning Surge
+  const surgeVals=[];
+  mans.forEach(m=>{
+    const fd=m.fecha||(m.timestamp||'').split('T')[0];
+    const pa=new Date(fd);pa.setDate(pa.getDate()-1);
+    const pas=pa.toISOString().split('T')[0];
+    const na=nocs.find(x=>(x.fecha||(x.timestamp||'').split('T')[0])===pas);
+    if(na)surgeVals.push(m.sistolica-na.sistolica);
+  });
+  const surge=surgeVals.length?Math.round(surgeVals.reduce((a,b)=>a+b,0)/surgeVals.length):null;
 
-  const altas = (cats.alta1||0)+(cats.alta2||0)+(cats.crisis||0);
-  document.getElementById('dist-detalle').innerHTML = `
-    <div class="estado-row"><span class="estado-label"><span style="color:#00c8a0">●</span> Normal / Elevada</span><span><span class="estado-count">${(cats.normal||0)+(cats.elevada||0)}</span>&nbsp;<span class="estado-pct">${Math.round(((cats.normal||0)+(cats.elevada||0))*100/total)}%</span></span></div>
-    <div class="estado-row"><span class="estado-label"><span style="color:#ff5c5c">●</span> Hipertensión</span><span><span class="estado-count">${altas}</span>&nbsp;<span class="estado-pct">${Math.round(altas*100/total)}%</span></span></div>
-    <div class="estado-row"><span class="estado-label"><span style="color:#3a8fff">●</span> Baja</span><span><span class="estado-count">${cats.baja||0}</span>&nbsp;<span class="estado-pct">${Math.round((cats.baja||0)*100/total)}%</span></span></div>
+  // 2. Carga hipertensiva
+  const altN=registros.filter(r=>r.sistolica>=140||r.diastolica>=90).length;
+  const carga=Math.round(altN*100/n);
+
+  // 3. ARV
+  const pf={};
+  sorted.forEach(r=>{const f=(r.timestamp||r.fecha||'').split('T')[0];if(!f)return;if(!pf[f])pf[f]={s:[],d:[]};pf[f].s.push(r.sistolica);pf[f].d.push(r.diastolica);});
+  const dSis=Object.values(pf).map(d=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
+  const arv=dSis.length>=2?Math.round(dSis.slice(1).map((v,i)=>Math.abs(v-dSis[i])).reduce((a,b)=>a+b,0)/( dSis.length-1)*10)/10:null;
+
+  // 4. Ratio S/D
+  const aS=registros.reduce((s,r)=>s+r.sistolica,0)/n;
+  const aD=registros.reduce((s,r)=>s+r.diastolica,0)/n;
+  const ratio=Math.round(aS/aD*100)/100;
+
+  // 5. PAM
+  const pam=Math.round(registros.reduce((s,r)=>s+(r.diastolica+(r.sistolica-r.diastolica)/3),0)/n);
+
+  // 6. Estabilidad
+  const desv=Math.sqrt(registros.reduce((s,r)=>s+Math.pow(r.sistolica-aS,2),0)/n);
+  const estab=aS>0?Math.round((1-desv/aS)*100)/100:null;
+
+  // 7. Tendencia (slope)
+  const diasArr=Object.entries(pf).sort(([a],[b])=>a.localeCompare(b));
+  const v7=diasArr.slice(-7).map(([,d])=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
+  const v30=diasArr.slice(-30).map(([,d])=>d.s.reduce((a,b)=>a+b,0)/d.s.length);
+  const sl7=v7.length>=2?calcSlope(v7):null;
+  const sl30=v30.length>=3?calcSlope(v30):null;
+
+  // 8. PP elevada
+  const aPP=Math.round(registros.reduce((s,r)=>s+(r.sistolica-r.diastolica),0)/n);
+  const ppEl=registros.filter(r=>(r.sistolica-r.diastolica)>60).length;
+  const pctPP=Math.round(ppEl*100/n);
+
+  const items=[];
+
+  // 1
+  if(surge!==null){
+    const sc=surge>55?'c-danger':surge>35?'c-warn':surge<0?'c-info':'c-ok';
+    const sl=surge>55?'⚠️ Muy elevado (riesgo CV alto)':surge>35?'Moderado':surge<0?'Negativo (dipping nocturno)':'Normal';
+    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🌅 Morning Surge</div><div class="clin-val">${surge>0?'+':''}${surge} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Aumento de la presión sistólica al despertar respecto a la noche anterior. Valores >55 mmHg se asocian a mayor riesgo de infarto y ACV matutino. Calculado sobre ${surgeVals.length} par${surgeVals.length!==1?'es':''}.</div><span class="clin-tag ${sc}">${sl}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,Math.max(0,(surge+20)/100*100))}%;background:${surge>55?'#c0392b':surge>35?'#d4800a':'#2e7d5e'}"></div></div></div>`);
+  }else{
+    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🌅 Morning Surge</div><div class="clin-val" style="color:var(--muted);font-size:16px">Sin datos</div></div><div class="clin-desc">Necesita al menos un par de medición nocturna seguida de medición matutina del día siguiente.</div><span class="clin-tag c-na">Sin pares noche→mañana</span></div>`);
+  }
+
+  // 2
+  const c2=carga>50?'c-danger':carga>25?'c-warn':'c-ok';
+  const l2=carga>50?'⚠️ Carga alta':carga>25?'Carga moderada':'Carga baja';
+  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📊 Carga hipertensiva</div><div class="clin-val">${carga}<small style="font-size:11px;color:var(--muted)">%</small></div></div><div class="clin-desc">Proporción de mediciones con PA ≥140/90 mmHg. Refleja el tiempo real bajo hipertensión. ${altN} de ${n} mediciones superan el umbral.</div><span class="clin-tag ${c2}">${l2}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${carga}%;background:${carga>50?'#c0392b':carga>25?'#d4800a':'#2e7d5e'}"></div></div></div>`);
+
+  // 3
+  if(arv!==null){
+    const c3=arv>10?'c-danger':arv>6?'c-warn':'c-ok';
+    const l3=arv>10?'⚠️ Variabilidad alta':arv>6?'Variabilidad moderada':'Variabilidad baja';
+    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📉 Variabilidad día a día (ARV)</div><div class="clin-val">${arv} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Average Real Variability: promedio de cambios absolutos entre días consecutivos. Alta variabilidad se asocia a mayor riesgo cardiovascular, incluso con PA media normal.</div><span class="clin-tag ${c3}">${l3}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,arv/20*100)}%;background:${arv>10?'#c0392b':arv>6?'#d4800a':'#2e7d5e'}"></div></div></div>`);
+  }
+
+  // 4
+  const c4=ratio>1.8?'c-warn':ratio<1.3?'c-info':'c-ok';
+  const l4=ratio>1.8?'Por encima del rango':ratio<1.3?'Por debajo del rango':'Normal (1.3–1.8)';
+  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">🔢 Índice sistólica/diastólica</div><div class="clin-val">${ratio}</div></div><div class="clin-desc">Relación entre la PA sistólica y diastólica medias (${Math.round(aS)}/${Math.round(aD)} mmHg). Puede indicar cambios en la elasticidad arterial. Rango habitual: 1.3–1.8.</div><span class="clin-tag ${c4}">${l4}</span></div>`);
+
+  // 5
+  const c5=pam>110?'c-danger':pam>100?'c-warn':pam<70?'c-info':'c-ok';
+  const l5=pam>110?'⚠️ Elevada':pam>100?'Algo elevada':pam<70?'Baja':'Normal (70–100 mmHg)';
+  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">💉 Presión arterial media (PAM)</div><div class="clin-val">${pam} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">PAM = Diastólica + (Sistólica − Diastólica) / 3. Refleja la presión de perfusión de los órganos vitales. Rango normal: 70–100 mmHg.</div><span class="clin-tag ${c5}">${l5}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,pam/150*100)}%;background:${pam>110?'#c0392b':pam>100?'#d4800a':'#2e7d5e'}"></div></div></div>`);
+
+  // 6
+  if(estab!==null){
+    const c6=estab>0.9?'c-ok':estab>0.8?'c-warn':'c-danger';
+    const l6=estab>0.9?'Muy estable':estab>0.8?'Moderadamente estable':'Inestable';
+    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">⚖️ Índice de estabilidad</div><div class="clin-val">${estab}</div></div><div class="clin-desc">Estabilidad = 1 − (desviación estándar / media sistólica). Más cercano a 1 indica presión más constante en el tiempo. Valores &lt;0.8 sugieren variabilidad importante.</div><span class="clin-tag ${c6}">${l6}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${Math.min(100,estab*100)}%;background:${estab>0.9?'#2e7d5e':estab>0.8?'#d4800a':'#c0392b'}"></div></div></div>`);
+  }
+
+  // 7
+  if(sl7!==null){
+    const c7=Math.abs(sl7)<0.5?'c-ok':sl7>0?'c-warn':'c-info';
+    const l7=Math.abs(sl7)<0.5?'Estable':sl7>1?`↑ Subiendo ${sl7>0?'+':''}${sl7} mmHg/día`:`${sl7>0?'↑':'↓'} ${sl7>0?'+':''}${sl7} mmHg/día`;
+    const l30=sl30!==null?(Math.abs(sl30)<0.3?'Estable':sl30>0?`↑ +${sl30} mmHg/día`:`↓ ${sl30} mmHg/día`):'';
+    items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">📈 Tendencia (slope)</div><div class="clin-val" style="font-size:16px">${sl7>0?'+':''}${sl7} <small style="font-size:11px;color:var(--muted)">mmHg/día</small></div></div><div class="clin-desc">Pendiente de la presión sistólica por regresión lineal. Detecta si la presión está aumentando o bajando lentamente.${l30?'<br>• Última semana: <strong>'+l7+'</strong><br>• Último mes: <strong>'+l30+'</strong>':''}</div><span class="clin-tag ${c7}">${l7}</span></div>`);
+  }
+
+  // 8
+  const c8=pctPP>50?'c-danger':pctPP>30?'c-warn':'c-ok';
+  const l8=pctPP>50?'⚠️ Frecuente — posible rigidez arterial':pctPP>30?'Moderado':'Normal';
+  items.push(`<div class="clin-card"><div class="clin-hdr"><div class="clin-name">💓 PP elevada (&gt;60 mmHg)</div><div class="clin-val">${aPP} <small style="font-size:11px;color:var(--muted)">mmHg</small></div></div><div class="clin-desc">Presión de pulso media = Sistólica − Diastólica. PP >60 mmHg de forma habitual puede indicar rigidez arterial. ${ppEl} de ${n} mediciones (${pctPP}%) superan los 60 mmHg.</div><span class="clin-tag ${c8}">${l8}</span><div class="clin-bar-wrap"><div class="clin-bar" style="width:${pctPP}%;background:${pctPP>50?'#c0392b':pctPP>30?'#d4800a':'#2e7d5e'}"></div></div></div>`);
+
+  document.getElementById('metricas-clinicas').innerHTML=items.join('');
+}
+
+function calcSlope(vs){
+  const n=vs.length;if(n<2)return null;
+  const sx=n*(n-1)/2,sx2=n*(n-1)*(2*n-1)/6;
+  const sy=vs.reduce((a,b)=>a+b,0);
+  const sxy=vs.reduce((s,v,i)=>s+i*v,0);
+  return Math.round((n*sxy-sx*sy)/(n*sx2-sx*sx)*10)/10;
+}
+
+function renderDist(){
+  const cats={baja:0,normal:0,elevada:0,alta1:0,alta2:0,crisis:0};
+  registros.forEach(r=>{const e=r.estado||clasif(r.sistolica,r.diastolica);cats[e]=(cats[e]||0)+1;});
+  const tot=registros.length;
+  const col={baja:'#3a6fbf',normal:'#2e7d5e',elevada:'#d4800a',alta1:'#c07030',alta2:'#c0392b',crisis:'#8b1a1a'};
+  document.getElementById('dist-bar').innerHTML=Object.entries(cats).filter(([,v])=>v>0).map(([k,v])=>{const p=Math.round(v*100/tot);return`<div class="dist-seg" style="width:${p}%;background:${col[k]};color:#fff">${p>10?p+'%':''}</div>`;}).join('');
+  document.getElementById('dist-legend').innerHTML=Object.entries(cats).filter(([,v])=>v>0).map(([k,v])=>`<div class="leg-item"><div class="leg-dot" style="background:${col[k]}"></div>${CL[k].l}: ${v}</div>`).join('');
+  const alt=(cats.alta1||0)+(cats.alta2||0)+(cats.crisis||0);
+  document.getElementById('dist-detalle').innerHTML=`
+    <div class="est-row"><span class="est-lbl"><span style="color:#2e7d5e">●</span> Normal/Elevada</span><span><span class="est-cnt">${(cats.normal||0)+(cats.elevada||0)}</span>&nbsp;<span class="est-pct">${Math.round(((cats.normal||0)+(cats.elevada||0))*100/tot)}%</span></span></div>
+    <div class="est-row"><span class="est-lbl"><span style="color:#c0392b">●</span> Hipertensión</span><span><span class="est-cnt">${alt}</span>&nbsp;<span class="est-pct">${Math.round(alt*100/tot)}%</span></span></div>
+    <div class="est-row"><span class="est-lbl"><span style="color:#3a6fbf">●</span> Baja</span><span><span class="est-cnt">${cats.baja||0}</span>&nbsp;<span class="est-pct">${Math.round((cats.baja||0)*100/tot)}%</span></span></div>
   `;
 }
 
-function renderInsights() {
-  const insights = [];
-  const n = registros.length;
-  if (n < 2) {
-    document.getElementById('insights-lista').innerHTML = '<div class="empty-state"><div class="empty-icon">🔬</div><div class="empty-text">Necesitas al menos 2 mediciones<br>para generar insights</div></div>';
-    return;
-  }
-  const avgSis = registros.reduce((s,r) => s+r.sistolica, 0)/n;
-
-  // Tendencia 7 días
-  const r7 = registros.filter(r => (Date.now()-new Date(r.timestamp||r.fecha).getTime()) < 7*86400000);
-  if (r7.length >= 3) {
-    const a7 = Math.round(r7.reduce((s,r) => s+r.sistolica, 0)/r7.length);
-    const d  = a7 - Math.round(avgSis);
-    if (Math.abs(d) >= 5) insights.push({ icon:'📈', text:`Últimos 7 días: sistólica media <strong>${a7} mmHg</strong> (${d>0?'+'+d:d} mmHg respecto a tu media histórica).${Math.abs(d)>10?' Tendencia marcada, comenta con tu médico.':''}` });
-  }
-  // Mañana vs noche
-  const man = registros.filter(r => r.turno==='manana');
-  const noc = registros.filter(r => r.turno==='noche');
-  if (man.length>=2 && noc.length>=2) {
-    const am = Math.round(man.reduce((s,r)=>s+r.sistolica,0)/man.length);
-    const an = Math.round(noc.reduce((s,r)=>s+r.sistolica,0)/noc.length);
-    const d  = an-am;
-    if (Math.abs(d)>=5) insights.push({ icon:'🕐', text:`Tu tensión sistólica es <strong>${d>0?an+' mmHg por la noche':am+' mmHg por la mañana'}</strong> (diferencia de ${Math.abs(d)} mmHg). ${Math.abs(d)>10?'Diferencia clínicamente significativa.':''}` });
-  }
-  // Crisis
-  const crisis = registros.filter(r => (r.estado||clasificarTension(r.sistolica,r.diastolica))==='crisis');
-  if (crisis.length) insights.push({ icon:'⚠️', text:`Has registrado <strong>${crisis.length} episodio${crisis.length>1?'s':''} de crisis hipertensiva</strong> (≥180/120 mmHg). Es importante consultarlo con tu médico.` });
-  // PP alta
-  const pp = registros.filter(r=>(r.sistolica-r.diastolica)>60);
-  if (pp.length > n*0.3) insights.push({ icon:'💓', text:`En el <strong>${Math.round(pp.length*100/n)}%</strong> de mediciones la presión de pulso supera 60 mmHg. Puede indicar rigidez arterial.` });
-  // Taquicardia / bradicardia
-  const pv = registros.filter(r=>r.pulso);
-  if (pv.length) {
-    const taq = pv.filter(r=>r.pulso>100);
-    const bra = pv.filter(r=>r.pulso<50);
-    if (taq.length) insights.push({ icon:'💗', text:`<strong>${taq.length} medición${taq.length>1?'es':''}</strong> con pulso >100 ppm (taquicardia). Puede ser circunstancial pero merece seguimiento.` });
-    if (bra.length) insights.push({ icon:'🫀', text:`<strong>${bra.length} medición${bra.length>1?'es':''}</strong> con pulso <50 ppm (bradicardia).` });
-  }
-  // Positivo
-  const norm = registros.filter(r=>['normal'].includes(r.estado||clasificarTension(r.sistolica,r.diastolica)));
-  const pct  = Math.round(norm.length*100/n);
-  if (pct>=70) insights.push({ icon:'✅', text:`El <strong>${pct}%</strong> de tus mediciones están en rango óptimo. ¡Buen control de la tensión!` });
-  if (!insights.length) insights.push({ icon:'🔬', text:'Sigue registrando mediciones para obtener insights personalizados.' });
-
-  document.getElementById('insights-lista').innerHTML = insights.map(i =>
-    `<div class="insight-item"><div class="insight-icon">${i.icon}</div><div class="insight-text">${i.text}</div></div>`
-  ).join('');
+function renderInsights(){
+  const ins=[],n=registros.length;
+  if(n<2){document.getElementById('insights-lista').innerHTML='<div class="empty-st"><div class="empty-ic">🔬</div><div class="empty-tx">Necesitas al menos 2 mediciones</div></div>';return;}
+  const aS=registros.reduce((s,r)=>s+r.sistolica,0)/n;
+  const r7=registros.filter(r=>(Date.now()-new Date(r.timestamp||r.fecha).getTime())<7*86400000);
+  if(r7.length>=3){const a7=Math.round(r7.reduce((s,r)=>s+r.sistolica,0)/r7.length),d=a7-Math.round(aS);if(Math.abs(d)>=5)ins.push({i:'📈',t:`Últimos 7 días: sistólica media <strong>${a7} mmHg</strong> (${d>0?'+'+d:d} mmHg vs. media histórica).${Math.abs(d)>10?' Tendencia marcada.':''}`});}
+  const ma=registros.filter(r=>r.turno==='manana'),no=registros.filter(r=>r.turno==='noche');
+  if(ma.length>=2&&no.length>=2){const am=Math.round(ma.reduce((s,r)=>s+r.sistolica,0)/ma.length),an=Math.round(no.reduce((s,r)=>s+r.sistolica,0)/no.length),d=an-am;if(Math.abs(d)>=5)ins.push({i:'🕐',t:`Sistólica <strong>${d>0?an+' mmHg por la noche':am+' mmHg por la mañana'}</strong> (${Math.abs(d)} mmHg de diferencia).`});}
+  const cr=registros.filter(r=>(r.estado||clasif(r.sistolica,r.diastolica))==='crisis');
+  if(cr.length)ins.push({i:'⚠️',t:`<strong>${cr.length} episodio${cr.length>1?'s':''} de crisis hipertensiva</strong> (≥180/120). Consulta con tu médico.`});
+  const pv=registros.filter(r=>r.pulso);
+  if(pv.length){const tq=pv.filter(r=>r.pulso>100),br=pv.filter(r=>r.pulso<50);if(tq.length)ins.push({i:'💗',t:`<strong>${tq.length} medición${tq.length>1?'es':''}</strong> con pulso >100 ppm.`});if(br.length)ins.push({i:'🫀',t:`<strong>${br.length} medición${br.length>1?'es':''}</strong> con pulso <50 ppm.`});}
+  const nm=registros.filter(r=>r.estado==='normal'||(clasif(r.sistolica,r.diastolica)==='normal'));
+  if(Math.round(nm.length*100/n)>=70)ins.push({i:'✅',t:`El <strong>${Math.round(nm.length*100/n)}%</strong> de tus mediciones están en rango óptimo.`});
+  if(!ins.length)ins.push({i:'🔬',t:'Sigue registrando mediciones para obtener insights personalizados.'});
+  document.getElementById('insights-lista').innerHTML=ins.map(x=>`<div class="ins-item"><div class="ins-icon">${x.i}</div><div class="ins-text">${x.t}</div></div>`).join('');
 }
 
-function renderChartEvolucion() {
-  const pf = {};
-  registros.forEach(r => {
-    const f = (r.timestamp||r.fecha||'').split('T')[0];
-    if (!f) return;
-    if (!pf[f]) pf[f] = {sis:[],dia:[]};
-    pf[f].sis.push(r.sistolica); pf[f].dia.push(r.diastolica);
+function renderChEv(){
+  const pf={};
+  registros.forEach(r=>{const f=(r.timestamp||r.fecha||'').split('T')[0];if(!f)return;if(!pf[f])pf[f]={s:[],d:[]};pf[f].s.push(r.sistolica);pf[f].d.push(r.diastolica);});
+  const sk=Object.keys(pf).sort().slice(-14);
+  const lb=sk.map(f=>f.slice(5).replace('-','/'));
+  const dS=sk.map(f=>Math.round(pf[f].s.reduce((a,b)=>a+b,0)/pf[f].s.length));
+  const dD=sk.map(f=>Math.round(pf[f].d.reduce((a,b)=>a+b,0)/pf[f].d.length));
+  if(cEv)cEv.destroy();
+  cEv=new Chart(document.getElementById('chartEv').getContext('2d'),{
+    type:'line',data:{labels:lb,datasets:[
+      {label:'Sistólica',data:dS,borderColor:'#c0622a',backgroundColor:'rgba(192,98,42,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#c0622a'},
+      {label:'Diastólica',data:dD,borderColor:'#3a6fbf',backgroundColor:'rgba(58,111,191,0.08)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#3a6fbf'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#8c6e56',boxWidth:10,font:{size:11}}}},
+      scales:{x:{ticks:{color:'#8c6e56',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:7},grid:{color:'rgba(160,90,40,0.06)'}},
+              y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:50,suggestedMax:185}}}
   });
-  const sorted = Object.keys(pf).sort().slice(-14);
-  const labels  = sorted.map(f => f.slice(5).replace('-','/'));
-  const dataSis = sorted.map(f => Math.round(pf[f].sis.reduce((a,b)=>a+b,0)/pf[f].sis.length));
-  const dataDia = sorted.map(f => Math.round(pf[f].dia.reduce((a,b)=>a+b,0)/pf[f].dia.length));
-
-  if (chartEvol) chartEvol.destroy();
-  chartEvol = new Chart(document.getElementById('chartEvolucion').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label:'Sistólica', data:dataSis, borderColor:'#ff5c5c', backgroundColor:'rgba(255,92,92,0.08)', tension:0.4, fill:true, pointRadius:3, pointBackgroundColor:'#ff5c5c' },
-        { label:'Diastólica',data:dataDia, borderColor:'#3a8fff', backgroundColor:'rgba(58,143,255,0.08)',tension:0.4, fill:true, pointRadius:3, pointBackgroundColor:'#3a8fff' }
-      ]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:true, labels:{ color:'#607090', boxWidth:10, font:{size:11} } } },
-      scales:{
-        x:{ ticks:{color:'#607090',font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:7}, grid:{color:'rgba(255,255,255,0.04)'} },
-        y:{ ticks:{color:'#607090',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, suggestedMin:50, suggestedMax:185 }
-      }
-    }
+}
+function renderChPulso(){
+  const pv=registros.filter(r=>r.pulso).slice(-20).reverse();
+  if(pv.length<2)return;
+  const lb=pv.map(r=>(r.timestamp||r.fecha||'').split('T')[0].slice(5).replace('-','/'));
+  const dt=pv.map(r=>r.pulso);
+  if(cPul)cPul.destroy();
+  cPul=new Chart(document.getElementById('chartPulso').getContext('2d'),{
+    type:'bar',data:{labels:lb,datasets:[{label:'Pulso (ppm)',data:dt,backgroundColor:dt.map(v=>v>100?'rgba(192,57,43,0.7)':v<50?'rgba(58,111,191,0.7)':'rgba(46,125,94,0.6)'),borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#8c6e56',font:{size:9},maxRotation:45},grid:{display:false}},
+              y:{ticks:{color:'#8c6e56',font:{size:10}},grid:{color:'rgba(160,90,40,0.06)'},suggestedMin:40,suggestedMax:120}}}
   });
 }
 
-function renderChartPulso() {
-  const pv = registros.filter(r=>r.pulso).slice(-20).reverse();
-  if (pv.length < 2) return;
-  const labels = pv.map(r => {
-    const f = (r.timestamp||r.fecha||'').split('T')[0];
-    return f.slice(5).replace('-','/');
-  });
-  const data = pv.map(r=>r.pulso);
-  if (chartPulso) chartPulso.destroy();
-  chartPulso = new Chart(document.getElementById('chartPulso').getContext('2d'), {
-    type:'bar',
-    data:{
-      labels,
-      datasets:[{ label:'Pulso (ppm)', data, backgroundColor:data.map(v=>v>100?'rgba(255,92,92,0.7)':v<50?'rgba(58,143,255,0.7)':'rgba(0,200,160,0.6)'), borderRadius:5 }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        x:{ ticks:{color:'#607090',font:{size:9},maxRotation:45}, grid:{display:false} },
-        y:{ ticks:{color:'#607090',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, suggestedMin:40, suggestedMax:120 }
-      }
-    }
-  });
+// ── UI HELPERS ────────────────────────
+function showTab(n,b){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');b.classList.add('active');
+  if(n==='metricas')renderMet();
 }
-
-// ══════════════════════════════════════
-//  UI HELPERS
-// ══════════════════════════════════════
-function showTab(name, btn) {
-  document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
-  if (name === 'metricas') renderMetricas();
+function setTurno(t){
+  turno=t;
+  document.getElementById('btn-manana').classList.toggle('active',t==='manana');
+  document.getElementById('btn-noche').classList.toggle('active',t==='noche');
 }
-function setTurno(t) {
-  turnoActual = t;
-  document.getElementById('btn-manana').classList.toggle('active', t==='manana');
-  document.getElementById('btn-noche').classList.toggle('active', t==='noche');
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+function cambiarPin(){
+  const a=document.getElementById('cfg-pin-actual').value;
+  const nv=document.getElementById('cfg-pin-nuevo').value;
+  const r=document.getElementById('cfg-pin-rep').value;
+  if(a!==leer('scls_pin',DPIN)){toast('❌ PIN actual incorrecto');return;}
+  if(!/^\d{4}$/.test(nv)){toast('⚠️ El PIN debe tener 4 dígitos');return;}
+  if(nv!==r){toast('❌ Los PINs no coinciden');return;}
+  guar('scls_pin',nv);['cfg-pin-actual','cfg-pin-nuevo','cfg-pin-rep'].forEach(id=>document.getElementById(id).value='');toast('✅ PIN cambiado');
 }
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+function borrarLocal(){
+  if(!confirm('¿Borrar caché local? Los datos en Firebase no se eliminan.'))return;
+  localStorage.removeItem('scls_local');registros=[];renderAll();toast('🗑️ Caché local limpiado');
 }
-function cambiarPin() {
-  const actual = document.getElementById('cfg-pin-actual').value;
-  const nuevo  = document.getElementById('cfg-pin-nuevo').value;
-  const rep    = document.getElementById('cfg-pin-rep').value;
-  const saved  = leerConfig('scls_pin', DEFAULT_PIN);
-  if (actual !== saved)       { showToast('❌ PIN actual incorrecto'); return; }
-  if (!/^\d{4}$/.test(nuevo)) { showToast('⚠️ El PIN debe tener 4 dígitos'); return; }
-  if (nuevo !== rep)          { showToast('❌ Los PINs no coinciden'); return; }
-  guardarConfig('scls_pin', nuevo);
-  ['cfg-pin-actual','cfg-pin-nuevo','cfg-pin-rep'].forEach(id => document.getElementById(id).value='');
-  showToast('✅ PIN cambiado correctamente');
-}
-function borrarDatosLocales() {
-  if (!confirm('¿Borrar caché local? Los datos en Firebase no se eliminan.')) return;
-  localStorage.removeItem('scls_local');
-  registros = []; renderHistorial(); renderMetricas();
-  showToast('🗑️ Caché local limpiado');
-}
-
-// ══════════════════════════════════════
-//  SERVICE WORKER
-// ══════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-
-// ══════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════
-window.addEventListener('DOMContentLoaded', initPin);
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+window.addEventListener('DOMContentLoaded',initPin);
 </script>
 </body>
 </html>

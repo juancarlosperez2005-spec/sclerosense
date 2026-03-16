@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ScleroSense">
 <title>ScleroSense</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231a6b7a'/%3E%3Cpath d='M20,7 C20,7 9,13.5 9,22 C9,27.5 14,32 20,32 C26,32 31,27.5 31,22 C31,13.5 20,7 Z' stroke='white' stroke-width='1.8' fill='rgba(255,255,255,0.15)'/%3E%3Cpath d='M13,22 L17,18 L20,23 L23,15 L27,22' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231a6b7a'/%3E%3Cellipse cx='20' cy='21' rx='11' ry='13' stroke='white' stroke-width='1.8' fill='rgba(255,255,255,0.15)'/%3E%3Cpolyline points='13,21 17,17 20,22 23,14 27,21' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -182,9 +182,9 @@ textarea.txt-inp{resize:vertical;min-height:60px}
 <div id="pin-screen">
   <div class="pin-glow"></div>
   <div class="pin-logo">
-    <svg viewBox="0 0 40 40" fill="none">
-      <path d="M20,7 C20,7 9,13.5 9,22 C9,27.5 14,32 20,32 C26,32 31,27.5 31,22 C31,13.5 20,7 Z" stroke="#1a6b7a" stroke-width="1.8" fill="rgba(26,107,122,0.08)"/>
-      <path d="M13,22 L17,18 L20,23 L23,15 L27,22" stroke="#1a6b7a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="20" cy="21" rx="11" ry="13" stroke="#1a6b7a" stroke-width="1.8" fill="rgba(26,107,122,0.08)"/>
+      <polyline points="13,21 17,17 20,22 23,14 27,21" stroke="#1a6b7a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
   </div>
   <div class="pin-wm">Sclero<span>Sense</span></div>
@@ -216,9 +216,9 @@ textarea.txt-inp{resize:vertical;min-height:60px}
   <header class="app-hdr">
     <div class="hdr-brand">
       <div class="hdr-icon">
-        <svg viewBox="0 0 20 20" fill="none">
-          <path d="M10,3 C10,3 4,6.5 4,11 C4,13.8 6.7,16 10,16 C13.3,16 16,13.8 16,11 C16,6.5 10,3 Z" stroke="#ffffff" stroke-width="1.5" fill="rgba(255,255,255,0.15)"/>
-          <path d="M6,11 L8,9 L10,12 L12,7 L14,11" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="10" cy="10.5" rx="5.5" ry="6.5" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.15)"/>
+          <polyline points="6.5,10.5 8,9 10,11 12,7 13.5,10.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </div>
       <div>
@@ -843,11 +843,12 @@ async function loadAll(){
   try{
     if(db){
       const[ts,ns]=await Promise.all([
-        db.collection('tensiones').where('pacienteId','==',p).orderBy('timestamp','desc').limit(100).get(),
-        db.collection('noches').where('pacienteId','==',p).orderBy('fecha','desc').limit(60).get()
+        db.collection('tensiones').where('pacienteId','==',p).limit(200).get(),
+        db.collection('noches').where('pacienteId','==',p).limit(120).get()
       ]);
-      tensiones=ts.docs.map(d=>({id:d.id,...d.data()}));
-      nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()}));
+      // Ordenar en cliente — evita índices compuestos en Firestore
+      tensiones=ts.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.timestamp||b.fecha||'').localeCompare(a.timestamp||a.fecha||''));
+      nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.fecha.localeCompare(a.fecha));
     }else{loadLocal();return;}
   }catch(e){loadLocal();return;}
   renderTHist();renderAnalisis();
@@ -1249,16 +1250,16 @@ async function exportarBackup(){
 
     if(db){
       status.textContent='Leyendo formularios de mañana...';
-      const msSnap=await db.collection('mananas').where('pacienteId','==',p).orderBy('fecha','asc').get();
-      backup.mananas=msSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const msSnap=await db.collection('mananas').where('pacienteId','==',p).get();
+      backup.mananas=msSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
 
       status.textContent='Leyendo formularios de noche...';
-      const nsSnap=await db.collection('noches').where('pacienteId','==',p).orderBy('fecha','asc').get();
-      backup.noches=nsSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const nsSnap=await db.collection('noches').where('pacienteId','==',p).get();
+      backup.noches=nsSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
 
       status.textContent='Leyendo mediciones de tensión...';
-      const tsSnap=await db.collection('tensiones').where('pacienteId','==',p).orderBy('timestamp','asc').get();
-      backup.tensiones=tsSnap.docs.map(d=>({id:d.id,...d.data()}));
+      const tsSnap=await db.collection('tensiones').where('pacienteId','==',p).get();
+      backup.tensiones=tsSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.timestamp||'').localeCompare(b.timestamp||''));
     }else{
       // Fallback local
       backup.mananas=JSON.parse(leer('scls_mananas','[]'));

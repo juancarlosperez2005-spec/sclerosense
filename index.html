@@ -559,6 +559,25 @@ textarea.txt-inp{resize:vertical;min-height:60px}
       <button class="btn-cfg" onclick="cambiarPin()">🔑 Cambiar PIN</button>
     </div>
     <div class="card">
+      <div class="ct"><span class="ctd"></span> 🗄️ Copia de seguridad</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:14px">
+        Descarga todos tus datos (formularios de mañana, noche y tensiones) en un archivo JSON. Guárdalo en Google Drive o en tu ordenador como copia de seguridad.
+      </div>
+      <div style="background:var(--sf2);border:1px solid var(--brd);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--petrol);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">El archivo incluye:</div>
+        <div style="font-size:12px;color:var(--muted2);line-height:1.7" id="backup-stats">
+          <div class="spinner" style="margin:8px auto;display:block"></div>
+        </div>
+      </div>
+      <button class="btn-save" id="btn-backup" onclick="exportarBackup()" style="background:var(--petrol)">
+        📦 Descargar copia de seguridad (.json)
+      </button>
+      <div id="backup-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;font-family:var(--mono);min-height:16px"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;text-align:center">
+        ⚠️ Recomendamos hacer una copia semanal y guardarla en la nube
+      </div>
+    </div>
+    <div class="card">
       <div class="ct"><span class="ctd"></span> Exportar informe médico</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">
         Genera un informe PDF completo con evolución de tensión, métricas clínicas, gráficas y tabla de registros — listo para llevar a consulta.
@@ -1132,6 +1151,7 @@ function showTab(n,b){
   document.getElementById('tab-'+n).classList.add('active');b.classList.add('active');
   if(n==='analisis')renderAnalisis();
   if(n==='profundo')renderProfundo();
+  if(n==='config')actualizarStatsBackup();
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 function cambiarPin(){
@@ -1149,8 +1169,119 @@ function guardarPaciente(){
   guar('scls_nombre',n);document.getElementById('hdr-patient').textContent=n;toast('✅ Nombre guardado');
 }
 // ══════════════════════════════════════════
-//  GENERADOR DE INFORME PDF MÉDICO
+//  BACKUP JSON COMPLETO
 // ══════════════════════════════════════════
+async function actualizarStatsBackup(){
+  const el=document.getElementById('backup-stats');
+  if(!el)return;
+  try{
+    let nMan=0,nNoc=0,nTen=0;
+    if(db){
+      const p=pid();
+      const[ms,ns,ts]=await Promise.all([
+        db.collection('mananas').where('pacienteId','==',p).get(),
+        db.collection('noches').where('pacienteId','==',p).get(),
+        db.collection('tensiones').where('pacienteId','==',p).get()
+      ]);
+      nMan=ms.size;nNoc=ns.size;nTen=ts.size;
+    }else{
+      nMan=JSON.parse(leer('scls_mananas','[]')).length;
+      nNoc=JSON.parse(leer('scls_noches','[]')).length;
+      nTen=JSON.parse(leer('scls_tensiones','[]')).length;
+    }
+    el.innerHTML=`
+      <div>📝 Formularios de mañana: <strong>${nMan}</strong></div>
+      <div>🌙 Formularios de noche: <strong>${nNoc}</strong></div>
+      <div>❤️ Mediciones de tensión: <strong>${nTen}</strong></div>
+      <div style="margin-top:4px;color:var(--muted);font-size:11px">Total: ${nMan+nNoc+nTen} registros · Paciente: ${nombre()}</div>
+    `;
+  }catch(e){
+    el.innerHTML='<div style="color:var(--muted)">Conecta Firebase para ver el resumen</div>';
+  }
+}
+
+async function exportarBackup(){
+  const btn=document.getElementById('btn-backup');
+  const status=document.getElementById('backup-status');
+  btn.disabled=true;
+  btn.innerHTML='⏳ Leyendo datos...';
+  status.textContent='';
+
+  try{
+    const p=pid();
+    const backup={
+      meta:{
+        version:'1.0',
+        app:'ScleroSense Suite',
+        paciente:nombre(),
+        pacienteId:p,
+        fechaExportacion:new Date().toISOString(),
+        totalRegistros:0
+      },
+      mananas:[],
+      noches:[],
+      tensiones:[]
+    };
+
+    if(db){
+      status.textContent='Leyendo formularios de mañana...';
+      const msSnap=await db.collection('mananas').where('pacienteId','==',p).orderBy('fecha','asc').get();
+      backup.mananas=msSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+      status.textContent='Leyendo formularios de noche...';
+      const nsSnap=await db.collection('noches').where('pacienteId','==',p).orderBy('fecha','asc').get();
+      backup.noches=nsSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+      status.textContent='Leyendo mediciones de tensión...';
+      const tsSnap=await db.collection('tensiones').where('pacienteId','==',p).orderBy('timestamp','asc').get();
+      backup.tensiones=tsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    }else{
+      // Fallback local
+      backup.mananas=JSON.parse(leer('scls_mananas','[]'));
+      backup.noches=JSON.parse(leer('scls_noches','[]'));
+      backup.tensiones=JSON.parse(leer('scls_tensiones','[]'));
+      status.textContent='⚠️ Sin Firebase — exportando datos locales';
+    }
+
+    backup.meta.totalRegistros=backup.mananas.length+backup.noches.length+backup.tensiones.length;
+
+    if(backup.meta.totalRegistros===0){
+      toast('⚠️ No hay datos que exportar');
+      btn.disabled=false;btn.innerHTML='📦 Descargar copia de seguridad (.json)';
+      status.textContent='';return;
+    }
+
+    // Generar y descargar el archivo
+    status.textContent='Generando archivo...';
+    const json=JSON.stringify(backup,null,2);
+    const blob=new Blob([json],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const fecha=new Date().toISOString().slice(0,10);
+    a.href=url;
+    a.download=`ScleroSense_Backup_${nombre().replace(/\s/g,'_')}_${fecha}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const kb=Math.round(json.length/1024*10)/10;
+    status.textContent=`✅ Backup descargado — ${backup.meta.totalRegistros} registros · ${kb} KB`;
+    toast(`✅ Backup guardado (${backup.meta.totalRegistros} registros)`);
+
+    // Guardar fecha del último backup en localStorage
+    guar('scls_ultimo_backup',new Date().toISOString());
+    actualizarStatsBackup();
+
+  }catch(e){
+    status.textContent='❌ Error: '+e.message;
+    toast('❌ Error al generar el backup');
+    console.error(e);
+  }
+
+  btn.disabled=false;
+  btn.innerHTML='📦 Descargar copia de seguridad (.json)';
+}
 async function generarInformePDF(){
   const btn=document.getElementById('btn-pdf');
   const status=document.getElementById('pdf-status');

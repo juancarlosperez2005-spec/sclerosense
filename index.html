@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ScleroSense">
 <title>ScleroSense</title>
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231a6b7a'/%3E%3Cpath d='M20,7 C20,7 9,13.5 9,22 C9,27.5 14,32 20,32 C26,32 31,27.5 31,22 C31,13.5 20,7 Z' stroke='white' stroke-width='1.8' fill='rgba(255,255,255,0.15)'/%3E%3Cpath d='M13,22 L17,18 L20,23 L23,15 L27,22' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -182,8 +183,8 @@ textarea.txt-inp{resize:vertical;min-height:60px}
   <div class="pin-glow"></div>
   <div class="pin-logo">
     <svg viewBox="0 0 40 40" fill="none">
-      <path d="M20 7C20 7 9 13.5 9 22C9 27.5 14 32 20 32C26 32 31 27.5 31 22C31 13.5 20 7Z" stroke="#1a6b7a" stroke-width="1.8" fill="rgba(26,107,122,0.08)"/>
-      <path d="M13 22 L17 18 L20 23 L23 15 L27 22" stroke="#1a6b7a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M20,7 C20,7 9,13.5 9,22 C9,27.5 14,32 20,32 C26,32 31,27.5 31,22 C31,13.5 20,7 Z" stroke="#1a6b7a" stroke-width="1.8" fill="rgba(26,107,122,0.08)"/>
+      <path d="M13,22 L17,18 L20,23 L23,15 L27,22" stroke="#1a6b7a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
   </div>
   <div class="pin-wm">Sclero<span>Sense</span></div>
@@ -216,8 +217,8 @@ textarea.txt-inp{resize:vertical;min-height:60px}
     <div class="hdr-brand">
       <div class="hdr-icon">
         <svg viewBox="0 0 20 20" fill="none">
-          <path d="M10 3C10 3 4 6.5 4 11C4 13.8 6.7 16 10 16C13.3 16 16 13.8 16 11C16 6.5 10 3Z" stroke="#ffffff" stroke-width="1.5" fill="rgba(255,255,255,0.15)"/>
-          <path d="M6 11 L8 9 L10 12 L12 7 L14 11" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10,3 C10,3 4,6.5 4,11 C4,13.8 6.7,16 10,16 C13.3,16 16,13.8 16,11 C16,6.5 10,3 Z" stroke="#ffffff" stroke-width="1.5" fill="rgba(255,255,255,0.15)"/>
+          <path d="M6,11 L8,9 L10,12 L12,7 L14,11" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div>
@@ -742,22 +743,30 @@ function initFB(){
   document.getElementById('cfg-projectId').value=cfg.projectId;
   if(!cfg.apiKey||!cfg.projectId){setFbSt('s-err','Sin configurar — ve a Config');loadLocal();return;}
   try{
-    const app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
-    db=firebase.firestore(app);setFbSt('s-conn','Conectando...');
+    let app;
+    if(firebase.apps.length>0){
+      try{app=firebase.app();}
+      catch(e){app=firebase.initializeApp(cfg);}
+    }else{
+      app=firebase.initializeApp(cfg);
+    }
+    db=firebase.firestore(app);
+    setFbSt('s-conn','Conectando...');
     db.collection('tensiones').limit(1).get()
-      .then(()=>{setFbSt('s-ok','Conectado ✓');loadAll();})
+      .then(()=>{setFbSt('s-ok','Conectado ✓');loadAll();actualizarStatsBackup();})
       .catch(e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
   }catch(e){setFbSt('s-err','Error: '+e.message);loadLocal();}
 }
 function setFbSt(cls,msg){document.getElementById('fb-status').className='fb-status '+cls;document.getElementById('fb-status-text').textContent=msg;}
-function guardarFirebase(){
+async function guardarFirebase(){
   const ak=document.getElementById('cfg-apiKey').value.trim();
   const ad=document.getElementById('cfg-authDomain').value.trim();
   const pr=document.getElementById('cfg-projectId').value.trim();
   if(!ak||!pr){toast('⚠️ Rellena API Key y Project ID');return;}
   guar('scls_fb_apiKey',ak);guar('scls_fb_authDomain',ad||pr+'.firebaseapp.com');guar('scls_fb_projectId',pr);
-  try{firebase.apps.forEach(a=>a.delete());}catch(e){}
-  db=null;initFB();toast('✅ Firebase guardado');
+  db=null;
+  try{await Promise.all(firebase.apps.map(a=>a.delete()));}catch(e){}
+  initFB();toast('✅ Firebase guardado');
 }
 
 // ── GUARDAR ─────────────────────────────────────────
@@ -1208,6 +1217,21 @@ async function exportarBackup(){
   status.textContent='';
 
   try{
+    // Verificar que Firebase está activo
+    if(db){
+      try{await db.collection('tensiones').limit(1).get();}
+      catch(e){
+        // Reconectar si está terminado
+        db=null;
+        const cfg={apiKey:leer('scls_fb_apiKey'),authDomain:leer('scls_fb_authDomain'),projectId:leer('scls_fb_projectId')};
+        if(cfg.apiKey&&cfg.projectId){
+          try{await Promise.all(firebase.apps.map(a=>a.delete()));}catch(e2){}
+          const app=firebase.initializeApp(cfg);
+          db=firebase.firestore(app);
+          await new Promise(r=>setTimeout(r,800));
+        }
+      }
+    }
     const p=pid();
     const backup={
       meta:{

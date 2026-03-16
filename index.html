@@ -559,6 +559,20 @@ textarea.txt-inp{resize:vertical;min-height:60px}
       <button class="btn-cfg" onclick="cambiarPin()">🔑 Cambiar PIN</button>
     </div>
     <div class="card">
+      <div class="ct"><span class="ctd"></span> Exportar informe médico</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">
+        Genera un informe PDF completo con evolución de tensión, métricas clínicas, gráficas y tabla de registros — listo para llevar a consulta.
+      </div>
+      <div class="cfg-fld">
+        <label>Período del informe</label>
+        <div class="opts-wrap" id="pdf-periodo-sel"></div>
+      </div>
+      <button class="btn-save" id="btn-pdf" onclick="generarInformePDF()" style="margin-top:4px">
+        📄 Generar informe PDF
+      </button>
+      <div id="pdf-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;font-family:var(--mono);min-height:16px"></div>
+    </div>
+    <div class="card">
       <div class="ct"><span class="ctd"></span> Acerca de</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.8">
         <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">ScleroSense Suite</div>
@@ -571,6 +585,8 @@ textarea.txt-inp{resize:vertical;min-height:60px}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 const DPIN='1234';
 let db=null,pinIn='',setPinMode=false,turnoT='manana';
@@ -1132,8 +1148,382 @@ function guardarPaciente(){
   if(!n){toast('⚠️ Escribe un nombre');return;}
   guar('scls_nombre',n);document.getElementById('hdr-patient').textContent=n;toast('✅ Nombre guardado');
 }
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-window.addEventListener('DOMContentLoaded',()=>{initForms();initPin();});
+// ══════════════════════════════════════════
+//  GENERADOR DE INFORME PDF MÉDICO
+// ══════════════════════════════════════════
+async function generarInformePDF(){
+  const btn=document.getElementById('btn-pdf');
+  const status=document.getElementById('pdf-status');
+  const diasSel=parseInt(document.querySelector('#pdf-periodo-sel .opt-btn.sel')?.dataset.v||'30');
+
+  btn.disabled=true;btn.innerHTML='⏳ Generando informe...';status.textContent='Preparando datos...';
+
+  try{
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,H=297,mg=18;
+    let y=mg;
+
+    // ── PALETA ──────────────────────────────
+    const C={
+      naranja:[192,98,42],naranjaCl:[254,243,232],
+      texto:[44,31,20],muted:[140,110,86],
+      ok:[46,125,94],okCl:[234,243,222],
+      warn:[212,128,10],warnCl:[254,243,218],
+      danger:[192,57,43],dangerCl:[252,235,235],
+      blue:[58,111,191],blueCl:[230,240,251],
+      gris:[245,240,234],grisBorde:[220,205,190],
+      blanco:[255,255,255]
+    };
+
+    // ── HELPERS ─────────────────────────────
+    const rgb=(c)=>({r:c[0],g:c[1],b:c[2]});
+    const setFill=(c)=>doc.setFillColor(c[0],c[1],c[2]);
+    const setTxt=(c)=>doc.setTextColor(c[0],c[1],c[2]);
+    const setDraw=(c)=>doc.setDrawColor(c[0],c[1],c[2]);
+
+    function header(titulo,subtitulo){
+      // Fondo superior
+      setFill(C.naranja);doc.rect(0,0,W,28,'F');
+      // Logo texto
+      doc.setFont('helvetica','bold');doc.setFontSize(20);
+      setTxt(C.blanco);doc.text('ScleroSense',mg,13);
+      doc.setFont('helvetica','normal');doc.setFontSize(9);
+      setTxt([255,220,200]);doc.text('Suite de seguimiento de esclerodermia',mg,19);
+      // Título sección
+      doc.setFont('helvetica','bold');doc.setFontSize(11);
+      setTxt(C.blanco);doc.text(titulo,W-mg,13,{align:'right'});
+      if(subtitulo){doc.setFont('helvetica','normal');doc.setFontSize(8);setTxt([255,220,200]);doc.text(subtitulo,W-mg,19,{align:'right'});}
+      y=36;
+    }
+
+    function footer(pageNum,total){
+      const py=H-10;
+      doc.setFont('helvetica','normal');doc.setFontSize(7);
+      setTxt(C.muted);
+      doc.text('ScleroSense Suite · Informe generado el '+new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}),mg,py);
+      doc.text('Página '+pageNum+' / '+total,W-mg,py,{align:'right'});
+      doc.text('Este documento no sustituye el criterio médico profesional',W/2,py,{align:'center'});
+      setDraw(C.grisBorde);doc.line(mg,py-3,W-mg,py-3);
+    }
+
+    function sectionTitle(txt,icon=''){
+      if(y>H-50){doc.addPage();y=mg;}
+      setFill(C.naranjaCl);doc.roundedRect(mg,y,W-mg*2,9,2,2,'F');
+      setDraw(C.naranja);doc.setLineWidth(0.5);doc.roundedRect(mg,y,W-mg*2,9,2,2,'S');
+      doc.setFont('helvetica','bold');doc.setFontSize(9);
+      setTxt(C.naranja);doc.text((icon?icon+' ':'')+txt.toUpperCase(),mg+4,y+6);
+      y+=13;
+    }
+
+    function metricaBox(x,bY,bW,bH,label,valor,unidad,colorVal,nota){
+      setFill(C.gris);doc.roundedRect(x,bY,bW,bH,2,2,'F');
+      setDraw(C.grisBorde);doc.setLineWidth(0.3);doc.roundedRect(x,bY,bW,bH,2,2,'S');
+      doc.setFont('helvetica','normal');doc.setFontSize(7);setTxt(C.muted);doc.text(label,x+bW/2,bY+5,{align:'center'});
+      doc.setFont('helvetica','bold');doc.setFontSize(13);setTxt(colorVal||C.texto);doc.text(String(valor),x+bW/2,bY+13,{align:'center'});
+      if(unidad){doc.setFont('helvetica','normal');doc.setFontSize(6.5);setTxt(C.muted);doc.text(unidad,x+bW/2,bY+18,{align:'center'});}
+      if(nota){doc.setFont('helvetica','normal');doc.setFontSize(6);setTxt(C.muted);doc.text(nota,x+bW/2,bY+22,{align:'center'});}
+    }
+
+    function miniBar(x,bY,val,max,color,label){
+      const bW=W-mg*2-30;const pct=max>0?val/max:0;
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);setTxt(C.texto);doc.text(label,x,bY+3.5);
+      setFill(C.gris);doc.roundedRect(x+30,bY,bW,4,1,1,'F');
+      setFill(color);doc.roundedRect(x+30,bY,bW*pct,4,1,1,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(7);setTxt(C.texto);doc.text(String(val),x+30+bW+2,bY+3.5);
+      return bY+7;
+    }
+
+    function badge(x,bY,txt,bg,tc){
+      const tw=doc.getTextWidth(txt)+6;
+      setFill(bg);doc.roundedRect(x,bY-4,tw,6,1.5,1.5,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(7);setTxt(tc);doc.text(txt,x+3,bY);
+      return x+tw+3;
+    }
+
+    // ── OBTENER DATOS ───────────────────────
+    const desde=new Date();desde.setDate(desde.getDate()-(diasSel===9999?3650:diasSel));
+    const tDatos=tensiones.filter(r=>new Date(r.timestamp||r.fecha)>=desde).sort((a,b)=>(a.timestamp||a.fecha).localeCompare(b.timestamp||b.fecha));
+    const nDatos=nochesDatos.filter(r=>new Date(r.fecha)>=desde).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    const periodoLabel=diasSel===9999?'Todos los datos':diasSel===30?'Último mes':diasSel===90?'Últimos 3 meses':'Últimos 6 meses';
+    const hoyStr=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+
+    if(!tDatos.length&&!nDatos.length){toast('⚠️ Sin datos para el período seleccionado');btn.disabled=false;btn.innerHTML='📄 Generar informe PDF';status.textContent='';return;}
+
+    // ── MÉTRICAS CALCULADAS ──────────────────
+    const n=tDatos.length;
+    const avgSis=n?Math.round(tDatos.reduce((s,r)=>s+r.sistolica,0)/n):0;
+    const avgDia=n?Math.round(tDatos.reduce((s,r)=>s+r.diastolica,0)/n):0;
+    const maxSis=n?Math.max(...tDatos.map(r=>r.sistolica)):0;
+    const minSis=n?Math.min(...tDatos.map(r=>r.sistolica)):0;
+    const pv=tDatos.filter(r=>r.pulso);
+    const avgPul=pv.length?Math.round(pv.reduce((s,r)=>s+r.pulso,0)/pv.length):null;
+    const altasN=tDatos.filter(r=>r.sistolica>=140||r.diastolica>=90).length;
+    const cargaHTA=n?Math.round(altasN*100/n):0;
+    const avgPP=n?Math.round(tDatos.reduce((s,r)=>s+(r.sistolica-r.diastolica),0)/n):0;
+    const pam=n?Math.round(tDatos.reduce((s,r)=>s+(r.diastolica+(r.sistolica-r.diastolica)/3),0)/n):0;
+    const desv=n?Math.round(Math.sqrt(tDatos.reduce((s,r)=>s+Math.pow(r.sistolica-avgSis,2),0)/n)):0;
+    const estab=avgSis>0?Math.round((1-desv/avgSis)*100)/100:null;
+    const mans=tDatos.filter(r=>r.turno==='manana');
+    const nocs=tDatos.filter(r=>r.turno==='noche');
+    const avgSisMa=mans.length?Math.round(mans.reduce((s,r)=>s+r.sistolica,0)/mans.length):null;
+    const avgSisNo=nocs.length?Math.round(nocs.reduce((s,r)=>s+r.sistolica,0)/nocs.length):null;
+    const estClasif=clasifT(avgSis,avgDia);
+    const estColor=estClasif==='normal'?C.ok:estClasif==='elevada'||estClasif==='alta1'?C.warn:C.danger;
+
+    // Síntomas promedio (noches)
+    const sintAvg=nDatos.length?[
+      {l:'Fatiga',v:'fatiga'},{l:'Dolor articular',v:'dolorSup'},{l:'Rigidez',v:'rigidez'},
+      {l:'Reflujo',v:'reflujo'},{l:'Piel tirante',v:'pielSup'},{l:'Estrés',v:'estres'},
+      {l:'Náuseas',v:'nauseas'},{l:'Claridad mental',v:'claridad'},{l:'Ánimo',v:'animo'},
+      {l:'Bienestar',v:'bienestar'}
+    ].map(s=>{const vs=nDatos.filter(r=>r[s.v]!=null).map(r=>r[s.v]);return{...s,avg:vs.length?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length*10)/10:null};}).filter(s=>s.avg!==null):[];
+
+    // Agrupar tensiones por fecha
+    const porFecha={};
+    tDatos.forEach(r=>{const f=r.fecha||(r.timestamp||'').split('T')[0];if(!porFecha[f])porFecha[f]={man:null,noc:null};if(r.turno==='manana')porFecha[f].man=r;else porFecha[f].noc=r;});
+    const fechasSorted=Object.keys(porFecha).sort();
+
+    // ══════════════════════
+    //  PÁGINA 1 — PORTADA
+    // ══════════════════════
+    status.textContent='Creando portada...';
+    // Fondo crema
+    setFill([253,246,238]);doc.rect(0,0,W,H,'F');
+    // Franja superior grande
+    setFill(C.naranja);doc.rect(0,0,W,60,'F');
+    // Patrón decorativo (círculos)
+    setFill([180,75,20]);
+    for(let i=0;i<6;i++){doc.circle(W-10+i*20,30,25,'F');}
+    // Logo
+    doc.setFont('helvetica','bold');doc.setFontSize(32);setTxt(C.blanco);doc.text('ScleroSense',mg,32);
+    doc.setFont('helvetica','normal');doc.setFontSize(11);setTxt([255,220,200]);doc.text('Suite de seguimiento · Esclerodermia sistémica',mg,42);
+    // Línea decorativa
+    setDraw(C.blanco);doc.setLineWidth(0.5);doc.line(mg,50,W-mg,50);
+    doc.setFont('helvetica','normal');doc.setFontSize(9);setTxt([255,220,200]);doc.text('Informe médico de tensión arterial y seguimiento clínico',mg,56);
+    // Cuerpo portada
+    y=80;
+    setFill(C.blanco);doc.roundedRect(mg,y,W-mg*2,55,3,3,'F');
+    setDraw(C.naranja);doc.setLineWidth(0.8);doc.roundedRect(mg,y,W-mg*2,55,3,3,'S');
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);setTxt(C.muted);doc.text('PACIENTE',mg+8,y+10);
+    doc.setFont('helvetica','bold');doc.setFontSize(18);setTxt(C.texto);doc.text(nombre(),mg+8,y+22);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);setTxt(C.muted);doc.text('PERÍODO DEL INFORME',mg+8,y+32);
+    doc.setFont('helvetica','bold');doc.setFontSize(11);setTxt(C.naranja);doc.text(periodoLabel,mg+8,y+41);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);setTxt(C.muted);doc.text('FECHA DE GENERACIÓN',W/2+10,y+10);
+    doc.setFont('helvetica','bold');doc.setFontSize(11);setTxt(C.texto);doc.text(hoyStr,W/2+10,y+22);
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);setTxt(C.muted);doc.text('MEDICIONES INCLUIDAS',W/2+10,y+32);
+    doc.setFont('helvetica','bold');doc.setFontSize(11);setTxt(C.texto);doc.text(String(tDatos.length)+' tensiones · '+nDatos.length+' registros diarios',W/2+10,y+41);
+    y+=65;
+    // Resumen rápido en portada
+    if(n){
+      const bW=(W-mg*2-12)/4;const bH=30;
+      metricaBox(mg,y,bW,bH,'Tensión media',avgSis+'/'+avgDia,'mmHg',estColor);
+      metricaBox(mg+bW+4,y,bW,bH,'Carga hipertensiva',cargaHTA+'%','de mediciones ≥140/90',cargaHTA>50?C.danger:cargaHTA>25?C.warn:C.ok);
+      metricaBox(mg+bW*2+8,y,bW,bH,'Presión de pulso',avgPP,'mmHg (normal <60)',avgPP>60?C.warn:C.ok);
+      metricaBox(mg+bW*3+12,y,bW,bH,'PAM media',pam,'mmHg (normal 70-100)',pam>100?C.warn:pam<70?C.blue:C.ok);
+      y+=36;
+    }
+    // Clasificación
+    setFill(estColor);doc.roundedRect(mg,y,W-mg*2,14,2,2,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(11);setTxt(C.blanco);
+    doc.text('Clasificación media: '+CL[estClasif].l+' ('+avgSis+'/'+avgDia+' mmHg)',W/2,y+9.5,{align:'center'});
+    y+=22;
+    // Índice
+    setFill(C.gris);doc.roundedRect(mg,y,W-mg*2,52,2,2,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(9);setTxt(C.naranja);doc.text('CONTENIDO DEL INFORME',mg+6,y+8);
+    const indice=['1. Resumen ejecutivo y métricas clínicas','2. Evolución de la tensión arterial (gráfica)','3. Análisis mañana vs noche','4. Tabla completa de mediciones','5. Síntomas y bienestar general','6. Conclusiones e insights clínicos'];
+    indice.forEach((t,i)=>{doc.setFont('helvetica','normal');doc.setFontSize(8.5);setTxt(C.texto);doc.text(t,mg+10,y+16+i*6);});
+    footer(1,'—');
+
+    // ══════════════════════════════
+    //  PÁGINA 2 — MÉTRICAS + GRÁFICA
+    // ══════════════════════════════
+    status.textContent='Creando métricas...';
+    doc.addPage();setFill([253,246,238]);doc.rect(0,0,W,H,'F');
+    header('Resumen ejecutivo',periodoLabel+' · '+nombre());
+
+    sectionTitle('Métricas clínicas de tensión arterial','');
+    if(n){
+      const bW=(W-mg*2-8)/3;const bH=28;
+      metricaBox(mg,y,bW,bH,'Sistólica media',avgSis,'mmHg',estColor);
+      metricaBox(mg+bW+4,y,bW,bH,'Diastólica media',avgDia,'mmHg',estColor);
+      metricaBox(mg+bW*2+8,y,bW,bH,'Pulso medio',avgPul||'—','ppm');
+      y+=32;
+      metricaBox(mg,y,bW,bH,'Sistólica máxima',maxSis,'mmHg',C.danger,'registrada');
+      metricaBox(mg+bW+4,y,bW,bH,'Sistólica mínima',minSis,'mmHg',C.ok,'registrada');
+      metricaBox(mg+bW*2+8,y,bW,bH,'Variabilidad',desv,'mmHg desv. estándar');
+      y+=32;
+      metricaBox(mg,y,bW,bH,'Carga hipertensiva',cargaHTA+'%','mediciones ≥140/90',cargaHTA>50?C.danger:cargaHTA>25?C.warn:C.ok);
+      metricaBox(mg+bW+4,y,bW,bH,'Presión de pulso',avgPP,'mmHg (normal <60)',avgPP>60?C.warn:C.ok);
+      metricaBox(mg+bW*2+8,y,bW,bH,'Índice estabilidad',estab||'—','cercano a 1 = estable');
+      y+=32;
+      metricaBox(mg,y,bW,bH,'PAM media',pam,'mmHg (normal 70-100)',pam>100?C.warn:C.ok);
+      if(avgSisMa)metricaBox(mg+bW+4,y,bW,bH,'Media mañana',avgSisMa,'mmHg sistólica',C.blue);
+      if(avgSisNo)metricaBox(mg+bW*2+8,y,bW,bH,'Media noche',avgSisNo,'mmHg sistólica',C.naranja);
+      y+=36;
+    }
+
+    // Gráfica evolución tensión (canvas off-screen)
+    sectionTitle('Evolución de la tensión arterial');
+    if(fechasSorted.length>=2){
+      status.textContent='Renderizando gráfica...';
+      const canvas=document.createElement('canvas');canvas.width=800;canvas.height=280;
+      const ctx=canvas.getContext('2d');
+      const labelsG=fechasSorted.slice(-30).map(f=>f.slice(5).replace('-','/'));
+      const dataSis=fechasSorted.slice(-30).map(f=>{const d=porFecha[f];return d.man?d.man.sistolica:d.noc?d.noc.sistolica:null;});
+      const dataDia=fechasSorted.slice(-30).map(f=>{const d=porFecha[f];return d.man?d.man.diastolica:d.noc?d.noc.diastolica:null;});
+      const tempChart=new Chart(ctx,{type:'line',data:{labels:labelsG,datasets:[
+        {label:'Sistólica',data:dataSis,borderColor:'rgb(192,98,42)',backgroundColor:'rgba(192,98,42,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'rgb(192,98,42)',borderWidth:2},
+        {label:'Diastólica',data:dataDia,borderColor:'rgb(58,111,191)',backgroundColor:'rgba(58,111,191,0.08)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'rgb(58,111,191)',borderWidth:2},
+        {label:'Límite normal (120)',data:labelsG.map(()=>120),borderColor:'rgba(46,125,94,0.5)',borderDash:[5,5],borderWidth:1,pointRadius:0,fill:false}
+      ]},options:{animation:false,responsive:false,plugins:{legend:{display:true,labels:{font:{size:11},color:'#444'}}},scales:{x:{ticks:{font:{size:10},color:'#666',maxRotation:45},grid:{color:'rgba(0,0,0,0.05)'}},y:{suggestedMin:60,suggestedMax:180,ticks:{font:{size:10},color:'#666'},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+      await new Promise(r=>setTimeout(r,600));
+      const imgData=canvas.toDataURL('image/png');
+      const imgH=(W-mg*2)*280/800;
+      doc.addImage(imgData,'PNG',mg,y,W-mg*2,imgH);
+      y+=imgH+6;
+      tempChart.destroy();
+    }
+    footer(2,'—');
+
+    // ══════════════════════════════════════
+    //  PÁGINA 3 — TABLA DE MEDICIONES
+    // ══════════════════════════════════════
+    status.textContent='Creando tabla de mediciones...';
+    doc.addPage();setFill([253,246,238]);doc.rect(0,0,W,H,'F');
+    header('Tabla de mediciones',periodoLabel+' · '+nombre());
+    sectionTitle('Registro completo de tensión arterial por fecha');
+
+    const tablaRows=[];
+    fechasSorted.forEach(f=>{
+      const d=porFecha[f];
+      const fmt=new Date(f).toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+      if(d.man){const e=CL[clasifT(d.man.sistolica,d.man.diastolica)];tablaRows.push([fmt,'🌅 Mañana',d.man.sistolica+'/'+d.man.diastolica,d.man.pulso||'—',e.l,d.man.notas||'']);}
+      if(d.noc){const e=CL[clasifT(d.noc.sistolica,d.noc.diastolica)];tablaRows.push([fmt,'🌙 Noche',d.noc.sistolica+'/'+d.noc.diastolica,d.noc.pulso||'—',e.l,d.noc.notas||'']);}
+    });
+
+    doc.autoTable({
+      startY:y,
+      head:[['Fecha','Turno','Tensión','Pulso','Clasificación','Notas']],
+      body:tablaRows,
+      styles:{fontSize:8,cellPadding:3,font:'helvetica',textColor:[44,31,20],lineColor:[220,205,190],lineWidth:0.3},
+      headStyles:{fillColor:[192,98,42],textColor:[255,255,255],fontStyle:'bold',fontSize:8.5},
+      alternateRowStyles:{fillColor:[253,246,238]},
+      columnStyles:{0:{cellWidth:36},1:{cellWidth:20},2:{cellWidth:22,halign:'center',fontStyle:'bold'},3:{cellWidth:16,halign:'center'},4:{cellWidth:36},5:{cellWidth:'auto'}},
+      margin:{left:mg,right:mg},
+      didParseCell:(data)=>{
+        if(data.section==='body'&&data.column.index===4){
+          const v=data.cell.raw;
+          if(v.includes('Crisis'))data.cell.styles.textColor=[192,57,43];
+          else if(v.includes('II'))data.cell.styles.textColor=[192,57,43];
+          else if(v.includes('I')||v.includes('Elevada'))data.cell.styles.textColor=[212,128,10];
+          else if(v.includes('Normal'))data.cell.styles.textColor=[46,125,94];
+          else if(v.includes('baja'))data.cell.styles.textColor=[58,111,191];
+        }
+      }
+    });
+    footer(3,'—');
+
+    // ══════════════════════════════════════
+    //  PÁGINA 4 — SÍNTOMAS + INSIGHTS
+    // ══════════════════════════════════════
+    status.textContent='Creando análisis de síntomas...';
+    doc.addPage();setFill([253,246,238]);doc.rect(0,0,W,H,'F');
+    header('Síntomas e insights clínicos',periodoLabel+' · '+nombre());
+
+    if(sintAvg.length){
+      sectionTitle('Síntomas promedio registrados (escala 1-10)');
+      const top=sintAvg.sort((a,b)=>b.avg-a.avg);
+      top.forEach(s=>{
+        const col=s.avg>=7?C.danger:s.avg>=5?C.warn:s.avg>=3?[200,140,50]:C.ok;
+        y=miniBar(mg,y,s.avg,10,col,s.l);
+        if(y>H-40){doc.addPage();setFill([253,246,238]);doc.rect(0,0,W,H,'F');header('Síntomas (cont.)',nombre());y=mg+10;}
+      });
+      y+=6;
+    }
+
+    // Distribución por categorías
+    if(n){
+      sectionTitle('Distribución de mediciones por categoría');
+      const cats={};tDatos.forEach(r=>{const e=r.estado||clasifT(r.sistolica,r.diastolica);cats[e]=(cats[e]||0)+1;});
+      const colMap={baja:C.blue,normal:C.ok,elevada:C.warn,alta1:C.warn,alta2:C.danger,crisis:C.danger};
+      const bW=W-mg*2;let xc=mg;
+      // Barra de distribución
+      Object.entries(cats).forEach(([k,v])=>{const pct=v/n;const segW=bW*pct;setFill(colMap[k]||C.muted);doc.rect(xc,y,segW,8,'F');xc+=segW;});
+      y+=12;
+      // Leyenda
+      let xl=mg;
+      Object.entries(cats).forEach(([k,v])=>{
+        const pct=Math.round(v*100/n);
+        xl=badge(xl,y,CL[k].l+' '+pct+'%',colMap[k]||C.gris,[255,255,255]);
+        if(xl>W-mg-30){xl=mg;y+=8;}
+      });
+      y+=14;
+    }
+
+    // Insights
+    sectionTitle('Insights clínicos automáticos');
+    const insights=[];
+    if(n){
+      if(cargaHTA>50)insights.push({ic:'⚠️',t:'CARGA HIPERTENSIVA ALTA',d:`El ${cargaHTA}% de las mediciones superan 140/90 mmHg. Se recomienda revisión del tratamiento antihipertensivo.`,col:C.danger});
+      else if(cargaHTA>25)insights.push({ic:'！',t:'CARGA HIPERTENSIVA MODERADA',d:`El ${cargaHTA}% de las mediciones superan 140/90 mmHg. Monitorización continua recomendada.`,col:C.warn});
+      else insights.push({ic:'✓',t:'CARGA HIPERTENSIVA BAJA',d:`Solo el ${cargaHTA}% de mediciones superan 140/90 mmHg. Buen control de la tensión.`,col:C.ok});
+      if(avgPP>60)insights.push({ic:'！',t:'PRESIÓN DE PULSO ELEVADA',d:`PP media de ${avgPP} mmHg (normal <60). Puede indicar mayor rigidez arterial. Valorar con cardiólogo.`,col:C.warn});
+      if(avgSisMa&&avgSisNo&&Math.abs(avgSisMa-avgSisNo)>=10)insights.push({ic:'！',t:'VARIACIÓN MAÑANA/NOCHE SIGNIFICATIVA',d:`Diferencia de ${Math.abs(avgSisMa-avgSisNo)} mmHg entre mediciones matutinas (${avgSisMa}) y nocturnas (${avgSisNo}). Clínicamente relevante.`,col:C.warn});
+      if(pam>110)insights.push({ic:'⚠️',t:'PAM ELEVADA',d:`Presión arterial media de ${pam} mmHg (normal 70-100). Evaluar perfusión de órganos.`,col:C.danger});
+    }
+    if(sintAvg.length){
+      const fatAvg=sintAvg.find(s=>s.v==='fatiga');
+      const bienAvg=sintAvg.find(s=>s.v==='bienestar');
+      if(fatAvg&&fatAvg.avg>6)insights.push({ic:'！',t:'FATIGA CRÓNICA ELEVADA',d:`Fatiga media de ${fatAvg.avg}/10. Nivel sostenido alto. Valorar relación con calidad del sueño y actividad física.`,col:C.warn});
+      if(bienAvg&&bienAvg.avg<5)insights.push({ic:'！',t:'CALIDAD DE VIDA REDUCIDA',d:`Bienestar medio de ${bienAvg.avg}/10. Por debajo del umbral óptimo. Valorar ajuste del plan terapéutico.`,col:C.warn});
+    }
+
+    insights.forEach(ins=>{
+      if(y>H-50){doc.addPage();setFill([253,246,238]);doc.rect(0,0,W,H,'F');header('Insights (cont.)',nombre());y=mg+5;}
+      setFill(ins.col==='ok'?C.okCl:ins.col===C.ok?C.okCl:ins.col===C.warn?C.warnCl:C.dangerCl);
+      const boxH=20;doc.roundedRect(mg,y,W-mg*2,boxH,2,2,'F');
+      setDraw(ins.col);doc.setLineWidth(0.4);doc.roundedRect(mg,y,W-mg*2,boxH,2,2,'S');
+      doc.setFont('helvetica','bold');doc.setFontSize(8.5);setTxt(ins.col);doc.text(ins.t,mg+5,y+7);
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);setTxt(C.texto);
+      const lines=doc.splitTextToSize(ins.d,W-mg*2-10);
+      lines.forEach((l,i)=>doc.text(l,mg+5,y+13+i*4.5));
+      y+=boxH+5;
+    });
+
+    // Nota médica final
+    y+=6;
+    setFill(C.gris);doc.roundedRect(mg,y,W-mg*2,20,2,2,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(8);setTxt(C.muted);doc.text('NOTA PARA EL MÉDICO',mg+5,y+6);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);setTxt(C.texto);
+    doc.text('Este informe ha sido generado automáticamente por ScleroSense Suite. Los datos han sido registrados por la paciente de forma',mg+5,y+12);
+    doc.text('autónoma. Se recomienda contrastar con la valoración clínica presencial. No sustituye el criterio médico profesional.',mg+5,y+17);
+
+    footer(4,'—');
+
+    // ── GUARDAR ──────────────────────────────
+    status.textContent='Guardando PDF...';
+    const nombreArchivo='ScleroSense_Informe_'+nombre().replace(/\s/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+    doc.save(nombreArchivo);
+
+    btn.disabled=false;btn.innerHTML='📄 Generar informe PDF';
+    status.textContent='✅ Informe descargado correctamente';
+    setTimeout(()=>status.textContent='',4000);
+    toast('✅ PDF generado: '+nombreArchivo);
+
+  }catch(e){
+    console.error(e);
+    btn.disabled=false;btn.innerHTML='📄 Generar informe PDF';
+    status.textContent='❌ Error: '+e.message;
+    toast('❌ Error al generar el PDF');
+  }
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  initForms();initPin();
+  // Selector período PDF
+  const psel=document.getElementById('pdf-periodo-sel');
+  if(psel){[{l:'Último mes',v:30},{l:'3 meses',v:90},{l:'6 meses',v:180},{l:'Todo',v:9999}].forEach((o,i)=>{const b=document.createElement('button');b.className='opt-btn'+(i===0?' sel':'');b.textContent=o.l;b.dataset.v=o.v;b.onclick=()=>{psel.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');};psel.appendChild(b);});}
+});
 </script>
 </body>
 </html>

@@ -175,18 +175,17 @@ textarea.txt-inp{resize:vertical;min-height:60px}
 .cita-card{background:var(--sf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(26,107,122,0.06)}
 .cita-card.proxima{border-left:3px solid var(--acc)}
 .cita-card.pasada{border-left:3px solid var(--muted);opacity:.85}
-.cita-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
-.cita-esp{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--acc);font-family:var(--mono)}
-.cita-fecha-badge{font-size:11px;font-family:var(--mono);color:var(--sf);background:var(--acc);padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+.cita-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px}
+.cita-esp{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--acc);font-family:var(--mono)}
+.cita-fecha-badge{font-size:10px;font-family:var(--mono);color:#fff;background:var(--acc);padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;flex-shrink:0}
 .cita-fecha-badge.pasada{background:var(--muted)}
 .cita-doctor{font-size:14px;font-weight:600;color:var(--petrol);margin-bottom:2px}
-.cita-lugar{font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.cita-lugar{font-size:11px;color:var(--muted);margin-bottom:8px}
 .cita-campo{margin-top:7px;padding-top:7px;border-top:1px solid var(--brd)}
 .cita-campo-lbl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);font-family:var(--mono);margin-bottom:3px}
-.cita-campo-txt{font-size:12.5px;color:var(--text);line-height:1.5}
+.cita-campo-txt{font-size:12.5px;color:var(--text);line-height:1.5;white-space:pre-wrap}
 .cita-actions{display:flex;gap:6px;margin-top:10px}
 .cita-btn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--brd);background:var(--bg);color:var(--muted2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
-.cita-btn:active{transform:scale(.96)}
 .cita-btn.del{border-color:rgba(192,57,43,.3);color:var(--danger)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--petrol);color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;font-family:var(--font)}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -617,54 +616,28 @@ textarea.txt-inp{resize:vertical;min-height:60px}
         <div style="margin-top:8px;font-size:11px">Esta app no sustituye el criterio médico profesional.</div>
       </div>
     </div>
-  <!-- CITAS MÉDICAS -->
+
+  <!-- CITAS MEDICAS -->
   <div class="tab-content" id="tab-citas">
     <div class="card">
       <div class="ct"><span class="ctd"></span> Nueva cita</div>
-      <div class="fld"><div class="fld-lbl">Especialidad</div>
-        <div class="opts-wrap" id="cita-especialidad"></div>
-      </div>
-      <div class="fld"><div class="fld-lbl">Doctor / Doctora</div>
-        <input class="txt-inp" type="text" id="cita-doctor" placeholder="Nombre del profesional...">
-      </div>
-      <div class="fld"><div class="fld-lbl">Centro médico</div>
-        <input class="txt-inp" type="text" id="cita-lugar" placeholder="Hospital, clínica...">
-      </div>
+      <div class="fld"><div class="fld-lbl">Especialidad</div><div class="opts-wrap" id="cita-especialidad"></div></div>
+      <div class="fld"><div class="fld-lbl">Doctor / Doctora</div><input class="txt-inp" type="text" id="cita-doctor" placeholder="Nombre del profesional..."></div>
+      <div class="fld"><div class="fld-lbl">Centro médico</div><input class="txt-inp" type="text" id="cita-lugar" placeholder="Hospital, clínica..."></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-        <div class="fld" style="margin:0"><div class="fld-lbl">Fecha</div>
-          <input class="txt-inp" type="date" id="cita-fecha">
-        </div>
-        <div class="fld" style="margin:0"><div class="fld-lbl">Hora</div>
-          <input class="txt-inp" type="time" id="cita-hora">
-        </div>
+        <div class="fld" style="margin:0"><div class="fld-lbl">Fecha</div><input class="txt-inp" type="date" id="cita-fecha"></div>
+        <div class="fld" style="margin:0"><div class="fld-lbl">Hora</div><input class="txt-inp" type="time" id="cita-hora"></div>
       </div>
-      <div class="fld"><div class="fld-lbl">Motivo de la cita</div>
-        <textarea class="txt-inp" id="cita-motivo" placeholder="Revisión, seguimiento, urgencia..." style="min-height:50px"></textarea>
-      </div>
-      <div class="fld"><div class="fld-lbl">Resumen de la consulta</div>
-        <textarea class="txt-inp" id="cita-resumen" placeholder="Lo que dijo el doctor, diagnóstico, observaciones..." style="min-height:80px"></textarea>
-      </div>
-      <div class="fld"><div class="fld-lbl">Próximos pasos / Recetas</div>
-        <textarea class="txt-inp" id="cita-pasos" placeholder="Medicación prescrita, pruebas solicitadas, próxima cita..." style="min-height:60px"></textarea>
-      </div>
-      <button class="btn-save" onclick="guardarCita()">💾 Guardar cita</button>
+      <div class="fld"><div class="fld-lbl">Motivo de la cita</div><textarea class="txt-inp" id="cita-motivo" placeholder="Revisión, seguimiento, urgencia..." style="min-height:50px"></textarea></div>
+      <div class="fld"><div class="fld-lbl">Resumen de la consulta</div><textarea class="txt-inp" id="cita-resumen" placeholder="Lo que dijo el doctor, diagnóstico, observaciones..." style="min-height:80px"></textarea></div>
+      <div class="fld"><div class="fld-lbl">Próximos pasos / Recetas</div><textarea class="txt-inp" id="cita-pasos" placeholder="Medicación prescrita, pruebas solicitadas, próxima cita..." style="min-height:60px"></textarea></div>
+      <button class="btn-save" onclick="guardarCita()">Guardar cita</button>
     </div>
-
-    <div id="citas-proximas-sec">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--acc);margin:8px 4px 6px;display:flex;align-items:center;gap:6px">
-        <span style="width:7px;height:7px;border-radius:50%;background:var(--acc);display:inline-block"></span> Próximas citas
-      </div>
-      <div id="citas-proximas"><div class="empty-st"><div class="empty-ic">📅</div><div class="empty-tx">Sin citas próximas</div></div></div>
-    </div>
-
-    <div id="citas-pasadas-sec" style="margin-top:8px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:8px 4px 6px;display:flex;align-items:center;gap:6px">
-        <span style="width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block"></span> Citas pasadas
-      </div>
-      <div id="citas-pasadas"><div class="empty-st"><div class="empty-ic">📋</div><div class="empty-tx">Sin citas pasadas</div></div></div>
-    </div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--acc);margin:8px 4px 6px">Próximas citas</div>
+    <div id="citas-proximas"><div class="empty-st"><div class="empty-ic">&#128197;</div><div class="empty-tx">Sin citas próximas</div></div></div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 4px 6px">Citas pasadas</div>
+    <div id="citas-pasadas"><div class="empty-st"><div class="empty-ic">&#128203;</div><div class="empty-tx">Sin citas pasadas</div></div></div>
   </div>
-
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -908,18 +881,19 @@ function loadAll(){
   if(!db){loadLocal();return;}
   if(_unsubTensiones)_unsubTensiones();
   _unsubTensiones=db.collection('tensiones').where('pacienteId','==',p)
-    .onSnapshot(async ts=>{
+    .onSnapshot(async function(ts){
       setFbSt('s-ok','Conectado ✓');
-      tensiones=ts.docs.map(d=>({id:d.id,...d.data()}))
-        .sort((a,b)=>(b.timestamp||b.fecha||'').localeCompare(a.timestamp||a.fecha||''));
+      tensiones=ts.docs.map(function(d){return Object.assign({id:d.id},d.data());})
+        .sort(function(a,b){return (b.timestamp||b.fecha||'').localeCompare(a.timestamp||a.fecha||'');});
       try{
         const ns=await db.collection('noches').where('pacienteId','==',p).limit(120).get();
-        nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()}))
-          .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+        nochesDatos=ns.docs.map(function(d){return Object.assign({id:d.id},d.data());})
+          .sort(function(a,b){return b.fecha.localeCompare(a.fecha);});
       }catch(e){nochesDatos=[];}
       renderTHist();renderAnalisis();
-    },e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
+    },function(e){setFbSt('s-err','Error: '+e.message);loadLocal();});
 }
+
 function loadLocal(){
   try{tensiones=JSON.parse(leer('scls_tensiones','[]'));}catch(e){tensiones=[];}
   try{nochesDatos=JSON.parse(leer('scls_noches','[]'));}catch(e){nochesDatos=[];}
@@ -1229,7 +1203,7 @@ function showTab(n,b){
   if(n==='analisis')renderAnalisis();
   if(n==='profundo')renderProfundo();
   if(n==='config')actualizarStatsBackup();
-  if(n==='citas'){initCitasForm();renderCitas();}
+  if(n==='citas'){initCitasForm();loadCitas();}
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 function cambiarPin(){
@@ -1743,52 +1717,50 @@ async function generarInformePDF(){
   }
 }
 // ══════════════════════════════════════════
-//  CITAS MÉDICAS
+//  CITAS MEDICAS
 // ══════════════════════════════════════════
-let citasDatos=[];
-
-const ESPECIALIDADES=['Reumatología','Cardiología','Neumología','Digestivo','Dermatología','Nefrología','Medicina Interna','Rehabilitación','Nutrición','Psicología','Médico de cabecera','Otra'];
+var citasDatos=[];
+var ESPECIALIDADES=['Reumatología','Cardiología','Neumología','Digestivo','Dermatología','Nefrología','Medicina Interna','Rehabilitación','Nutrición','Psicología','Médico de cabecera','Otra'];
 
 function initCitasForm(){
-  const el=document.getElementById('cita-especialidad');
+  var el=document.getElementById('cita-especialidad');
   if(el&&!el.children.length){
-    ESPECIALIDADES.forEach(e=>{
-      const b=document.createElement('button');b.className='opt-btn';b.textContent=e;b.dataset.val=e;
-      b.onclick=()=>{el.querySelectorAll('.opt-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');};
+    ESPECIALIDADES.forEach(function(e){
+      var b=document.createElement('button');b.className='opt-btn';b.textContent=e;b.dataset.val=e;
+      b.onclick=function(){el.querySelectorAll('.opt-btn').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');};
       el.appendChild(b);
     });
   }
-  // Default fecha a hoy
-  const fi=document.getElementById('cita-fecha');
+  var fi=document.getElementById('cita-fecha');
   if(fi&&!fi.value)fi.value=hoy();
 }
 
 async function guardarCita(){
-  const esp=document.querySelector('#cita-especialidad .opt-btn.sel')?.dataset.val||'';
-  const doc2=document.getElementById('cita-doctor').value.trim();
-  const lugar=document.getElementById('cita-lugar').value.trim();
-  const fecha=document.getElementById('cita-fecha').value;
-  const hora=document.getElementById('cita-hora').value;
-  const motivo=document.getElementById('cita-motivo').value.trim();
-  const resumen=document.getElementById('cita-resumen').value.trim();
-  const pasos=document.getElementById('cita-pasos').value.trim();
-  if(!fecha){toast('⚠️ La fecha es obligatoria');return;}
-  const cita={pacienteId:pid(),especialidad:esp,doctor:doc2,lugar,fecha,hora,motivo,resumen,pasos,timestamp:new Date().toISOString()};
+  var espEl=document.querySelector('#cita-especialidad .opt-btn.sel');
+  var esp=espEl?espEl.dataset.val:'';
+  var doc2=document.getElementById('cita-doctor').value.trim();
+  var lugar=document.getElementById('cita-lugar').value.trim();
+  var fecha=document.getElementById('cita-fecha').value;
+  var hora=document.getElementById('cita-hora').value;
+  var motivo=document.getElementById('cita-motivo').value.trim();
+  var resumen=document.getElementById('cita-resumen').value.trim();
+  var pasos=document.getElementById('cita-pasos').value.trim();
+  if(!fecha){toast('Selecciona la fecha');return;}
+  var cita={pacienteId:pid(),especialidad:esp,doctor:doc2,lugar:lugar,fecha:fecha,hora:hora,motivo:motivo,resumen:resumen,pasos:pasos,timestamp:new Date().toISOString()};
   await saveDoc('citas',null,cita);
-  // Limpiar form
-  ['cita-doctor','cita-lugar','cita-hora','cita-motivo','cita-resumen','cita-pasos'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('#cita-especialidad .opt-btn').forEach(b=>b.classList.remove('sel'));
+  ['cita-doctor','cita-lugar','cita-hora','cita-motivo','cita-resumen','cita-pasos'].forEach(function(id){document.getElementById(id).value='';});
+  document.querySelectorAll('#cita-especialidad .opt-btn').forEach(function(b){b.classList.remove('sel');});
   document.getElementById('cita-fecha').value=hoy();
   await loadCitas();
-  toast('✅ Cita guardada');
+  toast('Cita guardada');
 }
 
 async function loadCitas(){
-  const p=pid();
+  var p=pid();
   try{
     if(db){
-      const sn=await db.collection('citas').where('pacienteId','==',p).get();
-      citasDatos=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+      var sn=await db.collection('citas').where('pacienteId','==',p).get();
+      citasDatos=sn.docs.map(function(d){return Object.assign({id:d.id},d.data());}).sort(function(a,b){return a.fecha.localeCompare(b.fecha);});
     }else{
       try{citasDatos=JSON.parse(leer('scls_citas','[]'));}catch(e){citasDatos=[];}
     }
@@ -1797,46 +1769,41 @@ async function loadCitas(){
 }
 
 async function eliminarCita(id){
-  if(!confirm('¿Eliminar esta cita?'))return;
+  if(!confirm('Eliminar esta cita?'))return;
   try{
     if(db)await db.collection('citas').doc(id).delete();
-    else{const loc=citasDatos.filter(c=>c.id!==id);guar('scls_citas',JSON.stringify(loc));}
-  }catch(e){toast('❌ Error: '+e.message);return;}
-  await loadCitas();toast('🗑️ Cita eliminada');
+    else{var loc=citasDatos.filter(function(c){return c.id!==id;});guar('scls_citas',JSON.stringify(loc));}
+  }catch(e){toast('Error: '+e.message);return;}
+  await loadCitas();toast('Cita eliminada');
 }
 
 function renderCitas(){
-  const hoyD=hoy();
-  const proximas=citasDatos.filter(c=>c.fecha>=hoyD).sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const pasadas=citasDatos.filter(c=>c.fecha<hoyD).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-
-  const elP=document.getElementById('citas-proximas');
-  const elPa=document.getElementById('citas-pasadas');
+  var hoyD=hoy();
+  var proximas=citasDatos.filter(function(c){return c.fecha>=hoyD;});
+  var pasadas=citasDatos.filter(function(c){return c.fecha<hoyD;}).reverse();
+  var elP=document.getElementById('citas-proximas');
+  var elPa=document.getElementById('citas-pasadas');
   if(!elP||!elPa)return;
-
-  elP.innerHTML=proximas.length?proximas.map(c=>citaCard(c,false)).join(''):'<div class="empty-st"><div class="empty-ic">📅</div><div class="empty-tx">Sin citas próximas</div></div>';
-  elPa.innerHTML=pasadas.length?pasadas.map(c=>citaCard(c,true)).join(''):'<div class="empty-st"><div class="empty-ic">📋</div><div class="empty-tx">Sin citas pasadas</div></div>';
+  elP.innerHTML=proximas.length?proximas.map(function(c){return citaCard(c,false);}).join(''):'<div class="empty-st"><div class="empty-ic">&#128197;</div><div class="empty-tx">Sin citas próximas</div></div>';
+  elPa.innerHTML=pasadas.length?pasadas.map(function(c){return citaCard(c,true);}).join(''):'<div class="empty-st"><div class="empty-ic">&#128203;</div><div class="empty-tx">Sin citas pasadas</div></div>';
 }
 
 function citaCard(c,pasada){
-  const fechaFmt=new Date(c.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  const horaFmt=c.hora?(' · '+c.hora):'';
-  return \`<div class="cita-card \${pasada?'pasada':'proxima'}">
-    <div class="cita-header">
-      <div>
-        <div class="cita-esp">\${c.especialidad||'Sin especialidad'}</div>
-        <div class="cita-doctor">\${c.doctor||'Doctor no especificado'}</div>
-      </div>
-      <div class="cita-fecha-badge \${pasada?'pasada':''}">\${fechaFmt}\${horaFmt}</div>
-    </div>
-    \${c.lugar?'<div class="cita-lugar">📍 '+c.lugar+'</div>':''}
-    \${c.motivo?'<div class="cita-campo"><div class="cita-campo-lbl">Motivo</div><div class="cita-campo-txt">'+c.motivo+'</div></div>':''}
-    \${c.resumen?'<div class="cita-campo"><div class="cita-campo-lbl">Resumen de la consulta</div><div class="cita-campo-txt">'+c.resumen+'</div></div>':''}
-    \${c.pasos?'<div class="cita-campo"><div class="cita-campo-lbl">Próximos pasos / Recetas</div><div class="cita-campo-txt">'+c.pasos+'</div></div>':''}
-    <div class="cita-actions">
-      <button class="cita-btn del" onclick="eliminarCita('\${c.id}')">🗑️ Eliminar</button>
-    </div>
-  </div>\`;
+  var fechaFmt=new Date(c.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  var horaFmt=c.hora?' &middot; '+c.hora:'';
+  var cls=pasada?'pasada':'proxima';
+  var h='<div class="cita-card '+cls+'">';
+  h+='<div class="cita-header"><div>';
+  h+='<div class="cita-esp">'+(c.especialidad||'Sin especialidad')+'</div>';
+  h+='<div class="cita-doctor">'+(c.doctor||'Sin especificar')+'</div>';
+  h+='</div><div class="cita-fecha-badge '+(pasada?'pasada':'')+'" >'+fechaFmt+horaFmt+'</div></div>';
+  if(c.lugar)h+='<div class="cita-lugar">&#128205; '+c.lugar+'</div>';
+  if(c.motivo)h+='<div class="cita-campo"><div class="cita-campo-lbl">Motivo</div><div class="cita-campo-txt">'+c.motivo+'</div></div>';
+  if(c.resumen)h+='<div class="cita-campo"><div class="cita-campo-lbl">Resumen de la consulta</div><div class="cita-campo-txt">'+c.resumen+'</div></div>';
+  if(c.pasos)h+='<div class="cita-campo"><div class="cita-campo-lbl">Próximos pasos / Recetas</div><div class="cita-campo-txt">'+c.pasos+'</div></div>';
+  h+='<div class="cita-actions"><button class="cita-btn del" onclick="eliminarCita(\''+c.id+'\')">&#215; Eliminar</button></div>';
+  h+='</div>';
+  return h;
 }
 
 window.addEventListener('DOMContentLoaded',()=>{

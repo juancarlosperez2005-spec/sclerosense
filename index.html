@@ -752,9 +752,8 @@ function initFB(){
     }
     db=firebase.firestore(app);
     setFbSt('s-conn','Conectando...');
-    db.collection('tensiones').limit(1).get()
-      .then(()=>{setFbSt('s-ok','Conectado ✓');loadAll();actualizarStatsBackup();})
-      .catch(e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
+    loadAll();
+    actualizarStatsBackup();
   }catch(e){setFbSt('s-err','Error: '+e.message);loadLocal();}
 }
 function setFbSt(cls,msg){document.getElementById('fb-status').className='fb-status '+cls;document.getElementById('fb-status-text').textContent=msg;}
@@ -827,7 +826,7 @@ async function guardarTension(){
   await saveDoc('tensiones',null,reg);
   ['t-sis','t-dia','t-pul','t-notas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('t-estado').innerHTML='';
-  await loadAll();toast('✅ Tensión guardada');
+  toast('✅ Tensión guardada');
 }
 
 async function saveDoc(col,docId,datos){
@@ -838,20 +837,23 @@ async function saveDoc(col,docId,datos){
 }
 
 // ── CARGAR ──────────────────────────────────────────
-async function loadAll(){
+let _unsubTensiones=null;
+function loadAll(){
   const p=pid();
-  try{
-    if(db){
-      const[ts,ns]=await Promise.all([
-        db.collection('tensiones').where('pacienteId','==',p).limit(200).get(),
-        db.collection('noches').where('pacienteId','==',p).limit(120).get()
-      ]);
-      // Ordenar en cliente — evita índices compuestos en Firestore
-      tensiones=ts.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.timestamp||b.fecha||'').localeCompare(a.timestamp||a.fecha||''));
-      nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-    }else{loadLocal();return;}
-  }catch(e){loadLocal();return;}
-  renderTHist();renderAnalisis();
+  if(!db){loadLocal();return;}
+  if(_unsubTensiones)_unsubTensiones();
+  _unsubTensiones=db.collection('tensiones').where('pacienteId','==',p)
+    .onSnapshot(async ts=>{
+      setFbSt('s-ok','Conectado ✓');
+      tensiones=ts.docs.map(d=>({id:d.id,...d.data()}))
+        .sort((a,b)=>(b.timestamp||b.fecha||'').localeCompare(a.timestamp||a.fecha||''));
+      try{
+        const ns=await db.collection('noches').where('pacienteId','==',p).limit(120).get();
+        nochesDatos=ns.docs.map(d=>({id:d.id,...d.data()}))
+          .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+      }catch(e){nochesDatos=[];}
+      renderTHist();renderAnalisis();
+    },e=>{setFbSt('s-err','Error: '+e.message);loadLocal();});
 }
 function loadLocal(){
   try{tensiones=JSON.parse(leer('scls_tensiones','[]'));}catch(e){tensiones=[];}
